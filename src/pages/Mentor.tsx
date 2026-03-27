@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { useMentorStore } from '@/store'
 import { cn } from '@/lib/utils'
+import type { ChatMessage } from '@/data/mockData'
 
 const QUICK_PROMPTS = [
   { icon: Bug, label: 'Debug my code', text: 'Can you help me debug this code? It\'s giving me an unexpected result.' },
@@ -36,7 +37,7 @@ function TypingIndicator() {
   )
 }
 
-function MessageBubble({ message }: { message: ReturnType<typeof useMentorStore>['messages'][0] }) {
+function MessageBubble({ message }: { message: ChatMessage }) {
   const isUser = message.role === 'user'
 
   const typeStyle: Record<string, string> = {

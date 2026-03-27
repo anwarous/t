@@ -8,20 +8,30 @@ import {
 } from 'lucide-react'
 import { useUserStore } from '@/store'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
-const NAV_ITEMS = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/learn',     label: 'Learn',     icon: BookOpen },
-  { to: '/editor',    label: 'Code',      icon: Code2 },
-  { to: '/sandbox',   label: 'Sandbox',   icon: Terminal },
-  { to: '/visualize', label: 'Visualize', icon: GitBranch },
-  { to: '/mentor',    label: 'AI Mentor', icon: Brain },
-]
+// ── Language Switcher ──────────────────────────────────────────────────────────
+function LanguageSwitcher() {
+  const { i18n } = useTranslation()
+  const isEn = i18n.language?.startsWith('en')
+
+  return (
+    <button
+      onClick={() => i18n.changeLanguage(isEn ? 'fr' : 'en')}
+      className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-xs font-semibold text-surface-300 select-none"
+      title={isEn ? 'Switch to French' : 'Passer en anglais'}
+    >
+      <span className="text-sm">{isEn ? '🇫🇷' : '🇬🇧'}</span>
+      <span>{isEn ? 'FR' : 'EN'}</span>
+    </button>
+  )
+}
 
 // ── Avatar dropdown ───────────────────────────────────────────────────────────
 function AvatarDropdown({ onClose }: { onClose: () => void }) {
   const { user } = useUserStore()
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const go = (path: string) => { navigate(path); onClose() }
 
@@ -49,7 +59,7 @@ function AvatarDropdown({ onClose }: { onClose: () => void }) {
         <div className="flex gap-3 mt-3">
           <div className="flex-1 flex flex-col items-center py-2 rounded-xl bg-brand-500/10 border border-brand-500/15">
             <span className="text-base font-bold text-brand-300">{user.xp.toLocaleString()}</span>
-            <span className="text-[10px] text-surface-500 mt-0.5">XP</span>
+            <span className="text-[10px] text-surface-500 mt-0.5">{t('nav.xp')}</span>
           </div>
           <div className="flex-1 flex flex-col items-center py-2 rounded-xl bg-amber-500/10 border border-amber-500/15">
             <span className="text-base font-bold text-amber-300">{user.streak}</span>
@@ -65,10 +75,10 @@ function AvatarDropdown({ onClose }: { onClose: () => void }) {
       {/* Menu items */}
       <div className="p-2">
         {[
-          { icon: User,     label: 'My Profile',    sub: 'View & edit profile',   path: '/profile' },
-          { icon: Trophy,   label: 'Achievements',  sub: 'Badges & milestones',   path: '/profile?tab=badges' },
-          { icon: Settings, label: 'Settings',      sub: 'Preferences & account', path: '/profile?tab=settings' },
-          { icon: Bell,     label: 'Notifications', sub: '3 unread',              path: '/profile?tab=notifications' },
+          { icon: User,     label: t('nav.myProfile'),    sub: t('nav.myProfileSub'),   path: '/profile' },
+          { icon: Trophy,   label: t('nav.achievements'), sub: t('nav.achievementsSub'), path: '/profile?tab=badges' },
+          { icon: Settings, label: t('nav.settings'),     sub: t('nav.settingsSub'),    path: '/profile?tab=settings' },
+          { icon: Bell,     label: t('nav.notifications'), sub: t('nav.notificationsSub', { count: 3 }), path: '/profile?tab=notifications' },
         ].map(({ icon: Icon, label, sub, path }) => (
           <button
             key={label}
@@ -94,7 +104,7 @@ function AvatarDropdown({ onClose }: { onClose: () => void }) {
           <div className="w-8 h-8 rounded-lg bg-surface-800 border border-white/5 flex items-center justify-center flex-shrink-0 group-hover:border-rose-500/30 transition-colors">
             <LogOut size={15} className="text-surface-400 group-hover:text-rose-400 transition-colors" />
           </div>
-          <p className="text-sm font-medium group-hover:text-rose-400 transition-colors">Sign out</p>
+          <p className="text-sm font-medium group-hover:text-rose-400 transition-colors">{t('nav.signOut')}</p>
         </button>
       </div>
     </motion.div>
@@ -105,11 +115,21 @@ function AvatarDropdown({ onClose }: { onClose: () => void }) {
 export default function Navbar() {
   const location  = useLocation()
   const { user }  = useUserStore()
+  const { t }     = useTranslation()
   const [mobileOpen,   setMobileOpen]   = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const isLanding = location.pathname === '/'
+
+  const NAV_ITEMS = [
+    { to: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { to: '/learn',     label: t('nav.learn'),     icon: BookOpen },
+    { to: '/editor',    label: t('nav.code'),      icon: Code2 },
+    { to: '/sandbox',   label: t('nav.sandbox'),   icon: Terminal },
+    { to: '/visualize', label: t('nav.visualize'), icon: GitBranch },
+    { to: '/mentor',    label: t('nav.aiMentor'),  icon: Brain },
+  ]
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -186,14 +206,17 @@ export default function Navbar() {
           {/* ── Right side ───────────────────────────────────────────────── */}
           <div className="flex items-center gap-2.5">
 
+            {/* Language switcher (always visible) */}
+            <LanguageSwitcher />
+
             {isLanding ? (
               /* Landing CTAs */
               <>
                 <Link to="/dashboard" className="btn-ghost hidden sm:flex text-sm py-2 px-4">
-                  Sign in
+                  {t('nav.signIn')}
                 </Link>
                 <Link to="/dashboard" className="btn-primary text-sm py-2 px-4">
-                  Start Learning →
+                  {t('nav.startLearning')}
                 </Link>
               </>
             ) : (
@@ -203,12 +226,12 @@ export default function Navbar() {
                   {/* XP pill */}
                   <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-xs font-semibold text-brand-300 select-none">
                     <Zap size={12} className="text-accent-cyan" />
-                    {user.xp.toLocaleString()} XP
+                    {user.xp.toLocaleString()} {t('nav.xp')}
                   </div>
                   {/* Streak pill */}
                   <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-300 select-none">
                     <Flame size={12} className="text-amber-400" />
-                    {user.streak} day streak
+                    {user.streak} {t('nav.streak')}
                   </div>
                 </div>
 
@@ -309,18 +332,18 @@ export default function Navbar() {
                 )}
               >
                 <User size={16} />
-                Profile
+                {t('nav.profile')}
               </Link>
 
               {/* Mobile mini-stats */}
               <div className="flex gap-2 pt-2 pb-1">
                 <div className="flex-1 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-500/10 border border-brand-500/15">
                   <Zap size={12} className="text-accent-cyan" />
-                  <span className="text-xs font-semibold text-brand-300">{user.xp.toLocaleString()} XP</span>
+                  <span className="text-xs font-semibold text-brand-300">{user.xp.toLocaleString()} {t('nav.xp')}</span>
                 </div>
                 <div className="flex-1 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/15">
                   <Flame size={12} className="text-amber-400" />
-                  <span className="text-xs font-semibold text-amber-300">{user.streak} streak</span>
+                  <span className="text-xs font-semibold text-amber-300">{user.streak} {t('nav.streak')}</span>
                 </div>
               </div>
             </div>

@@ -4,6 +4,7 @@ import {
   ArrowRight, Zap, Brain, Trophy, GitBranch, Code2, Play,
   CheckCircle, Star, BarChart2, Lock, Sparkles
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -19,51 +20,27 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.1 } },
 }
 
-const FEATURES = [
-  {
-    icon: GitBranch,
-    color: '#1a5cff',
-    glow: 'rgba(26,92,255,0.3)',
-    title: 'Step-by-Step Visualization',
-    desc: 'Watch algorithms execute in real time. Pause, rewind, and inspect every swap, comparison, and pivot.',
-  },
-  {
-    icon: Brain,
-    color: '#00d4ff',
-    glow: 'rgba(0,212,255,0.3)',
-    title: 'AI Mentor',
-    desc: 'Get instant explanations, debug hints, and personalized guidance from an AI that understands your code.',
-  },
-  {
-    icon: Trophy,
-    color: '#f59e0b',
-    glow: 'rgba(245,158,11,0.3)',
-    title: 'Gamified Learning',
-    desc: 'Earn XP, unlock badges, maintain streaks, and climb the leaderboard as you master each algorithm.',
-  },
-  {
-    icon: Code2,
-    color: '#10b981',
-    glow: 'rgba(16,185,129,0.3)',
-    title: 'Interactive Code Editor',
-    desc: 'Write and run Python directly in the browser. Instant feedback with test cases and performance metrics.',
-  },
-]
-
-const STATS = [
-  { value: '50+', label: 'Algorithms' },
-  { value: '200+', label: 'Practice Problems' },
-  { value: '12k+', label: 'Students' },
-  { value: '4.9★', label: 'Rating' },
-]
-
 const ALGORITHMS = [
   'Bubble Sort', 'Quick Sort', 'Merge Sort', 'Binary Search',
   'BFS', 'DFS', 'Dijkstra', 'Dynamic Programming',
   'Heap Sort', 'A* Search', 'Kruskal', 'Floyd-Warshall',
 ]
 
+const FEATURE_KEYS = ['viz', 'ai', 'gamified', 'editor'] as const
+const FEATURE_ICONS = [GitBranch, Brain, Trophy, Code2]
+const FEATURE_COLORS = ['#1a5cff', '#00d4ff', '#f59e0b', '#10b981']
+const FEATURE_GLOWS = ['rgba(26,92,255,0.3)', 'rgba(0,212,255,0.3)', 'rgba(245,158,11,0.3)', 'rgba(16,185,129,0.3)']
+
 export default function Landing() {
+  const { t } = useTranslation()
+
+  const STATS = [
+    { value: '50+',  label: t('landing.stats.algorithms') },
+    { value: '200+', label: t('landing.stats.problems') },
+    { value: '12k+', label: t('landing.stats.students') },
+    { value: '4.9★', label: t('landing.stats.rating') },
+  ]
+
   return (
     <div className="relative overflow-hidden">
       {/* ── Hero ─────────────────────────────────────── */}
@@ -84,7 +61,7 @@ export default function Landing() {
           {/* Badge */}
           <motion.div variants={fadeUp} custom={0} className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-500/30 bg-brand-500/10 text-brand-300 text-sm font-medium mb-8">
             <Sparkles size={14} className="text-accent-cyan" />
-            AI-Powered Algorithm Learning Platform
+            {t('landing.badge')}
           </motion.div>
 
           {/* Headline */}
@@ -93,8 +70,8 @@ export default function Landing() {
             custom={1}
             className="text-5xl sm:text-6xl md:text-7xl font-display font-bold leading-[1.08] tracking-tight mb-6 text-balance"
           >
-            Master Algorithms.{' '}
-            <span className="gradient-text">See Them Move.</span>
+            {t('landing.heroTitle')}{' '}
+            <span className="gradient-text">{t('landing.heroTitleHighlight')}</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -103,19 +80,18 @@ export default function Landing() {
             custom={2}
             className="text-lg sm:text-xl text-surface-400 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
-            The interactive platform where you write code, visualize execution step-by-step,
-            and get AI guidance — all in one place. From bubble sort to dynamic programming.
+            {t('landing.heroDesc')}
           </motion.p>
 
           {/* CTAs */}
           <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/dashboard" className="btn-primary text-base px-7 py-3.5 rounded-2xl">
-              Start Learning Free
+              {t('landing.getStarted')}
               <ArrowRight size={18} />
             </Link>
             <Link to="/visualize" className="btn-ghost text-base px-7 py-3.5 rounded-2xl">
               <Play size={16} />
-              See Visualizer
+              {t('landing.watchDemo')}
             </Link>
           </motion.div>
 
@@ -184,17 +160,14 @@ export default function Landing() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">
-              Everything you need to <span className="gradient-text">actually learn</span>
+              {t('landing.features.title')} <span className="gradient-text">{t('landing.features.titleHighlight')}</span>
             </h2>
-            <p className="text-surface-400 text-lg max-w-xl mx-auto">
-              Not just theory — hands-on practice with tools that make abstract concepts concrete.
-            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-5">
-            {FEATURES.map((f, i) => (
+            {FEATURE_KEYS.map((key, i) => (
               <motion.div
-                key={f.title}
+                key={key}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -202,20 +175,19 @@ export default function Landing() {
                 whileHover={{ y: -4 }}
                 className="relative p-7 rounded-2xl glass border border-white/8 overflow-hidden group"
               >
-                {/* Background glow on hover */}
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: `radial-gradient(circle at 30% 40%, ${f.glow} 0%, transparent 60%)` }}
+                  style={{ background: `radial-gradient(circle at 30% 40%, ${FEATURE_GLOWS[i]} 0%, transparent 60%)` }}
                 />
                 <div className="relative">
                   <div
                     className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
-                    style={{ background: `${f.color}20`, border: `1px solid ${f.color}30` }}
+                    style={{ background: `${FEATURE_COLORS[i]}20`, border: `1px solid ${FEATURE_COLORS[i]}30` }}
                   >
-                    <f.icon size={22} style={{ color: f.color }} />
+                    {(() => { const Icon = FEATURE_ICONS[i]; return <Icon size={22} style={{ color: FEATURE_COLORS[i] }} /> })()}
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{f.title}</h3>
-                  <p className="text-surface-400 leading-relaxed">{f.desc}</p>
+                  <h3 className="text-xl font-bold mb-2">{t(`landing.features.${key}.title`)}</h3>
+                  <p className="text-surface-400 leading-relaxed">{t(`landing.features.${key}.desc`)}</p>
                 </div>
               </motion.div>
             ))}
@@ -223,7 +195,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Learning Path Preview ──────────────────── */}
+      {/* ── How It Works ──────────────────────────────── */}
       <section className="py-24 px-4">
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -233,46 +205,25 @@ export default function Landing() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">
-              A structured path to <span className="gradient-text">mastery</span>
+              {t('landing.howItWorks.title')}
             </h2>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-5">
-            {[
-              {
-                step: '01', color: '#10b981', title: 'Foundations',
-                items: ['Arrays & Strings', 'Linked Lists', 'Stacks & Queues', 'Hash Tables'],
-              },
-              {
-                step: '02', color: '#1a5cff', title: 'Core Algorithms',
-                items: ['Sorting Algorithms', 'Binary Search', 'Recursion', 'Graph Traversal'],
-              },
-              {
-                step: '03', color: '#7c3aed', title: 'Advanced Topics',
-                items: ['Dynamic Programming', 'Greedy Algorithms', 'Backtracking', 'Advanced Graphs'],
-              },
-            ].map((path, i) => (
+            {(['step1', 'step2', 'step3'] as const).map((step, i) => (
               <motion.div
-                key={path.step}
+                key={step}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15 }}
                 className="relative p-7 rounded-2xl glass border border-white/8"
               >
-                <div className="text-6xl font-display font-bold mb-4 opacity-10" style={{ color: path.color }}>
-                  {path.step}
+                <div className="text-6xl font-display font-bold mb-4 opacity-10 text-brand-400">
+                  {String(i + 1).padStart(2, '0')}
                 </div>
-                <h3 className="text-xl font-bold mb-4" style={{ color: path.color }}>{path.title}</h3>
-                <ul className="space-y-2.5">
-                  {path.items.map((item, j) => (
-                    <li key={item} className="flex items-center gap-2.5 text-surface-300 text-sm">
-                      <div className="w-1.5 h-1.5 rounded-full" style={{ background: path.color }} />
-                      {item}
-                      {j > 2 && <Lock size={12} className="text-surface-600 ml-auto" />}
-                    </li>
-                  ))}
-                </ul>
+                <h3 className="text-xl font-bold mb-2 text-brand-300">{t(`landing.howItWorks.${step}.title`)}</h3>
+                <p className="text-surface-400 text-sm leading-relaxed">{t(`landing.howItWorks.${step}.desc`)}</p>
               </motion.div>
             ))}
           </div>
@@ -347,12 +298,15 @@ export default function Landing() {
                   <BarChart2 size={32} className="text-white" />
                 </div>
               </div>
-              <h2 className="text-4xl font-display font-bold mb-4">Ready to level up?</h2>
-              <p className="text-surface-400 text-lg mb-8">Join 12,000+ students who are mastering algorithms with MQAcademy.</p>
+              <h2 className="text-4xl font-display font-bold mb-4">
+                {t('landing.cta.title')} <span className="gradient-text">{t('landing.cta.titleHighlight')}</span>
+              </h2>
+              <p className="text-surface-400 text-lg mb-8">{t('landing.cta.desc')}</p>
               <Link to="/dashboard" className="btn-primary text-base px-8 py-4 rounded-2xl">
-                Start for Free — No signup needed
+                {t('landing.cta.button')}
                 <ArrowRight size={18} />
               </Link>
+              <p className="text-surface-500 text-sm mt-4">{t('landing.cta.sub')}</p>
             </div>
           </motion.div>
         </div>
@@ -365,7 +319,7 @@ export default function Landing() {
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-accent-cyan flex items-center justify-center text-xs font-bold">MQ</div>
             <span className="font-display font-bold text-sm">MQAcademy</span>
           </div>
-          <p className="text-surface-500 text-sm">© 2025 MQAcademy. Built for learners, by learners.</p>
+          <p className="text-surface-500 text-sm">© 2025 MQAcademy. {t('landing.footer.tagline')}</p>
           <div className="flex gap-6 text-sm text-surface-500">
             <a href="#" className="hover:text-white transition-colors">Privacy</a>
             <a href="#" className="hover:text-white transition-colors">Terms</a>

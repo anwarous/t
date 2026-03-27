@@ -1,0 +1,252 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "learn": "Learn",
+    "code": "Code",
+    "sandbox": "Sandbox",
+    "visualize": "Visualize",
+    "aiMentor": "AI Mentor",
+    "signIn": "Sign in",
+    "startLearning": "Start Learning →",
+    "profile": "Profile",
+    "myProfile": "My Profile",
+    "myProfileSub": "View & edit profile",
+    "achievements": "Achievements",
+    "achievementsSub": "Badges & milestones",
+    "settings": "Settings",
+    "settingsSub": "Preferences & account",
+    "notifications": "Notifications",
+    "notificationsSub": "{{count}} unread",
+    "signOut": "Sign out",
+    "streak": "day streak",
+    "xp": "XP"
+  },
+  "landing": {
+    "badge": "Interactive Algorithm Learning",
+    "heroTitle": "Master Algorithms",
+    "heroTitleHighlight": "Interactively",
+    "heroDesc": "Learn data structures and algorithms through live visualizations, an AI mentor, and gamified challenges. Built for curious minds.",
+    "getStarted": "Get Started Free",
+    "watchDemo": "Watch Demo",
+    "stats": {
+      "algorithms": "Algorithms",
+      "problems": "Practice Problems",
+      "students": "Students",
+      "rating": "Rating"
+    },
+    "features": {
+      "title": "Everything you need to",
+      "titleHighlight": "master algorithms",
+      "viz": {
+        "title": "Step-by-Step Visualization",
+        "desc": "Watch algorithms execute in real time. Pause, rewind, and inspect every swap, comparison, and pivot."
+      },
+      "ai": {
+        "title": "AI Mentor",
+        "desc": "Get instant explanations, debug hints, and personalized guidance from an AI that understands your code."
+      },
+      "gamified": {
+        "title": "Gamified Learning",
+        "desc": "Earn XP, unlock badges, maintain streaks, and climb the leaderboard as you master each algorithm."
+      },
+      "editor": {
+        "title": "Interactive Code Editor",
+        "desc": "Write and run Python directly in the browser. Instant feedback with test cases and performance metrics."
+      }
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "step1": { "title": "Choose a Topic", "desc": "Browse courses on sorting, graphs, DP, and more. Structured paths for every level." },
+      "step2": { "title": "Learn & Visualize", "desc": "Watch algorithms come alive. Pause at any step, adjust speed, and see the data change." },
+      "step3": { "title": "Practice & Earn", "desc": "Solve exercises, earn XP, unlock badges, and track your progress over time." }
+    },
+    "cta": {
+      "title": "Ready to level up",
+      "titleHighlight": "your skills?",
+      "desc": "Join thousands of developers mastering algorithms with MQAcademy.",
+      "button": "Start Learning for Free",
+      "sub": "No credit card required • Free forever"
+    },
+    "footer": {
+      "tagline": "Master algorithms, one step at a time.",
+      "rights": "All rights reserved."
+    }
+  },
+  "dashboard": {
+    "greeting": "Welcome back",
+    "subGreeting": "You're on a {{streak}}-day streak! Keep it up 🔥",
+    "level": "Level {{level}}",
+    "xpToNext": "{{xp}} XP to next level",
+    "totalXP": "Total XP",
+    "currentStreak": "Current Streak",
+    "days": "days",
+    "problemsSolved": "Problems Solved",
+    "completed": "completed",
+    "coursesEnrolled": "Courses Enrolled",
+    "active": "active",
+    "continueLearning": "Continue Learning",
+    "recentActivity": "Recent Activity",
+    "leaderboard": "Leaderboard",
+    "rank": "Rank",
+    "you": "You",
+    "recommendedExercises": "Recommended Exercises",
+    "viewAll": "View All",
+    "startExercise": "Start",
+    "resumeCourse": "Resume",
+    "progress": "{{pct}}% complete",
+    "lessonsLeft": "{{count}} lessons left"
+  },
+  "learn": {
+    "title": "Courses",
+    "subtitle": "Master algorithms and data structures step by step.",
+    "searchPlaceholder": "Search courses...",
+    "all": "All",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "lessons": "{{count}} lessons",
+    "xpReward": "{{xp}} XP",
+    "progress": "{{pct}}%",
+    "continue": "Continue",
+    "start": "Start",
+    "chapters": "Chapters",
+    "chapter": "Chapter",
+    "locked": "Locked",
+    "completed": "Completed",
+    "practice": "Practice",
+    "video": "Video",
+    "reading": "Reading",
+    "quiz": "Quiz",
+    "backToCourses": "← Back to Courses",
+    "difficulty": {
+      "Beginner": "Beginner",
+      "Intermediate": "Intermediate",
+      "Advanced": "Advanced"
+    }
+  },
+  "editor": {
+    "title": "Code Editor",
+    "run": "Run",
+    "running": "Running…",
+    "clear": "Clear",
+    "reset": "Reset",
+    "output": "Output",
+    "language": "Language",
+    "theme": "Theme",
+    "fontSize": "Font Size",
+    "exercises": "Exercises",
+    "selectExercise": "Select an exercise",
+    "difficulty": "Difficulty",
+    "description": "Description",
+    "examples": "Examples",
+    "constraints": "Constraints",
+    "hint": "Hint",
+    "showHint": "Show Hint",
+    "solution": "View Solution",
+    "submit": "Submit",
+    "correct": "Correct! +{{xp}} XP",
+    "wrong": "Wrong answer, try again.",
+    "input": "Input",
+    "expectedOutput": "Expected Output",
+    "category": "Category",
+    "attempts": "Attempts"
+  },
+  "visualize": {
+    "title": "Algorithm Visualizer",
+    "subtitle": "Watch algorithms execute step by step",
+    "selectAlgorithm": "Select Algorithm",
+    "arraySize": "Array Size",
+    "speed": "Speed",
+    "generate": "New Array",
+    "play": "Play",
+    "pause": "Pause",
+    "step": "Step",
+    "reset": "Reset",
+    "comparisons": "Comparisons",
+    "swaps": "Swaps",
+    "stepOf": "Step {{current}} of {{total}}",
+    "algorithms": {
+      "bubble": "Bubble Sort",
+      "selection": "Selection Sort",
+      "insertion": "Insertion Sort",
+      "merge": "Merge Sort",
+      "quick": "Quick Sort"
+    }
+  },
+  "mentor": {
+    "title": "AI Mentor",
+    "subtitle": "Your personal algorithm guide",
+    "placeholder": "Ask me anything about algorithms, data structures, or your code…",
+    "send": "Send",
+    "clearChat": "Clear Chat",
+    "thinking": "Thinking…",
+    "suggestions": {
+      "bubbleSort": "Explain bubble sort complexity",
+      "bfs": "How does BFS work?",
+      "dp": "What is dynamic programming?",
+      "debug": "Help me debug my code"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "tabs": {
+      "overview": "Overview",
+      "badges": "Badges",
+      "settings": "Settings",
+      "notifications": "Notifications"
+    },
+    "stats": {
+      "xp": "Total XP",
+      "streak": "Day Streak",
+      "solved": "Problems Solved",
+      "rank": "Rank"
+    },
+    "badges": {
+      "title": "Badges",
+      "earned": "Earned",
+      "locked": "Locked",
+      "rarity": {
+        "common": "Common",
+        "rare": "Rare",
+        "epic": "Epic",
+        "legendary": "Legendary"
+      }
+    },
+    "settings": {
+      "profile": "Profile Settings",
+      "name": "Display Name",
+      "email": "Email",
+      "save": "Save Changes",
+      "notifications": "Notification Preferences",
+      "emailNotif": "Email Notifications",
+      "pushNotif": "Push Notifications",
+      "weeklyDigest": "Weekly Digest",
+      "theme": "Theme",
+      "dark": "Dark",
+      "light": "Light"
+    },
+    "joinedAt": "Member since {{date}}"
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "xp": "XP",
+    "min": "min"
+  }
+}

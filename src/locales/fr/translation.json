@@ -1,0 +1,252 @@
+{
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "learn": "Apprendre",
+    "code": "Code",
+    "sandbox": "Bac à sable",
+    "visualize": "Visualiser",
+    "aiMentor": "Mentor IA",
+    "signIn": "Se connecter",
+    "startLearning": "Commencer →",
+    "profile": "Profil",
+    "myProfile": "Mon Profil",
+    "myProfileSub": "Voir et modifier le profil",
+    "achievements": "Succès",
+    "achievementsSub": "Badges et étapes",
+    "settings": "Paramètres",
+    "settingsSub": "Préférences et compte",
+    "notifications": "Notifications",
+    "notificationsSub": "{{count}} non lues",
+    "signOut": "Se déconnecter",
+    "streak": "jours de suite",
+    "xp": "XP"
+  },
+  "landing": {
+    "badge": "Apprentissage Interactif des Algorithmes",
+    "heroTitle": "Maîtrisez les Algorithmes",
+    "heroTitleHighlight": "Interactivement",
+    "heroDesc": "Apprenez les structures de données et les algorithmes grâce à des visualisations en direct, un mentor IA et des défis ludiques. Conçu pour les esprits curieux.",
+    "getStarted": "Commencer Gratuitement",
+    "watchDemo": "Voir la démo",
+    "stats": {
+      "algorithms": "Algorithmes",
+      "problems": "Exercices pratiques",
+      "students": "Étudiants",
+      "rating": "Note"
+    },
+    "features": {
+      "title": "Tout ce qu'il faut pour",
+      "titleHighlight": "maîtriser les algorithmes",
+      "viz": {
+        "title": "Visualisation Pas à Pas",
+        "desc": "Observez l'exécution des algorithmes en temps réel. Mettez en pause, revenez en arrière et inspectez chaque échange, comparaison et pivot."
+      },
+      "ai": {
+        "title": "Mentor IA",
+        "desc": "Obtenez des explications instantanées, des conseils de débogage et des orientations personnalisées d'une IA qui comprend votre code."
+      },
+      "gamified": {
+        "title": "Apprentissage Ludique",
+        "desc": "Gagnez des XP, débloquez des badges, maintenez des séries et grimpez dans le classement en maîtrisant chaque algorithme."
+      },
+      "editor": {
+        "title": "Éditeur de Code Interactif",
+        "desc": "Écrivez et exécutez Python directement dans le navigateur. Retour instantané avec des cas de test et des métriques de performance."
+      }
+    },
+    "howItWorks": {
+      "title": "Comment ça marche",
+      "step1": { "title": "Choisissez un Sujet", "desc": "Parcourez les cours sur le tri, les graphes, la PD et plus encore. Des parcours structurés pour chaque niveau." },
+      "step2": { "title": "Apprenez & Visualisez", "desc": "Regardez les algorithmes prendre vie. Mettez en pause à n'importe quelle étape, ajustez la vitesse et observez les données changer." },
+      "step3": { "title": "Pratiquez & Gagnez", "desc": "Résolvez des exercices, gagnez des XP, débloquez des badges et suivez vos progrès au fil du temps." }
+    },
+    "cta": {
+      "title": "Prêt à améliorer",
+      "titleHighlight": "vos compétences ?",
+      "desc": "Rejoignez des milliers de développeurs qui maîtrisent les algorithmes avec MQAcademy.",
+      "button": "Commencer Gratuitement",
+      "sub": "Aucune carte de crédit requise • Gratuit pour toujours"
+    },
+    "footer": {
+      "tagline": "Maîtrisez les algorithmes, une étape à la fois.",
+      "rights": "Tous droits réservés."
+    }
+  },
+  "dashboard": {
+    "greeting": "Bienvenue",
+    "subGreeting": "Vous êtes sur une série de {{streak}} jours ! Continuez 🔥",
+    "level": "Niveau {{level}}",
+    "xpToNext": "{{xp}} XP pour le prochain niveau",
+    "totalXP": "XP Total",
+    "currentStreak": "Série Actuelle",
+    "days": "jours",
+    "problemsSolved": "Problèmes Résolus",
+    "completed": "complétés",
+    "coursesEnrolled": "Cours Inscrits",
+    "active": "actifs",
+    "continueLearning": "Continuer l'apprentissage",
+    "recentActivity": "Activité Récente",
+    "leaderboard": "Classement",
+    "rank": "Rang",
+    "you": "Vous",
+    "recommendedExercises": "Exercices Recommandés",
+    "viewAll": "Voir Tout",
+    "startExercise": "Commencer",
+    "resumeCourse": "Reprendre",
+    "progress": "{{pct}}% complété",
+    "lessonsLeft": "{{count}} leçons restantes"
+  },
+  "learn": {
+    "title": "Cours",
+    "subtitle": "Maîtrisez les algorithmes et structures de données étape par étape.",
+    "searchPlaceholder": "Rechercher des cours...",
+    "all": "Tous",
+    "beginner": "Débutant",
+    "intermediate": "Intermédiaire",
+    "advanced": "Avancé",
+    "lessons": "{{count}} leçons",
+    "xpReward": "{{xp}} XP",
+    "progress": "{{pct}}%",
+    "continue": "Continuer",
+    "start": "Commencer",
+    "chapters": "Chapitres",
+    "chapter": "Chapitre",
+    "locked": "Verrouillé",
+    "completed": "Terminé",
+    "practice": "Pratique",
+    "video": "Vidéo",
+    "reading": "Lecture",
+    "quiz": "Quiz",
+    "backToCourses": "← Retour aux cours",
+    "difficulty": {
+      "Beginner": "Débutant",
+      "Intermediate": "Intermédiaire",
+      "Advanced": "Avancé"
+    }
+  },
+  "editor": {
+    "title": "Éditeur de Code",
+    "run": "Exécuter",
+    "running": "En cours…",
+    "clear": "Effacer",
+    "reset": "Réinitialiser",
+    "output": "Sortie",
+    "language": "Langage",
+    "theme": "Thème",
+    "fontSize": "Taille de police",
+    "exercises": "Exercices",
+    "selectExercise": "Sélectionner un exercice",
+    "difficulty": "Difficulté",
+    "description": "Description",
+    "examples": "Exemples",
+    "constraints": "Contraintes",
+    "hint": "Indice",
+    "showHint": "Montrer l'indice",
+    "solution": "Voir la solution",
+    "submit": "Soumettre",
+    "correct": "Correct ! +{{xp}} XP",
+    "wrong": "Mauvaise réponse, réessayez.",
+    "input": "Entrée",
+    "expectedOutput": "Sortie Attendue",
+    "category": "Catégorie",
+    "attempts": "Tentatives"
+  },
+  "visualize": {
+    "title": "Visualiseur d'Algorithmes",
+    "subtitle": "Observez l'exécution des algorithmes étape par étape",
+    "selectAlgorithm": "Sélectionner un algorithme",
+    "arraySize": "Taille du tableau",
+    "speed": "Vitesse",
+    "generate": "Nouveau tableau",
+    "play": "Lire",
+    "pause": "Pause",
+    "step": "Étape",
+    "reset": "Réinitialiser",
+    "comparisons": "Comparaisons",
+    "swaps": "Échanges",
+    "stepOf": "Étape {{current}} sur {{total}}",
+    "algorithms": {
+      "bubble": "Tri à bulles",
+      "selection": "Tri par sélection",
+      "insertion": "Tri par insertion",
+      "merge": "Tri fusion",
+      "quick": "Tri rapide"
+    }
+  },
+  "mentor": {
+    "title": "Mentor IA",
+    "subtitle": "Votre guide personnel en algorithmique",
+    "placeholder": "Posez-moi une question sur les algorithmes, les structures de données ou votre code…",
+    "send": "Envoyer",
+    "clearChat": "Effacer la conversation",
+    "thinking": "Réflexion…",
+    "suggestions": {
+      "bubbleSort": "Expliquer la complexité du tri à bulles",
+      "bfs": "Comment fonctionne BFS ?",
+      "dp": "Qu'est-ce que la programmation dynamique ?",
+      "debug": "Aidez-moi à déboguer mon code"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "tabs": {
+      "overview": "Vue d'ensemble",
+      "badges": "Badges",
+      "settings": "Paramètres",
+      "notifications": "Notifications"
+    },
+    "stats": {
+      "xp": "XP Total",
+      "streak": "Jours de Suite",
+      "solved": "Problèmes Résolus",
+      "rank": "Rang"
+    },
+    "badges": {
+      "title": "Badges",
+      "earned": "Obtenu",
+      "locked": "Verrouillé",
+      "rarity": {
+        "common": "Commun",
+        "rare": "Rare",
+        "epic": "Épique",
+        "legendary": "Légendaire"
+      }
+    },
+    "settings": {
+      "profile": "Paramètres du Profil",
+      "name": "Nom d'affichage",
+      "email": "Email",
+      "save": "Enregistrer",
+      "notifications": "Préférences de notification",
+      "emailNotif": "Notifications par email",
+      "pushNotif": "Notifications push",
+      "weeklyDigest": "Résumé hebdomadaire",
+      "theme": "Thème",
+      "dark": "Sombre",
+      "light": "Clair"
+    },
+    "joinedAt": "Membre depuis {{date}}"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer",
+    "close": "Fermer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "easy": "Facile",
+    "medium": "Moyen",
+    "hard": "Difficile",
+    "xp": "XP",
+    "min": "min"
+  }
+}

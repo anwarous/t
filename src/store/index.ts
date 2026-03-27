@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { MOCK_USER, MOCK_BADGES, MOCK_CHAT_MESSAGES, type ChatMessage, type Badge } from '@/data/mockData'
 import { runPython } from '@/lib/pythonCompiler'
+import { runAlgo } from '@/lib/algoCompiler'
 
 // ─── User / Gamification Store ────────────────────────────────────────────────
 
@@ -362,9 +363,20 @@ print(two_sum([3, 3], 6))            # Expected: [0, 1]
   setActiveExercise: (id) => set({ activeExerciseId: id }),
   runCode: async () => {
     set({ isRunning: true, output: '' })
-    const { code, activeExerciseId } = get()
+    const { code, language, activeExerciseId } = get()
 
-    // Run the code through the real Python (Pyodide) engine.
+    // ── Algorithm language: call the Flask algo compiler API ──────────────
+    if (language === 'algorithm') {
+      try {
+        const result = await runAlgo(code)
+        set({ output: result || '(no output)', isRunning: false })
+      } catch (err) {
+        set({ output: `❌  Error: ${err instanceof Error ? err.message : String(err)}`, isRunning: false })
+      }
+      return
+    }
+
+    // ── Python: run through the real Pyodide engine ───────────────────────
     // On first call this triggers a one-time Wasm download; subsequent calls
     // use the cached Pyodide instance and are near-instant.
     let realOutput: string

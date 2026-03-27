@@ -212,8 +212,8 @@ export default function CodeEditorPage() {
   const exercise = MOCK_EXERCISES.find(e => e.id === exerciseId) ?? MOCK_EXERCISES[0]
 
   // Language → Monaco language id & file extension
-  const monacoLang = language === 'javascript' ? 'javascript' : 'python'
-  const fileExt    = language === 'javascript' ? 'solution.js' : 'solution.py'
+  const monacoLang = language === 'algorithm' ? 'plaintext' : 'python'
+  const fileExt    = language === 'algorithm' ? 'solution.algo' : 'solution.py'
 
   // Load starter code when exercise changes
   useEffect(() => {
@@ -271,7 +271,7 @@ export default function CodeEditorPage() {
             className="px-3 py-1.5 rounded-lg bg-surface-800 border border-white/8 text-sm text-surface-300 outline-none cursor-pointer"
           >
             <option value="python">Python</option>
-            <option value="javascript">JavaScript</option>
+            <option value="algorithm">Algorithm</option>
           </select>
           <button
             onClick={() => navigate('/sandbox')}

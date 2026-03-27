@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/learn',     label: 'Learn',     icon: BookOpen },
   { to: '/editor',    label: 'Code',      icon: Code2 },
+  { to: '/sandbox',   label: 'Sandbox',   icon: Terminal },
   { to: '/visualize', label: 'Visualize', icon: GitBranch },
   { to: '/mentor',    label: 'AI Mentor', icon: Brain },
 ]

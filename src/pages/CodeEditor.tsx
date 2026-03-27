@@ -8,6 +8,7 @@ import {
 import { useEditorStore } from '@/store'
 import { MOCK_EXERCISES } from '@/data/mockData'
 import { cn, getDifficultyBg } from '@/lib/utils'
+import { registerAlgorithmLanguage } from '@/lib/algorithmLanguage'
 
 const MonacoEditor = lazy(() => import('@monaco-editor/react'))
 
@@ -212,7 +213,7 @@ export default function CodeEditorPage() {
   const exercise = MOCK_EXERCISES.find(e => e.id === exerciseId) ?? MOCK_EXERCISES[0]
 
   // Language → Monaco language id & file extension
-  const monacoLang = language === 'algorithm' ? 'plaintext' : 'python'
+  const monacoLang = language === 'algorithm' ? 'algorithm' : 'python'
   const fileExt    = language === 'algorithm' ? 'solution.algo' : 'solution.py'
 
   // Load starter code when exercise changes
@@ -223,6 +224,7 @@ export default function CodeEditorPage() {
   }, [exerciseId])
 
   function handleEditorMount(_: unknown, monaco: any) {
+    registerAlgorithmLanguage(monaco)
     monaco.editor.defineTheme('mq-dark', MONACO_THEME)
     monaco.editor.setTheme('mq-dark')
   }

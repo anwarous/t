@@ -44,6 +44,9 @@ export interface Exercise {
   description: string
   starterCode: string
   solution: string
+  examples?: { input: string; output: string; note?: string }[]
+  constraints?: string[]
+  hint?: string
 }
 
 export interface Badge {
@@ -251,6 +254,12 @@ print(two_sum([3, 3], 6))            # Expected: [0, 1]
             return [seen[complement], i]
         seen[num] = i
     return []`,
+    examples: [
+      { input: '[2, 7, 11, 15], target = 9', output: '[0, 1]', note: 'nums[0] + nums[1] = 2 + 7 = 9' },
+      { input: '[3, 2, 4], target = 6',       output: '[1, 2]' },
+    ],
+    constraints: ['2 ≤ nums.length ≤ 10⁴', '-10⁹ ≤ nums[i] ≤ 10⁹', 'Only one valid answer exists'],
+    hint: 'For each element x, you need target − x. Can you check for it in O(1) using a data structure you\'ve seen?',
   },
   {
     id: 'ex-002',
@@ -291,6 +300,12 @@ print(bubble_sort([5, 4, 3, 2, 1]))
             if arr[j] > arr[j+1]:
                 arr[j], arr[j+1] = arr[j+1], arr[j]
     return arr`,
+    examples: [
+      { input: '[64, 34, 25, 12, 22, 11, 90]', output: '[11, 12, 22, 25, 34, 64, 90]' },
+      { input: '[5, 4, 3, 2, 1]',               output: '[1, 2, 3, 4, 5]' },
+    ],
+    constraints: ['1 ≤ arr.length ≤ 10⁴', '-10⁴ ≤ arr[i] ≤ 10⁴', 'Must sort in ascending order'],
+    hint: 'Compare adjacent elements and swap them if they are in the wrong order. Repeat until no swaps are needed.',
   },
   {
     id: 'ex-003',
@@ -331,6 +346,12 @@ print(binary_search([-1, 0, 3, 5, 9, 12], 2))   # Expected: -1
         else:
             right = mid - 1
     return -1`,
+    examples: [
+      { input: '[-1, 0, 3, 5, 9, 12], target = 9', output: '4',  note: 'nums[4] = 9' },
+      { input: '[-1, 0, 3, 5, 9, 12], target = 2', output: '-1', note: '2 does not exist' },
+    ],
+    constraints: ['1 ≤ nums.length ≤ 10⁴', 'nums is sorted in ascending order', 'All values in nums are unique'],
+    hint: 'Use two pointers (left and right) and repeatedly halve the search space by comparing the middle element to the target.',
   },
   {
     id: 'ex-004',
@@ -372,6 +393,14 @@ print(is_valid("{[]}"))        # True
         else:
             return False
     return len(stack) == 0`,
+    examples: [
+      { input: 's = "()"',      output: 'True' },
+      { input: 's = "()[]{}"',  output: 'True' },
+      { input: 's = "(]"',      output: 'False' },
+      { input: 's = "([)]"',    output: 'False', note: 'brackets must close in the correct order' },
+    ],
+    constraints: ['1 ≤ s.length ≤ 10⁴', 's consists of ( ) { } [ ] only'],
+    hint: 'Use a stack. Push opening brackets, and when you see a closing bracket check if it matches the top of the stack.',
   },
 ]
 

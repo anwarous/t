@@ -1,9 +1,9 @@
 import { useEffect, Suspense, lazy } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Play, RotateCcw, ChevronDown, CheckCircle2, XCircle,
-  Lightbulb, Terminal, Code2, Loader2, BookOpen
+  Lightbulb, Terminal, Code2, Loader2, BookOpen, ExternalLink
 } from 'lucide-react'
 import { useEditorStore } from '@/store'
 import { MOCK_EXERCISES } from '@/data/mockData'
@@ -160,37 +160,44 @@ function ExercisePanel({ exercise }: { exercise: typeof MOCK_EXERCISES[0] }) {
 
       <p className="text-surface-300 leading-relaxed mb-5 text-sm">{exercise.description}</p>
 
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">Examples</h4>
-      <div className="space-y-2 mb-5">
-        {[
-          { input: '[2, 7, 11, 15], target = 9', output: '[0, 1]', note: 'nums[0] + nums[1] = 2 + 7 = 9' },
-          { input: '[3, 2, 4], target = 6',       output: '[1, 2]' },
-        ].map((ex, i) => (
-          <div key={i} className="p-3 rounded-xl bg-surface-900 border border-white/5 font-mono text-xs">
-            <div><span className="text-surface-500">Input: </span><span className="text-surface-300">{ex.input}</span></div>
-            <div><span className="text-surface-500">Output: </span><span className="text-emerald-400">{ex.output}</span></div>
-            {ex.note && <div className="text-surface-600 mt-1"># {ex.note}</div>}
+      {exercise.examples && exercise.examples.length > 0 && (
+        <>
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">Examples</h4>
+          <div className="space-y-2 mb-5">
+            {exercise.examples.map((ex, i) => (
+              <div key={i} className="p-3 rounded-xl bg-surface-900 border border-white/5 font-mono text-xs">
+                <div><span className="text-surface-500">Input: </span><span className="text-surface-300">{ex.input}</span></div>
+                <div><span className="text-surface-500">Output: </span><span className="text-emerald-400">{ex.output}</span></div>
+                {ex.note && <div className="text-surface-600 mt-1"># {ex.note}</div>}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
 
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">Constraints</h4>
-      <ul className="space-y-1.5 text-sm text-surface-400 mb-5">
-        {['2 ≤ nums.length ≤ 10⁴', '-10⁹ ≤ nums[i] ≤ 10⁹', 'Only one valid answer exists'].map(c => (
-          <li key={c} className="flex items-center gap-2">
-            <div className="w-1 h-1 rounded-full bg-surface-600 flex-shrink-0" />{c}
-          </li>
-        ))}
-      </ul>
+      {exercise.constraints && exercise.constraints.length > 0 && (
+        <>
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">Constraints</h4>
+          <ul className="space-y-1.5 text-sm text-surface-400 mb-5">
+            {exercise.constraints.map(c => (
+              <li key={c} className="flex items-center gap-2">
+                <div className="w-1 h-1 rounded-full bg-surface-600 flex-shrink-0" />{c}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
-      <div className="p-3.5 rounded-xl bg-amber-500/8 border border-amber-500/20">
-        <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold mb-1.5">
-          <Lightbulb size={13} /> Hint
+      {exercise.hint && (
+        <div className="p-3.5 rounded-xl bg-amber-500/8 border border-amber-500/20">
+          <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold mb-1.5">
+            <Lightbulb size={13} /> Hint
+          </div>
+          <p className="text-surface-300 text-xs leading-relaxed">
+            {exercise.hint}
+          </p>
         </div>
-        <p className="text-surface-300 text-xs leading-relaxed">
-          For each element x, you need target − x. Can you check for it in O(1) using a data structure you've seen?
-        </p>
-      </div>
+      )}
     </div>
   )
 }
@@ -198,10 +205,15 @@ function ExercisePanel({ exercise }: { exercise: typeof MOCK_EXERCISES[0] }) {
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function CodeEditorPage() {
   const [searchParams] = useSearchParams()
+  const navigate       = useNavigate()
   const exerciseId     = searchParams.get('exercise') || 'ex-001'
 
-  const { code, output, isRunning, setCode, runCode, setActiveExercise } = useEditorStore()
+  const { code, output, isRunning, language, setCode, setLanguage, runCode, setActiveExercise } = useEditorStore()
   const exercise = MOCK_EXERCISES.find(e => e.id === exerciseId) ?? MOCK_EXERCISES[0]
+
+  // Language → Monaco language id & file extension
+  const monacoLang = language === 'javascript' ? 'javascript' : 'python'
+  const fileExt    = language === 'javascript' ? 'solution.js' : 'solution.py'
 
   // Load starter code when exercise changes
   useEffect(() => {
@@ -253,10 +265,21 @@ export default function CodeEditorPage() {
 
         {/* Actions */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          <select className="px-3 py-1.5 rounded-lg bg-surface-800 border border-white/8 text-sm text-surface-300 outline-none cursor-pointer">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="px-3 py-1.5 rounded-lg bg-surface-800 border border-white/8 text-sm text-surface-300 outline-none cursor-pointer"
+          >
             <option value="python">Python</option>
             <option value="javascript">JavaScript</option>
           </select>
+          <button
+            onClick={() => navigate('/sandbox')}
+            className="btn-ghost py-1.5 px-3 text-xs"
+            title="Open Free Coding Sandbox"
+          >
+            <ExternalLink size={13} /> Free Mode
+          </button>
           <button
             onClick={() => setCode(exercise.starterCode)}
             className="btn-ghost py-1.5 px-3 text-xs"
@@ -293,7 +316,7 @@ export default function CodeEditorPage() {
               <div className="w-3 h-3 rounded-full bg-amber-500/70" />
               <div className="w-3 h-3 rounded-full bg-emerald-500/70" />
             </div>
-            <span className="text-xs text-surface-500 font-mono ml-2">solution.py</span>
+            <span className="text-xs text-surface-500 font-mono ml-2">{fileExt}</span>
           </div>
 
           <div className="flex-1 min-h-0">
@@ -304,7 +327,7 @@ export default function CodeEditorPage() {
             }>
               <MonacoEditor
                 height="100%"
-                language="python"
+                language={monacoLang}
                 value={code}
                 onChange={(v) => setCode(v ?? '')}
                 onMount={handleEditorMount}

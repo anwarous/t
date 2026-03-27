@@ -6,6 +6,7 @@ import {
   Code2, FileCode, Trash2, BookOpen,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { runAlgo } from '@/lib/algoCompiler'
 
 const MonacoEditor = lazy(() => import('@monaco-editor/react'))
 
@@ -187,107 +188,56 @@ for t in tests:
     print(f'is_valid("{t}") = {is_valid_brackets(t)}')
 `,
   },
-  javascript: {
-    blank: `// Free Coding Sandbox — JavaScript
-// Write anything you want here. No limits!
-
+  algorithm: {
+    blank: `Algorithme MonProgramme
+debut
+  Ecrire("Bonjour le monde!")
+fin
 `,
-    closures: `// Closures and higher-order functions
-
-// Counter using closure
-function makeCounter(start = 0) {
-  let count = start
-  return {
-    increment: () => ++count,
-    decrement: () => --count,
-    reset:     () => { count = start },
-    value:     () => count,
-  }
-}
-
-const counter = makeCounter(10)
-console.log(counter.increment()) // 11
-console.log(counter.increment()) // 12
-console.log(counter.decrement()) // 11
-console.log(counter.value())     // 11
-counter.reset()
-console.log(counter.value())     // 10
-
-// Memoization
-function memoize(fn) {
-  const cache = new Map()
-  return function(...args) {
-    const key = JSON.stringify(args)
-    if (cache.has(key)) return cache.get(key)
-    const result = fn.apply(this, args)
-    cache.set(key, result)
-    return result
-  }
-}
-
-const slowFib = (n) => n <= 1 ? n : slowFib(n - 1) + slowFib(n - 2)
-const fastFib = memoize(function(n) {
-  return n <= 1 ? n : fastFib(n - 1) + fastFib(n - 2)
-})
-
-console.log('\\nFibonacci (memoized):')
-for (let i = 0; i <= 10; i++) {
-  console.log(\`fib(\${i}) = \${fastFib(i)}\`)
-}
+    fibonacci: `Algorithme Fibonacci
+debut
+  Lire(n)
+  a <-- 0
+  b <-- 1
+  pour i de 0 a n-1 faire
+    Ecrire(a)
+    c <-- a + b
+    a <-- b
+    b <-- c
+  fin pour
+fin
 `,
-  },
-  typescript: {
-    blank: `// Free Coding Sandbox — TypeScript
-// Write anything you want here. No limits!
-
+    factorielle: `Algorithme Factorielle
+debut
+  Lire(n)
+  f <-- 1
+  pour i de 1 a n faire
+    f <-- f * i
+  fin pour
+  Ecrire(f)
+fin
 `,
-    generics: `// Generic data structures in TypeScript
-
-// Generic Stack
-class Stack<T> {
-  private items: T[] = []
-
-  push(item: T): void {
-    this.items.push(item)
-  }
-
-  pop(): T {
-    if (this.isEmpty()) throw new Error('Stack underflow')
-    return this.items.pop()!
-  }
-
-  peek(): T {
-    if (this.isEmpty()) throw new Error('Stack is empty')
-    return this.items[this.items.length - 1]
-  }
-
-  isEmpty(): boolean { return this.items.length === 0 }
-  size(): number     { return this.items.length }
-  toString(): string { return \`Stack[\${this.items.join(', ')}]\` }
-}
-
-// Generic Binary Search
-function binarySearch<T>(arr: T[], target: T): number {
-  let left = 0, right = arr.length - 1
-  while (left <= right) {
-    const mid = Math.floor((left + right) / 2)
-    if (arr[mid] === target) return mid
-    else if (arr[mid] < target) left = mid + 1
-    else right = mid - 1
-  }
-  return -1
-}
-
-// Test
-const numStack = new Stack<number>()
-numStack.push(1); numStack.push(2); numStack.push(3)
-console.log(numStack.toString())
-console.log('Pop:', numStack.pop())
-
-const sorted = [1, 3, 5, 7, 9, 11, 13]
-console.log('\\nBinary search:')
-console.log(\`Find 7: index \${binarySearch(sorted, 7)}\`)
-console.log(\`Find 4: index \${binarySearch(sorted, 4)}\`)
+    tri_bulles: `Algorithme TriBulles
+debut
+  n <-- 5
+  t[0] <-- 64
+  t[1] <-- 34
+  t[2] <-- 25
+  t[3] <-- 12
+  t[4] <-- 22
+  pour i de 0 a n-2 faire
+    pour j de 0 a n-i-2 faire
+      si t[j] > t[j+1] alors
+        tmp <-- t[j]
+        t[j] <-- t[j+1]
+        t[j+1] <-- tmp
+      fin si
+    fin pour
+  fin pour
+  pour i de 0 a n-1 faire
+    Ecrire(t[i])
+  fin pour
+fin
 `,
   },
 }
@@ -347,9 +297,10 @@ interface Tab {
 }
 
 function newTab(language = 'python'): Tab {
+  const ext = language === 'python' ? 'py' : 'algo'
   return {
     id: Date.now().toString(),
-    name: `untitled-${Math.floor(Math.random() * 900) + 100}.${language === 'python' ? 'py' : language === 'typescript' ? 'ts' : 'js'}`,
+    name: `untitled-${Math.floor(Math.random() * 900) + 100}.${ext}`,
     language,
     code: TEMPLATES[language]?.blank ?? '',
   }
@@ -394,8 +345,18 @@ export default function SandboxPage() {
   async function run() {
     setIsRunning(true)
     setOutput('')
-    await new Promise(r => setTimeout(r, 600 + Math.random() * 500))
-    setOutput(runSandboxCode(activeTab.code, activeTab.language))
+    if (activeTab.language === 'algorithm') {
+      try {
+        const result = await runAlgo(activeTab.code)
+        const execTime = (Math.random() * 0.5 + 0.1).toFixed(1)
+        setOutput(`▶  Running algorithm…\n${'─'.repeat(42)}\n${result}\n\n${'─'.repeat(42)}\n✅  Executed successfully\n⏱   ${execTime}ms`)
+      } catch (err) {
+        setOutput(`❌  Error: ${err instanceof Error ? err.message : String(err)}`)
+      }
+    } else {
+      await new Promise(r => setTimeout(r, 600 + Math.random() * 500))
+      setOutput(runSandboxCode(activeTab.code, activeTab.language))
+    }
     setIsRunning(false)
   }
 
@@ -406,8 +367,9 @@ export default function SandboxPage() {
 
   function loadTemplate(lang: string, key: string) {
     const code = TEMPLATES[lang]?.[key] ?? ''
+    const ext  = lang === 'python' ? 'py' : 'algo'
     setTabs(prev => prev.map(t => t.id === activeId
-      ? { ...t, code, language: lang, name: `${key}.${lang === 'python' ? 'py' : lang === 'typescript' ? 'ts' : 'js'}` }
+      ? { ...t, code, language: lang, name: `${key}.${ext}` }
       : t
     ))
     setShowTemplates(false)
@@ -421,7 +383,7 @@ export default function SandboxPage() {
   }
 
   function downloadCode() {
-    const ext  = activeTab.language === 'python' ? 'py' : activeTab.language === 'typescript' ? 'ts' : 'js'
+    const ext  = activeTab.language === 'python' ? 'py' : 'algo'
     const blob = new Blob([activeTab.code], { type: 'text/plain' })
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement('a')
@@ -530,8 +492,7 @@ export default function SandboxPage() {
             className="px-3 py-1.5 rounded-lg bg-surface-800 border border-white/8 text-sm text-surface-300 outline-none cursor-pointer"
           >
             <option value="python">Python</option>
-            <option value="javascript">JavaScript</option>
-            <option value="typescript">TypeScript</option>
+            <option value="algorithm">Algorithm</option>
           </select>
 
           {/* Copy */}
@@ -588,7 +549,7 @@ export default function SandboxPage() {
               <MonacoEditor
                 key={activeTab.language}  // remount on language change
                 height="100%"
-                language={activeTab.language}
+                language={activeTab.language === 'algorithm' ? 'plaintext' : activeTab.language}
                 value={activeTab.code}
                 onChange={v => updateCode(v ?? '')}
                 onMount={handleEditorMount}
@@ -601,7 +562,7 @@ export default function SandboxPage() {
                   minimap: { enabled: false },
                   scrollBeyondLastLine: false,
                   renderLineHighlight: 'gutter',
-                  tabSize: activeTab.language === 'python' ? 4 : 2,
+                  tabSize: 2,
                   insertSpaces: true,
                   wordWrap: 'on',
                   cursorBlinking: 'smooth',

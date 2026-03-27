@@ -107,6 +107,9 @@ function OutputPanel({ output, isRunning }: { output: string; isRunning: boolean
               <Loader2 size={16} className="animate-spin text-brand-400" />
               Executing code…
             </div>
+            <p className="text-surface-600 text-xs">
+              First run initialises the Python engine — this may take a moment.
+            </p>
             <div className="space-y-2">
               {[75, 55, 65].map((w, i) => (
                 <div

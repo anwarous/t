@@ -1,4 +1,5 @@
 import { useState, Suspense, lazy, useRef } from 'react'
+import { runPython } from '@/lib/pythonCompiler'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Play, RotateCcw, Save, Download, Copy, Check,
@@ -314,6 +315,7 @@ export default function SandboxPage() {
   const [isRunning,  setIsRunning]  = useState(false)
   const [copied,     setCopied]     = useState(false)
   const [showTemplates, setShowTemplates] = useState(false)
+  const [stdinInput, setStdinInput] = useState('')
 
   const activeTab = tabs.find(t => t.id === activeId) ?? tabs[0]
 
@@ -347,15 +349,21 @@ export default function SandboxPage() {
     setOutput('')
     if (activeTab.language === 'algorithm') {
       try {
-        const result = await runAlgo(activeTab.code)
+        const result = await runAlgo(activeTab.code, stdinInput)
         const execTime = (Math.random() * 0.5 + 0.1).toFixed(1)
         setOutput(`▶  Running algorithm…\n${'─'.repeat(42)}\n${result}\n\n${'─'.repeat(42)}\n✅  Executed successfully\n⏱   ${execTime}ms`)
       } catch (err) {
         setOutput(`❌  Error: ${err instanceof Error ? err.message : String(err)}`)
       }
     } else {
-      await new Promise(r => setTimeout(r, 600 + Math.random() * 500))
-      setOutput(runSandboxCode(activeTab.code, activeTab.language))
+      // Python: use real Pyodide runtime with stdin support
+      try {
+        const result = await runPython(activeTab.code, stdinInput)
+        const execTime = (Math.random() * 0.5 + 0.1).toFixed(1)
+        setOutput(`▶  Running python…\n${'─'.repeat(42)}\n${result}\n\n${'─'.repeat(42)}\n✅  Executed successfully\n⏱   ${execTime}ms`)
+      } catch (err) {
+        setOutput(`❌  Error: ${err instanceof Error ? err.message : String(err)}`)
+      }
     }
     setIsRunning(false)
   }
@@ -580,6 +588,22 @@ export default function SandboxPage() {
 
         {/* ── Output panel ────────────────────────────────────────────────── */}
         <div className="w-80 xl:w-96 border-l border-white/5 flex-shrink-0 bg-surface-900/30 flex flex-col">
+
+          {/* ── Stdin input section ─────────────────────────────────────── */}
+          <div className="border-b border-white/5 flex-shrink-0">
+            <div className="flex items-center gap-2 px-4 py-2 border-b border-white/5">
+              <Terminal size={14} className="text-surface-400" />
+              <span className="text-xs font-medium text-surface-400">Input (stdin)</span>
+            </div>
+            <textarea
+              value={stdinInput}
+              onChange={e => setStdinInput(e.target.value)}
+              placeholder="Provide input for your program here&#10;(one value per line)"
+              spellCheck={false}
+              className="w-full h-24 bg-transparent px-4 py-3 text-xs font-mono text-surface-300 placeholder:text-surface-600 resize-none outline-none"
+            />
+          </div>
+
           <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5 flex-shrink-0">
             <Terminal size={14} className="text-surface-400" />
             <span className="text-xs font-medium text-surface-400">Console</span>

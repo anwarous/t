@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { MOCK_USER, MOCK_BADGES, MOCK_CHAT_MESSAGES, type ChatMessage, type Badge } from '@/data/mockData'
-import { runPython } from '../../algoCompiler/CompilerRes/pythonCompiler'
+import { runPython } from '@/lib/pythonCompiler'
 
 // ─── User / Gamification Store ────────────────────────────────────────────────
 

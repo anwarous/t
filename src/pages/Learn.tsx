@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { MOCK_COURSES, type Course, type Lesson } from '@/data/mockData'
 import { cn, getDifficultyBg } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 const LESSON_TYPE_ICONS = {
   video: Video,
@@ -25,6 +26,7 @@ const LESSON_TYPE_COLORS = {
 
 function LessonRow({ lesson, courseId }: { lesson: Lesson; courseId: string }) {
   const Icon = LESSON_TYPE_ICONS[lesson.type]
+  const { t } = useTranslation()
 
   return (
     <motion.div
@@ -65,7 +67,7 @@ function LessonRow({ lesson, courseId }: { lesson: Lesson; courseId: string }) {
           {lesson.title}
         </div>
         <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-xs text-surface-500 capitalize">{lesson.type}</span>
+          <span className="text-xs text-surface-500 capitalize">{t(`learn.${lesson.type}`)}</span>
           <span className="text-surface-700">·</span>
           <span className="text-xs text-surface-500 flex items-center gap-1">
             <Clock size={10} />
@@ -92,6 +94,7 @@ function LessonRow({ lesson, courseId }: { lesson: Lesson; courseId: string }) {
 }
 
 function CourseCard({ course, index }: { course: Course; index: number }) {
+  const { t } = useTranslation()
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -115,7 +118,7 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
             <h3 className="font-bold text-lg group-hover:text-white transition-colors">{course.title}</h3>
             <div className="flex items-center gap-2 mt-1">
               <span className={cn('tag border text-xs', getDifficultyBg(course.difficulty))}>
-                {course.difficulty}
+                {t(`learn.difficulty.${course.difficulty}`)}
               </span>
               <span className="text-xs text-surface-500">{course.category}</span>
             </div>
@@ -137,7 +140,7 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
         <div className="flex items-center gap-4 text-xs text-surface-500 mb-4">
           <span className="flex items-center gap-1">
             <BookOpen size={12} />
-            {course.totalLessons} lessons
+            {course.totalLessons} {t('learn.lessons', { count: course.totalLessons })}
           </span>
           <span className="flex items-center gap-1">
             <Clock size={12} />
@@ -152,7 +155,7 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
         {/* Progress */}
         <div>
           <div className="flex justify-between text-xs text-surface-500 mb-1.5">
-            <span>{course.completedLessons}/{course.totalLessons} lessons</span>
+            <span>{course.completedLessons}/{course.totalLessons} {t('learn.chapters').toLowerCase()}</span>
             <span>{course.progress}%</span>
           </div>
           <div className="progress-bar">
@@ -163,10 +166,10 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
         {/* CTA */}
         <div className="mt-4 flex items-center justify-between">
           <span className="text-xs text-surface-500">
-            {course.progress === 0 ? 'Not started' : course.progress === 100 ? '✅ Completed' : `In progress`}
+            {course.progress === 0 ? t('learn.notStarted') : course.progress === 100 ? `✅ ${t('learn.completed')}` : t('learn.inProgress')}
           </span>
           <span className="flex items-center gap-1 text-xs font-medium text-brand-400 group-hover:text-brand-300 transition-colors">
-            {course.progress === 0 ? 'Start course' : course.progress === 100 ? 'Review' : 'Continue'}
+            {course.progress === 0 ? t('learn.start') : course.progress === 100 ? t('learn.review') : t('learn.continue')}
             <ChevronRight size={13} />
           </span>
         </div>
@@ -179,6 +182,7 @@ function CourseCard({ course, index }: { course: Course; index: number }) {
 
 function CourseDetail({ course }: { course: Course }) {
   const [expandedChapter, setExpandedChapter] = useState<string | null>(course.chapters[0]?.id ?? null)
+  const { t } = useTranslation()
 
   const totalCompleted = course.chapters.flatMap(c => c.lessons).filter(l => l.completed).length
   const totalLessons = course.chapters.flatMap(c => c.lessons).length
@@ -190,7 +194,7 @@ function CourseDetail({ course }: { course: Course }) {
         {/* Back */}
         <Link to="/learn" className="inline-flex items-center gap-2 text-sm text-surface-400 hover:text-white transition-colors mb-6">
           <ArrowLeft size={15} />
-          All Courses
+          {t('learn.allCourses')}
         </Link>
 
         {/* Hero */}
@@ -218,7 +222,7 @@ function CourseDetail({ course }: { course: Course }) {
                 <h1 className="text-3xl font-display font-bold">{course.title}</h1>
                 <div className="flex items-center gap-3 mt-1">
                   <span className={cn('tag border text-xs', getDifficultyBg(course.difficulty))}>
-                    {course.difficulty}
+                    {t(`learn.difficulty.${course.difficulty}`)}
                   </span>
                   <span className="text-xs text-surface-400">{course.category}</span>
                 </div>
@@ -228,11 +232,11 @@ function CourseDetail({ course }: { course: Course }) {
 
             <div className="flex flex-wrap items-center gap-6">
               {[
-                { icon: BookOpen, val: `${course.totalLessons} lessons`, color: 'text-surface-400' },
+                { icon: BookOpen, val: `${course.totalLessons} ${t('learn.chapters').toLowerCase()}`, color: 'text-surface-400' },
                 { icon: Clock, val: course.duration, color: 'text-surface-400' },
-                { icon: Zap, val: `${course.xpReward} XP reward`, color: 'text-brand-400' },
-                { icon: Star, val: '4.9 rating', color: 'text-amber-400' },
-                { icon: Users, val: '2.1k students', color: 'text-surface-400' },
+                { icon: Zap, val: `${course.xpReward} XP`, color: 'text-brand-400' },
+                { icon: Star, val: `4.9 ${t('learn.rating')}`, color: 'text-amber-400' },
+                { icon: Users, val: `2.1k ${t('learn.students')}`, color: 'text-surface-400' },
               ].map(({ icon: Icon, val, color }) => (
                 <span key={val} className={cn('flex items-center gap-1.5 text-sm', color)}>
                   <Icon size={14} />
@@ -248,7 +252,7 @@ function CourseDetail({ course }: { course: Course }) {
           <div className="lg:col-span-2 space-y-3">
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
               <BarChart2 size={18} className="text-brand-400" />
-              Course Content
+              {t('learn.courseContent')}
             </h2>
             {course.chapters.map((chapter, chIdx) => {
               const chCompleted = chapter.lessons.filter(l => l.completed).length
@@ -278,7 +282,7 @@ function CourseDetail({ course }: { course: Course }) {
                       <div className="text-left">
                         <div className="font-semibold text-sm">{chapter.title}</div>
                         <div className="text-xs text-surface-500 mt-0.5">
-                          {chCompleted}/{chapter.lessons.length} completed
+                          {chCompleted}/{chapter.lessons.length} {t('learn.completed').toLowerCase()}
                         </div>
                       </div>
                     </div>
@@ -321,7 +325,7 @@ function CourseDetail({ course }: { course: Course }) {
               transition={{ delay: 0.2 }}
               className="p-5 rounded-2xl glass border border-white/8 sticky top-20"
             >
-              <h3 className="font-bold mb-4">Your Progress</h3>
+              <h3 className="font-bold mb-4">{t('learn.yourProgress')}</h3>
 
               <div className="relative w-28 h-28 mx-auto mb-5">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
@@ -345,21 +349,21 @@ function CourseDetail({ course }: { course: Course }) {
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-2xl font-display font-bold">{course.progress}%</span>
-                  <span className="text-xs text-surface-500">complete</span>
+                  <span className="text-xs text-surface-500">{t('learn.complete')}</span>
                 </div>
               </div>
 
               <div className="space-y-2.5 mb-5">
                 <div className="flex justify-between text-sm">
-                  <span className="text-surface-400">Lessons</span>
+                  <span className="text-surface-400">{t('learn.chapters')}</span>
                   <span>{totalCompleted}/{totalLessons}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-surface-400">XP earned</span>
+                  <span className="text-surface-400">{t('learn.xpEarned')}</span>
                   <span className="text-brand-400">{Math.round(course.xpReward * course.progress / 100)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-surface-400">Estimated</span>
+                  <span className="text-surface-400">{t('learn.estimated')}</span>
                   <span>{course.duration}</span>
                 </div>
               </div>
@@ -369,7 +373,7 @@ function CourseDetail({ course }: { course: Course }) {
                 className="btn-primary w-full justify-center"
               >
                 <Play size={15} />
-                {course.progress === 0 ? 'Start Course' : 'Continue'}
+                {course.progress === 0 ? t('learn.start') : t('learn.continue')}
               </Link>
             </motion.div>
           </div>
@@ -383,7 +387,14 @@ function CourseDetail({ course }: { course: Course }) {
 
 function CoursesListing() {
   const [filter, setFilter] = useState<string>('All')
+  const { t } = useTranslation()
   const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced']
+  const difficultyLabels: Record<string, string> = {
+    All: t('learn.all'),
+    Beginner: t('learn.beginner'),
+    Intermediate: t('learn.intermediate'),
+    Advanced: t('learn.advanced'),
+  }
 
   const filtered = filter === 'All'
     ? MOCK_COURSES
@@ -398,9 +409,10 @@ function CoursesListing() {
           className="mb-8"
         >
           <h1 className="text-3xl font-display font-bold mb-2">
-            Learning <span className="gradient-text">Modules</span>
+            {t('learn.learningModules').split(' ').slice(0, -1).join(' ')}{' '}
+            <span className="gradient-text">{t('learn.learningModules').split(' ').slice(-1)}</span>
           </h1>
-          <p className="text-surface-400">Master algorithms from fundamentals to advanced techniques</p>
+          <p className="text-surface-400">{t('learn.masterAlgo')}</p>
         </motion.div>
 
         {/* Filters */}
@@ -416,10 +428,10 @@ function CoursesListing() {
                   : 'text-surface-400 hover:text-white bg-surface-800/50 border border-white/5 hover:border-white/10'
               )}
             >
-              {d}
+              {difficultyLabels[d]}
             </button>
           ))}
-          <span className="ml-auto text-sm text-surface-500">{filtered.length} courses</span>
+          <span className="ml-auto text-sm text-surface-500">{filtered.length} {t('learn.courses')}</span>
         </div>
 
         <div className="grid md:grid-cols-2 gap-5">
@@ -436,13 +448,14 @@ function CoursesListing() {
 
 export default function LearnPage() {
   const { courseId } = useParams<{ courseId?: string }>()
+  const { t } = useTranslation()
 
   if (courseId) {
     const course = MOCK_COURSES.find(c => c.id === courseId)
     if (!course) return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <h2 className="text-2xl font-bold">Course not found</h2>
-        <Link to="/learn" className="btn-primary">Browse Courses</Link>
+        <h2 className="text-2xl font-bold">{t('common.error')}</h2>
+        <Link to="/learn" className="btn-primary">{t('learn.allCourses')}</Link>
       </div>
     )
     return <CourseDetail course={course} />

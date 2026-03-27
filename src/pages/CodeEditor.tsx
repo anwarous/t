@@ -9,6 +9,7 @@ import { useEditorStore } from '@/store'
 import { MOCK_EXERCISES } from '@/data/mockData'
 import { cn, getDifficultyBg } from '@/lib/utils'
 import { registerAlgorithmLanguage } from '@/lib/algorithmLanguage'
+import { useTranslation } from 'react-i18next'
 
 const MonacoEditor = lazy(() => import('@monaco-editor/react'))
 
@@ -59,6 +60,7 @@ function ColoredOutput({ text }: { text: string }) {
 
 // ── Output panel ─────────────────────────────────────────────────────────────
 function OutputPanel({ output, isRunning }: { output: string; isRunning: boolean }) {
+  const { t } = useTranslation()
   const has    = output.trim() !== ''
   const passed = has && output.includes('✅') && !output.includes('❌') && !output.includes('Error') && !output.includes('✗')
   const failed = has && (output.includes('❌') || output.includes('✗') || /Error:/.test(output))
@@ -66,8 +68,8 @@ function OutputPanel({ output, isRunning }: { output: string; isRunning: boolean
   const scoreMatch = output.match(/(\d+)\s*\/\s*(\d+)\s*test cases passed/)
   const badge = scoreMatch
     ? `${scoreMatch[1]}/${scoreMatch[2]} tests`
-    : passed ? 'All passed'
-    : failed ? 'Failed'
+    : passed ? t('editor.allPassed')
+    : failed ? t('editor.testsFailed')
     : null
 
   return (
@@ -75,12 +77,12 @@ function OutputPanel({ output, isRunning }: { output: string; isRunning: boolean
       {/* Header */}
       <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5 flex-shrink-0">
         <Terminal size={14} className="text-surface-400" />
-        <span className="text-xs font-medium text-surface-400">Output</span>
+        <span className="text-xs font-medium text-surface-400">{t('editor.output')}</span>
 
         {isRunning && (
           <span className="ml-auto flex items-center gap-1.5 text-xs text-brand-400">
             <Loader2 size={12} className="animate-spin" />
-            Running…
+            {t('editor.running')}
           </span>
         )}
 
@@ -106,11 +108,8 @@ function OutputPanel({ output, isRunning }: { output: string; isRunning: boolean
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-surface-500 text-sm">
               <Loader2 size={16} className="animate-spin text-brand-400" />
-              Executing code…
+              {t('editor.executingCode')}
             </div>
-            <p className="text-surface-600 text-xs">
-              First run initialises the Python engine — this may take a moment.
-            </p>
             <div className="space-y-2">
               {[75, 55, 65].map((w, i) => (
                 <div
@@ -129,11 +128,7 @@ function OutputPanel({ output, isRunning }: { output: string; isRunning: boolean
               <Play size={20} className="text-surface-500" />
             </div>
             <p className="text-surface-500 text-sm">
-              Press{' '}
-              <kbd className="px-1.5 py-0.5 rounded bg-surface-800 text-surface-300 font-mono text-xs">
-                Run
-              </kbd>{' '}
-              to execute your code
+              {t('editor.pressRun')}
             </p>
           </div>
         )}

@@ -20,6 +20,23 @@
     --accent-cyan-glow: rgba(0,212,255,0.25);
   }
 
+  html.light {
+    --bg-primary: #f0f4ff;
+    --bg-secondary: #e6eaf8;
+    --bg-card: #ffffff;
+    --bg-elevated: #dde3f5;
+    --border-subtle: rgba(0,0,0,0.07);
+    --border-default: rgba(0,0,0,0.12);
+    --border-strong: rgba(0,0,0,0.22);
+    --text-primary: #0a0f24;
+    --text-secondary: #3a4460;
+    --text-muted: #6b748a;
+    --brand-primary: #1a5cff;
+    --brand-glow: rgba(26,92,255,0.2);
+    --accent-cyan: #0099cc;
+    --accent-cyan-glow: rgba(0,153,204,0.2);
+  }
+
   * {
     box-sizing: border-box;
     border-color: var(--border-subtle);
@@ -52,6 +69,13 @@
     background: rgba(26, 92, 255, 0.35);
     color: #fff;
   }
+
+  html.light ::-webkit-scrollbar-thumb {
+    background: #c5cbe0;
+  }
+  html.light ::-webkit-scrollbar-thumb:hover {
+    background: #9aa3c0;
+  }
 }
 
 @layer components {
@@ -61,11 +85,19 @@
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-subtle);
   }
+  html.light .glass {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: var(--border-subtle);
+  }
 
   .glass-strong {
     background: rgba(20, 28, 53, 0.85);
     backdrop-filter: blur(20px);
     border: 1px solid var(--border-default);
+  }
+  html.light .glass-strong {
+    background: rgba(240, 244, 255, 0.97);
+    border-color: var(--border-default);
   }
 
   .card-hover {

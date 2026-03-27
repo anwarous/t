@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { runAlgo } from '@/lib/algoCompiler'
+import { registerAlgorithmLanguage } from '@/lib/algorithmLanguage'
 
 const MonacoEditor = lazy(() => import('@monaco-editor/react'))
 
@@ -400,6 +401,7 @@ export default function SandboxPage() {
   }
 
   function handleEditorMount(_: unknown, monaco: any) {
+    registerAlgorithmLanguage(monaco)
     monaco.editor.defineTheme('mq-dark', MONACO_THEME)
     monaco.editor.setTheme('mq-dark')
   }
@@ -557,7 +559,7 @@ export default function SandboxPage() {
               <MonacoEditor
                 key={activeTab.language}  // remount on language change
                 height="100%"
-                language={activeTab.language === 'algorithm' ? 'plaintext' : activeTab.language}
+                language={activeTab.language === 'algorithm' ? 'algorithm' : activeTab.language}
                 value={activeTab.code}
                 onChange={v => updateCode(v ?? '')}
                 onMount={handleEditorMount}

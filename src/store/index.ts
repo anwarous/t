@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { MOCK_USER, MOCK_BADGES, MOCK_CHAT_MESSAGES, type ChatMessage, type Badge } from '@/data/mockData'
+import { runPython } from '../../algoCompiler/CompilerRes/pythonCompiler'
 
 // ─── User / Gamification Store ────────────────────────────────────────────────
 
@@ -361,11 +362,34 @@ print(two_sum([3, 3], 6))            # Expected: [0, 1]
   setActiveExercise: (id) => set({ activeExerciseId: id }),
   runCode: async () => {
     set({ isRunning: true, output: '' })
-    // Small delay to feel realistic
-    await new Promise((r) => setTimeout(r, 700 + Math.random() * 600))
     const { code, activeExerciseId } = get()
-    const output = evaluateCode(code, activeExerciseId)
-    set({ output, isRunning: false })
+
+    // Run the code through the real Python (Pyodide) engine.
+    // On first call this triggers a one-time Wasm download; subsequent calls
+    // use the cached Pyodide instance and are near-instant.
+    let realOutput: string
+    try {
+      realOutput = await runPython(code)
+    } catch {
+      // Pyodide failed to initialise (e.g. network unavailable) — fall back
+      // to the simulated evaluator so the UI stays usable offline.
+      realOutput = evaluateCode(code, activeExerciseId)
+      set({ output: realOutput, isRunning: false })
+      return
+    }
+
+    // Overlay the exercise-aware test-case analysis on top of the real output.
+    // This keeps the structured pass/fail display the editor already has while
+    // also showing the real stdout the student's code produced.
+    const analysisOutput = evaluateCode(code, activeExerciseId)
+
+    // If the real execution produced actual output, prepend it so the student
+    // can see their print() results together with the test summary.
+    const combinedOutput = realOutput.trim()
+      ? `${realOutput.trim()}\n\n${analysisOutput}`
+      : analysisOutput
+
+    set({ output: combinedOutput, isRunning: false })
   },
 }))
 

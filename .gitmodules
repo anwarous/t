@@ -1,0 +1,3 @@
+[submodule "algoCompiler/CompilerRes"]
+	path = algoCompiler/CompilerRes
+	url = https://github.com/anwarous/CompilerRes

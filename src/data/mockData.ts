@@ -1201,10 +1201,18 @@ export const RECENT_ACTIVITY = [
   { id: 4, action: 'Earned badge', target: 'Week Warrior 🔥', xp: 200, time: '2d ago', icon: '🏅' },
 ]
 
-export const LEADERBOARD = [
-  { rank: 1, name: 'Sarah K.', xp: 8920, streak: 21, avatar: 'SK' },
-  { rank: 2, name: 'Marcus J.', xp: 7650, streak: 14, avatar: 'MJ' },
-  { rank: 3, name: 'Priya M.', xp: 6800, streak: 9, avatar: 'PM' },
-  { rank: 4, name: 'Alex Chen', xp: 3240, streak: 7, avatar: 'AC', isCurrentUser: true },
-  { rank: 5, name: 'David L.', xp: 2900, streak: 5, avatar: 'DL' },
+export interface LeaderboardEntry {
+  name: string
+  xp: number
+  streak: number
+  avatar: string
+  isCurrentUser?: boolean
+  rank?: number
+}
+
+export const LEADERBOARD_OTHERS: LeaderboardEntry[] = [
+  { name: 'Sarah K.', xp: 8920, streak: 21, avatar: 'SK' },
+  { name: 'Marcus J.', xp: 7650, streak: 14, avatar: 'MJ' },
+  { name: 'Priya M.', xp: 6800, streak: 9, avatar: 'PM' },
+  { name: 'David L.', xp: 2900, streak: 5, avatar: 'DL' },
 ]

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -8,7 +8,7 @@ import {
   ToggleLeft, ToggleRight, AlertCircle, Check
 } from 'lucide-react'
 import { useUserStore } from '@/store'
-import { MOCK_BADGES, RECENT_ACTIVITY, LEADERBOARD } from '@/data/mockData'
+import { MOCK_BADGES, RECENT_ACTIVITY, LEADERBOARD_OTHERS, type LeaderboardEntry } from '@/data/mockData'
 import { cn, getRarityColor } from '@/lib/utils'
 
 // ── Reusable toggle ────────────────────────────────────────────────────────────
@@ -69,6 +69,20 @@ function ProfileTab() {
     setTimeout(() => setSaved(false), 2000)
   }
 
+  const myRank = useMemo(() => {
+    const entries: LeaderboardEntry[] = [
+      ...LEADERBOARD_OTHERS,
+      { name: user.name, xp: user.xp, streak: 0, avatar: user.avatar, isCurrentUser: true },
+    ]
+    const sorted = [...entries].sort((a, b) => b.xp - a.xp)
+    return sorted.findIndex((e) => e.isCurrentUser) + 1
+  }, [user.name, user.xp, user.avatar])
+
+  const memberSince = useMemo(() => {
+    const d = new Date(user.joinedAt)
+    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+  }, [user.joinedAt])
+
   const stats = [
     { icon: Zap,         label: 'Total XP',      value: user.xp.toLocaleString(), color: 'text-brand-400',   bg: 'bg-brand-500/10'   },
     { icon: Flame,       label: 'Day Streak',     value: `${user.streak}`,         color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
@@ -102,14 +116,14 @@ function ProfileTab() {
                 Level {user.level} · {user.rank}
               </span>
               <span className="px-2.5 py-1 rounded-full bg-surface-800 border border-white/8 text-xs text-surface-400">
-                Member since Jan 2024
+                Member since {memberSince}
               </span>
             </div>
           </div>
 
           {/* Leaderboard rank */}
           <div className="text-center p-4 rounded-xl glass border border-white/8">
-            <div className="text-3xl font-display font-bold gradient-text">#4</div>
+            <div className="text-3xl font-display font-bold gradient-text">#{myRank}</div>
             <div className="text-xs text-surface-400 mt-1">Global rank</div>
           </div>
         </div>

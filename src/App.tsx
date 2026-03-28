@@ -1,6 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
-import { useUserStore } from '@/store'
+import { useUserStore, useAuthStore } from '@/store'
 import Layout from '@/components/layout/Layout'
 import Landing from '@/pages/Landing'
 import Dashboard from '@/pages/Dashboard'
@@ -12,6 +12,8 @@ import { ToastProvider } from '@/components/ui/Toast'
 import NotFound from '@/pages/NotFound'
 import ProfilePage from '@/pages/Profile'
 import SandboxPage from '@/pages/Sandbox'
+import SignIn from '@/pages/SignIn'
+import SignUp from '@/pages/SignUp'
 
 // Apply theme class to <html> whenever the store's theme changes
 function ThemeWatcher() {
@@ -29,6 +31,25 @@ function ThemeWatcher() {
   return null
 }
 
+// Redirect unauthenticated users to /signin
+function RequireAuth({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated)
+  const location = useLocation()
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" state={{ from: location.pathname }} replace />
+  }
+  return <>{children}</>
+}
+
+// Redirect already-authenticated users away from signin/signup
+function RedirectIfAuth({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated)
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />
+  }
+  return <>{children}</>
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -37,14 +58,16 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Landing />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/editor" element={<CodeEditorPage />} />
-          <Route path="/visualize" element={<VisualizationPage />} />
-          <Route path="/mentor" element={<MentorPage />} />
-          <Route path="/learn" element={<LearnPage />} />
-          <Route path="/learn/:courseId" element={<LearnPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/sandbox" element={<SandboxPage />} />
+          <Route path="/signin" element={<RedirectIfAuth><SignIn /></RedirectIfAuth>} />
+          <Route path="/signup" element={<RedirectIfAuth><SignUp /></RedirectIfAuth>} />
+          <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+          <Route path="/editor" element={<RequireAuth><CodeEditorPage /></RequireAuth>} />
+          <Route path="/visualize" element={<RequireAuth><VisualizationPage /></RequireAuth>} />
+          <Route path="/mentor" element={<RequireAuth><MentorPage /></RequireAuth>} />
+          <Route path="/learn" element={<RequireAuth><LearnPage /></RequireAuth>} />
+          <Route path="/learn/:courseId" element={<RequireAuth><LearnPage /></RequireAuth>} />
+          <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
+          <Route path="/sandbox" element={<RequireAuth><SandboxPage /></RequireAuth>} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

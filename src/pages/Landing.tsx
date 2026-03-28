@@ -85,7 +85,7 @@ export default function Landing() {
 
           {/* CTAs */}
           <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/dashboard" className="btn-primary text-base px-7 py-3.5 rounded-2xl">
+            <Link to="/signup" className="btn-primary text-base px-7 py-3.5 rounded-2xl">
               {t('landing.getStarted')}
               <ArrowRight size={18} />
             </Link>
@@ -302,7 +302,7 @@ export default function Landing() {
                 {t('landing.cta.title')} <span className="gradient-text">{t('landing.cta.titleHighlight')}</span>
               </h2>
               <p className="text-surface-400 text-lg mb-8">{t('landing.cta.desc')}</p>
-              <Link to="/dashboard" className="btn-primary text-base px-8 py-4 rounded-2xl">
+              <Link to="/signup" className="btn-primary text-base px-8 py-4 rounded-2xl">
                 {t('landing.cta.button')}
                 <ArrowRight size={18} />
               </Link>

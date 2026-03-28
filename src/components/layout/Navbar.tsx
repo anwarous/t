@@ -6,7 +6,7 @@ import {
   Menu, X, Zap, Flame, User, Settings, LogOut,
   Trophy, ChevronDown, Bell
 } from 'lucide-react'
-import { useUserStore } from '@/store'
+import { useUserStore, useAuthStore } from '@/store'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 
@@ -30,10 +30,17 @@ function LanguageSwitcher() {
 // ── Avatar dropdown ───────────────────────────────────────────────────────────
 function AvatarDropdown({ onClose }: { onClose: () => void }) {
   const { user } = useUserStore()
+  const clearAuth = useAuthStore((s) => s.clearAuth)
   const navigate = useNavigate()
   const { t } = useTranslation()
 
   const go = (path: string) => { navigate(path); onClose() }
+
+  const handleSignOut = () => {
+    clearAuth()
+    navigate('/')
+    onClose()
+  }
 
   return (
     <motion.div
@@ -98,7 +105,7 @@ function AvatarDropdown({ onClose }: { onClose: () => void }) {
 
       <div className="p-2 border-t border-white/8">
         <button
-          onClick={() => go('/')}
+          onClick={handleSignOut}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-rose-500/10 transition-colors text-left group"
         >
           <div className="w-8 h-8 rounded-lg bg-surface-800 border border-white/5 flex items-center justify-center flex-shrink-0 group-hover:border-rose-500/30 transition-colors">
@@ -176,10 +183,10 @@ export default function Navbar() {
             {isLanding ? (
               /* Landing CTAs */
               <>
-                <Link to="/dashboard" className="btn-ghost hidden sm:flex text-sm py-2 px-4">
+                <Link to="/signin" className="btn-ghost hidden sm:flex text-sm py-2 px-4">
                   {t('nav.signIn')}
                 </Link>
-                <Link to="/dashboard" className="btn-primary text-sm py-2 px-4">
+                <Link to="/signup" className="btn-primary text-sm py-2 px-4">
                   {t('nav.startLearning')}
                 </Link>
               </>

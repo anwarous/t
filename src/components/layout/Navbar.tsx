@@ -165,43 +165,7 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* ── Desktop nav (hidden on landing) ──────────────────────────── */}
-          {!isLanding && (
-            <nav className="hidden md:flex items-center gap-0.5">
-              {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
-                // exact match for dashboard, prefix match for others
-                const active = to === '/dashboard'
-                  ? location.pathname === '/dashboard'
-                  : location.pathname.startsWith(to)
 
-                return (
-                  <Link
-                    key={to}
-                    to={to}
-                    className={cn(
-                      'relative flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200',
-                      active
-                        ? 'text-white'
-                        : 'text-surface-400 hover:text-white hover:bg-white/5'
-                    )}
-                  >
-                    {/* Active background via layoutId — INSIDE the relative Link */}
-                    {active && (
-                      <motion.span
-                        layoutId="nav-pill"
-                        className="absolute inset-0 rounded-xl bg-brand-500/15 border border-brand-500/25"
-                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                    <span className="relative flex items-center gap-2">
-                      <Icon size={15} />
-                      {label}
-                    </span>
-                  </Link>
-                )
-              })}
-            </nav>
-          )}
 
           {/* ── Right side ───────────────────────────────────────────────── */}
           <div className="flex items-center gap-2.5">
@@ -267,11 +231,11 @@ export default function Navbar() {
               </>
             )}
 
-            {/* Mobile menu toggle (not on landing) */}
+            {/* Menu toggle (not on landing) */}
             {!isLanding && (
               <button
                 onClick={() => setMobileOpen(v => !v)}
-                className="md:hidden p-2 rounded-lg text-surface-400 hover:text-white hover:bg-white/5 transition-colors"
+                className="p-2 rounded-lg text-surface-400 hover:text-white hover:bg-white/5 transition-colors"
                 aria-label="Toggle menu"
               >
                 <AnimatePresence mode="wait">
@@ -294,7 +258,7 @@ export default function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.22, ease: 'easeInOut' }}
-            className="md:hidden overflow-hidden glass-strong border-t border-white/5"
+            className="overflow-hidden glass-strong border-t border-white/5"
           >
             <div className="px-4 py-3 space-y-1">
               {NAV_ITEMS.map(({ to, label, icon: Icon }) => {

@@ -3,6 +3,45 @@ import { MOCK_USER, MOCK_BADGES, MOCK_CHAT_MESSAGES, type ChatMessage, type Badg
 import { runPython } from '@/lib/pythonCompiler'
 import { runAlgo } from '@/lib/algoCompiler'
 
+// ─── Auth Store ───────────────────────────────────────────────────────────────
+
+const TOKEN_KEY = 'mqa_token'
+const USER_KEY = 'mqa_user'
+
+interface AuthState {
+  token: string | null
+  isAuthenticated: boolean
+  authUser: { username: string; email: string; displayName: string } | null
+  setAuth: (token: string, user: { username: string; email: string; displayName: string }) => void
+  clearAuth: () => void
+}
+
+export const useAuthStore = create<AuthState>((set) => {
+  const token = localStorage.getItem(TOKEN_KEY)
+  return {
+    token,
+    isAuthenticated: !!token,
+    authUser: (() => {
+      try {
+        const raw = localStorage.getItem(USER_KEY)
+        return raw ? JSON.parse(raw) : null
+      } catch {
+        return null
+      }
+    })(),
+    setAuth: (token, user) => {
+      localStorage.setItem(TOKEN_KEY, token)
+      localStorage.setItem(USER_KEY, JSON.stringify(user))
+      set({ token, isAuthenticated: true, authUser: user })
+    },
+    clearAuth: () => {
+      localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem(USER_KEY)
+      set({ token: null, isAuthenticated: false, authUser: null })
+    },
+  }
+})
+
 // ─── User / Gamification Store ────────────────────────────────────────────────
 
 type UserProfile = typeof MOCK_USER & {

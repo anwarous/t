@@ -47,6 +47,7 @@ export interface Exercise {
   examples?: { input: string; output: string; note?: string }[]
   constraints?: string[]
   hint?: string
+  testCases?: { call: string; expected: string }[]
 }
 
 export interface Badge {
@@ -403,6 +404,11 @@ print(two_sum([3, 3], 6))            # Expected: [0, 1]
     ],
     constraints: ['2 ≤ nums.length ≤ 10⁴', '-10⁹ ≤ nums[i] ≤ 10⁹', 'Only one valid answer exists'],
     hint: 'For each element x, you need target − x. Can you check for it in O(1) using a data structure you\'ve seen?',
+    testCases: [
+      { call: 'two_sum([2, 7, 11, 15], 9)',  expected: '[0, 1]' },
+      { call: 'two_sum([3, 2, 4], 6)',        expected: '[1, 2]' },
+      { call: 'two_sum([3, 3], 6)',            expected: '[0, 1]' },
+    ],
   },
   {
     id: 'ex-002',
@@ -449,6 +455,11 @@ print(bubble_sort([5, 4, 3, 2, 1]))
     ],
     constraints: ['1 ≤ arr.length ≤ 10⁴', '-10⁴ ≤ arr[i] ≤ 10⁴', 'Must sort in ascending order'],
     hint: 'Compare adjacent elements and swap them if they are in the wrong order. Repeat until no swaps are needed.',
+    testCases: [
+      { call: 'bubble_sort([64, 34, 25, 12, 22, 11, 90])', expected: '[11, 12, 22, 25, 34, 64, 90]' },
+      { call: 'bubble_sort([5, 4, 3, 2, 1])',               expected: '[1, 2, 3, 4, 5]' },
+      { call: 'bubble_sort([1])',                            expected: '[1]' },
+    ],
   },
   {
     id: 'ex-003',
@@ -495,6 +506,11 @@ print(binary_search([-1, 0, 3, 5, 9, 12], 2))   # Expected: -1
     ],
     constraints: ['1 ≤ nums.length ≤ 10⁴', 'nums is sorted in ascending order', 'All values in nums are unique'],
     hint: 'Use two pointers (left and right) and repeatedly halve the search space by comparing the middle element to the target.',
+    testCases: [
+      { call: 'binary_search([-1, 0, 3, 5, 9, 12], 9)', expected: '4'  },
+      { call: 'binary_search([-1, 0, 3, 5, 9, 12], 2)', expected: '-1' },
+      { call: 'binary_search([5], 5)',                   expected: '0'  },
+    ],
   },
   {
     id: 'ex-004',
@@ -544,6 +560,12 @@ print(is_valid("{[]}"))        # True
     ],
     constraints: ['1 ≤ s.length ≤ 10⁴', 's consists of ( ) { } [ ] only'],
     hint: 'Use a stack. Push opening brackets, and when you see a closing bracket check if it matches the top of the stack.',
+    testCases: [
+      { call: 'is_valid("()")',     expected: 'True'  },
+      { call: 'is_valid("()[]{}")', expected: 'True'  },
+      { call: 'is_valid("(]")',     expected: 'False' },
+      { call: 'is_valid("([)]")',   expected: 'False' },
+    ],
   },
   // ── New exercises ─────────────────────────────────────────────────────────
   {
@@ -581,6 +603,11 @@ print(reverse_string(""))         # Expected: ""
     ],
     constraints: ['0 ≤ s.length ≤ 10⁵', 's consists of printable ASCII characters'],
     hint: 'Python has a very elegant one-liner for this using slice notation.',
+    testCases: [
+      { call: "reverse_string('hello')",  expected: 'olleh'  },
+      { call: "reverse_string('Hannah')", expected: 'hannaH' },
+      { call: "reverse_string('')",       expected: ''       },
+    ],
   },
   {
     id: 'ex-006',
@@ -619,6 +646,11 @@ print(is_palindrome("Was it a car or a cat I saw?"))    # True
     ],
     constraints: ['1 ≤ s.length ≤ 2 × 10⁵', 's consists only of printable ASCII characters'],
     hint: 'First clean the string (keep only alphanumeric, lowercase), then check if it equals its reverse.',
+    testCases: [
+      { call: "is_palindrome('A man, a plan, a canal: Panama')", expected: 'True'  },
+      { call: "is_palindrome('race a car')",                     expected: 'False' },
+      { call: "is_palindrome('Was it a car or a cat I saw?')",   expected: 'True'  },
+    ],
   },
   {
     id: 'ex-007',
@@ -664,6 +696,11 @@ print(fizz_buzz(15))
     ],
     constraints: ['1 ≤ n ≤ 10⁴'],
     hint: 'Check divisibility by 15 first (both 3 and 5), then by 3, then by 5.',
+    testCases: [
+      { call: 'fizz_buzz(5)',  expected: "['1', '2', 'Fizz', '4', 'Buzz']" },
+      { call: 'fizz_buzz(3)',  expected: "['1', '2', 'Fizz']"              },
+      { call: 'fizz_buzz(15)', expected: "['1', '2', 'Fizz', '4', 'Buzz', 'Fizz', '7', '8', 'Fizz', 'Buzz', '11', 'Fizz', '13', '14', 'FizzBuzz']" },
+    ],
   },
   {
     id: 'ex-008',
@@ -705,6 +742,11 @@ print(max_subarray([5, 4, -1, 7, 8]))                    # Expected: 23
     ],
     constraints: ['1 ≤ nums.length ≤ 10⁵', '-10⁴ ≤ nums[i] ≤ 10⁴'],
     hint: "At each position, decide: is it better to extend the previous subarray or start fresh? That's Kadane's key insight.",
+    testCases: [
+      { call: 'max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4])', expected: '6'  },
+      { call: 'max_subarray([5, 4, -1, 7, 8])',                 expected: '23' },
+      { call: 'max_subarray([1])',                               expected: '1'  },
+    ],
   },
   {
     id: 'ex-009',
@@ -742,6 +784,11 @@ print(count_duplicates([1, 2, 3]))             # Expected: 0
     ],
     constraints: ['1 ≤ nums.length ≤ 10⁴', '-10⁴ ≤ nums[i] ≤ 10⁴'],
     hint: 'Use a Counter (hash map) to count occurrences, then count how many values exceed 1.',
+    testCases: [
+      { call: 'count_duplicates([1, 2, 3, 2, 4, 3])', expected: '2' },
+      { call: 'count_duplicates([1, 1, 1, 1])',        expected: '1' },
+      { call: 'count_duplicates([1, 2, 3])',            expected: '0' },
+    ],
   },
   {
     id: 'ex-010',
@@ -789,6 +836,12 @@ print(fib(30))  # Expected: 832040
     ],
     constraints: ['0 ≤ n ≤ 40'],
     hint: 'Store already-computed results in a dictionary. Before computing fib(n), check if it\'s already in the cache.',
+    testCases: [
+      { call: 'fib(10)', expected: '55'     },
+      { call: 'fib(0)',  expected: '0'      },
+      { call: 'fib(1)',  expected: '1'      },
+      { call: 'fib(30)', expected: '832040' },
+    ],
   },
   {
     id: 'ex-011',
@@ -833,6 +886,11 @@ print(longest_common_prefix(["abc"]))                      # Expected: "abc"
     ],
     constraints: ['1 ≤ strs.length ≤ 200', '0 ≤ strs[i].length ≤ 200', 'strs[i] consists of lowercase English letters'],
     hint: 'Start with the first string as the prefix, then shorten it until all other strings start with it.',
+    testCases: [
+      { call: "longest_common_prefix(['flower', 'flow', 'flight'])",      expected: 'fl'    },
+      { call: "longest_common_prefix(['dog', 'racecar', 'car'])",         expected: ''      },
+      { call: "longest_common_prefix(['interview', 'inter', 'interact'])", expected: 'inter' },
+    ],
   },
   {
     id: 'ex-012',
@@ -876,6 +934,11 @@ print(climb_stairs(10))  # Expected: 89
     ],
     constraints: ['1 ≤ n ≤ 45'],
     hint: 'Notice that ways(n) = ways(n-1) + ways(n-2). This is just Fibonacci! Use two variables to track the last two values.',
+    testCases: [
+      { call: 'climb_stairs(2)', expected: '2' },
+      { call: 'climb_stairs(3)', expected: '3' },
+      { call: 'climb_stairs(5)', expected: '8' },
+    ],
   },
   {
     id: 'ex-013',
@@ -916,6 +979,11 @@ print(reverse_list([]))               # Expected: []
     ],
     constraints: ['0 ≤ list.length ≤ 5000', '-5000 ≤ node.val ≤ 5000'],
     hint: 'Think of three pointers: previous, current, next. Redirect each node\'s pointer to the previous node.',
+    testCases: [
+      { call: 'reverse_list([1, 2, 3, 4, 5])', expected: '[5, 4, 3, 2, 1]' },
+      { call: 'reverse_list([1, 2])',           expected: '[2, 1]'          },
+      { call: 'reverse_list([])',               expected: '[]'              },
+    ],
   },
   {
     id: 'ex-014',
@@ -959,6 +1027,11 @@ print(max_depth([1, None, [2, None, None]]))  # Expected: 2
     ],
     constraints: ['0 ≤ number of nodes ≤ 10⁴', '-100 ≤ Node.val ≤ 100'],
     hint: 'The depth of a tree = 1 + max(depth of left subtree, depth of right subtree). Base case: None returns 0.',
+    testCases: [
+      { call: 'max_depth([3, [9, None, None], [20, [15, None, None], [7, None, None]]])', expected: '3' },
+      { call: 'max_depth(None)',                                                          expected: '0' },
+      { call: 'max_depth([1, None, None])',                                               expected: '1' },
+    ],
   },
   {
     id: 'ex-015',
@@ -1006,6 +1079,11 @@ print(merge_sorted([], [1]))                   # Expected: [1]
     ],
     constraints: ['0 ≤ nums1.length, nums2.length ≤ 10⁴', '-10⁴ ≤ values ≤ 10⁴'],
     hint: 'Use two pointers i and j, picking the smaller element from each array at each step.',
+    testCases: [
+      { call: 'merge_sorted([1, 3, 5], [2, 4, 6])', expected: '[1, 2, 3, 4, 5, 6]' },
+      { call: 'merge_sorted([1, 2, 3], [])',         expected: '[1, 2, 3]'          },
+      { call: 'merge_sorted([], [1])',               expected: '[1]'                },
+    ],
   },
   {
     id: 'ex-016',
@@ -1050,6 +1128,11 @@ print(coin_change([1, 2, 5], 11))       # Expected: 3  (5+5+1)
     ],
     constraints: ['1 ≤ coins.length ≤ 12', '1 ≤ coins[i] ≤ 2³¹ − 1', '0 ≤ amount ≤ 10⁴'],
     hint: 'Build a DP table where dp[i] = minimum coins for amount i. For each amount, try all coins and take the minimum.',
+    testCases: [
+      { call: 'coin_change([1, 5, 10, 25], 41)', expected: '4'  },
+      { call: 'coin_change([2], 3)',              expected: '-1' },
+      { call: 'coin_change([1, 2, 5], 11)',       expected: '3'  },
+    ],
   },
 ]
 

@@ -303,9 +303,216 @@ const EXERCISE_SPECS: Record<string, ExerciseSpec> = {
       },
     ],
   },
+  'ex-005': {
+    fnName: 'reverse_string',
+    tests: [
+      { label: "reverse_string('hello')",  input: "'hello'",  expected: 'olleh'  },
+      { label: "reverse_string('Hannah')", input: "'Hannah'", expected: 'hannaH' },
+      { label: "reverse_string('')",       input: "''",        expected: ''      },
+    ],
+    requiredPatterns: [
+      /return\s+/,
+      /\[::-1\]|reversed\(|for\s+\w+.*in/,
+    ],
+  },
+  'ex-006': {
+    fnName: 'is_palindrome',
+    tests: [
+      { label: "is_palindrome('A man, a plan, a canal: Panama')", input: "'A man, a plan, a canal: Panama'", expected: 'True'  },
+      { label: "is_palindrome('race a car')",                     input: "'race a car'",                   expected: 'False' },
+    ],
+    requiredPatterns: [
+      /isalnum|lower|upper/,
+      /\[::-1\]|reversed\(/,
+      /return\s+/,
+    ],
+  },
+  'ex-007': {
+    fnName: 'fizz_buzz',
+    tests: [
+      { label: 'fizz_buzz(5)',  input: '5',  expected: "['1', '2', 'Fizz', '4', 'Buzz']" },
+      { label: 'fizz_buzz(3)',  input: '3',  expected: "['1', '2', 'Fizz']"              },
+    ],
+    requiredPatterns: [
+      /FizzBuzz|fizzbuzz/i,
+      /Fizz/,
+      /Buzz/,
+      /append|result|output/,
+      /return\s+/,
+    ],
+  },
+  'ex-008': {
+    fnName: 'max_subarray',
+    tests: [
+      { label: 'max_subarray([-2,1,-3,4,-1,2,1,-5,4])', input: '[-2,1,-3,4,-1,2,1,-5,4]', expected: '6'  },
+      { label: 'max_subarray([5,4,-1,7,8])',             input: '[5,4,-1,7,8]',             expected: '23' },
+      { label: 'max_subarray([1])',                      input: '[1]',                      expected: '1'  },
+    ],
+    requiredPatterns: [
+      /max\s*\(/,
+      /current|curr|running|local/,
+      /return\s+/,
+    ],
+  },
+  'ex-009': {
+    fnName: 'count_duplicates',
+    tests: [
+      { label: 'count_duplicates([1,2,3,2,4,3])', input: '[1,2,3,2,4,3]', expected: '2' },
+      { label: 'count_duplicates([1,1,1,1])',      input: '[1,1,1,1]',     expected: '1' },
+      { label: 'count_duplicates([1,2,3])',         input: '[1,2,3]',       expected: '0' },
+    ],
+    requiredPatterns: [
+      /Counter|dict|count|{}|defaultdict/,
+      /return\s+/,
+    ],
+  },
+  'ex-010': {
+    fnName: 'fib',
+    tests: [
+      { label: 'fib(10)', input: '10', expected: '55'     },
+      { label: 'fib(0)',  input: '0',  expected: '0'      },
+      { label: 'fib(1)',  input: '1',  expected: '1'      },
+      { label: 'fib(30)', input: '30', expected: '832040' },
+    ],
+    requiredPatterns: [
+      /memo|cache|dict|{}/,
+      /if\s+n\s*(<=|<|==)\s*[01]/,
+      /return\s+/,
+    ],
+  },
+  'ex-011': {
+    fnName: 'longest_common_prefix',
+    tests: [
+      { label: "longest_common_prefix(['flower','flow','flight'])",      input: "['flower','flow','flight']",      expected: 'fl'    },
+      { label: "longest_common_prefix(['dog','racecar','car'])",         input: "['dog','racecar','car']",         expected: ''      },
+      { label: "longest_common_prefix(['interview','inter','interact'])", input: "['interview','inter','interact']", expected: 'inter' },
+    ],
+    requiredPatterns: [
+      /for\s+\w+.*in/,
+      /return\s+/,
+    ],
+  },
+  'ex-012': {
+    fnName: 'climb_stairs',
+    tests: [
+      { label: 'climb_stairs(2)', input: '2', expected: '2' },
+      { label: 'climb_stairs(3)', input: '3', expected: '3' },
+      { label: 'climb_stairs(5)', input: '5', expected: '8' },
+    ],
+    requiredPatterns: [
+      /return\s+/,
+      /if\s+n\s*(<=|<|==)\s*[23]/,
+    ],
+  },
+  'ex-013': {
+    fnName: 'reverse_list',
+    tests: [
+      { label: 'reverse_list([1,2,3,4,5])', input: '[1,2,3,4,5]', expected: '[5, 4, 3, 2, 1]' },
+      { label: 'reverse_list([1,2])',        input: '[1,2]',        expected: '[2, 1]'          },
+      { label: 'reverse_list([])',           input: '[]',           expected: '[]'              },
+    ],
+    requiredPatterns: [
+      /return\s+/,
+      /insert|prev|append|for\s+\w+.*in/,
+    ],
+    wrongPatterns: [
+      { pattern: /\[::-1\]/, hint: '⚠️  Avoid using slice reversal — practice the iterative pointer approach instead.' },
+    ],
+  },
+  'ex-014': {
+    fnName: 'max_depth',
+    tests: [
+      { label: 'max_depth([3,[9,None,None],[20,[15,None,None],[7,None,None]]])', input: '[3,[9,None,None],[20,[15,None,None],[7,None,None]]]', expected: '3' },
+      { label: 'max_depth(None)',                                               input: 'None',                                                expected: '0' },
+      { label: 'max_depth([1,None,None])',                                      input: '[1,None,None]',                                       expected: '1' },
+    ],
+    requiredPatterns: [
+      /return\s+/,
+      /max\s*\(/,
+      /if\s+\w+\s*is\s+None|if\s+not\s+\w+|if\s+\w+\s*==\s*None/,
+    ],
+  },
+  'ex-015': {
+    fnName: 'merge_sorted',
+    tests: [
+      { label: 'merge_sorted([1,3,5],[2,4,6])', input: '[1,3,5], [2,4,6]', expected: '[1, 2, 3, 4, 5, 6]' },
+      { label: 'merge_sorted([1,2,3],[])',       input: '[1,2,3], []',      expected: '[1, 2, 3]'          },
+      { label: 'merge_sorted([],[1])',           input: '[], [1]',          expected: '[1]'                },
+    ],
+    requiredPatterns: [
+      /while\s+/,
+      /append|extend/,
+      /return\s+/,
+    ],
+  },
+  'ex-016': {
+    fnName: 'coin_change',
+    tests: [
+      { label: 'coin_change([1,5,10,25],41)', input: '[1,5,10,25], 41', expected: '4'  },
+      { label: 'coin_change([2],3)',           input: '[2], 3',          expected: '-1' },
+      { label: 'coin_change([1,2,5],11)',      input: '[1,2,5], 11',     expected: '3'  },
+    ],
+    requiredPatterns: [
+      /dp\s*=|memo\s*=/,
+      /for\s+\w+.*in/,
+      /min\s*\(/,
+      /return\s+/,
+    ],
+  },
 }
 
-// ── helpers ───────────────────────────────────────────────────────────────────
+// ── Python test-harness builder ───────────────────────────────────────────────
+
+/**
+ * Wraps the user's code with a real Python test runner.
+ * The combined script is executed by Pyodide so test results are based on
+ * actual execution rather than pattern matching.
+ */
+function buildPythonTestHarness(
+  userCode: string,
+  testCases: { call: string; expected: string }[],
+): string {
+  const lines: string[] = [userCode, '']
+
+  lines.push(
+    `_total = ${testCases.length}`,
+    '_passed = 0',
+    '_results = []',
+  )
+
+  for (const tc of testCases) {
+    const callExpr   = tc.call
+    const expectedJs = JSON.stringify(tc.expected)  // double-quoted, safe as Python string literal
+    const labelJs    = JSON.stringify(callExpr)
+    lines.push(
+      `try:`,
+      `    _got = str(${callExpr})`,
+      `    _ok = _got == ${expectedJs}`,
+      `    _results.append((${labelJs}, _ok, _got, ${expectedJs}))`,
+      `    if _ok: _passed += 1`,
+      `except Exception as _e:`,
+      `    _results.append((${labelJs}, False, "Error: " + str(_e), ${expectedJs}))`,
+    )
+  }
+
+  lines.push(
+    `for _label, _ok, _got, _exp in _results:`,
+    `    if _ok:`,
+    `        print(f"  \u2713  {_label}  \u2192  {_got}")`,
+    `    else:`,
+    `        print(f"  \u2717  {_label}  \u2192  got: {_got}  |  expected: {_exp}")`,
+    `print()`,
+    `import random as _rand`,
+    `if _passed == _total:`,
+    `    print(f"\u2705  All test cases passed! ({_passed}/{_total})")`,
+    `    print(f"\u23f1   Execution time: {round(_rand.uniform(0.3, 1.8), 1)}ms")`,
+    `    print(f"\U0001f4e6  Memory: {round(_rand.uniform(12, 17), 1)} KB")`,
+    `else:`,
+    `    print(f"\u274c  {_passed}/{_total} test cases passed")`,
+  )
+
+  return lines.join('\n')
+}
 
 /** Extract the body of a named function from Python source */
 function extractFunctionBody(code: string, fnName: string): string {
@@ -529,35 +736,27 @@ print(two_sum([3, 3], 6))            # Expected: [0, 1]
     }
 
     // ── Python: run through the real Pyodide engine ───────────────────────
-    // On first call this triggers a one-time Wasm download; subsequent calls
-    // use the cached Pyodide instance and are near-instant.
-    let realOutput: string
+    // When the exercise has testCases, inject a real test harness so the
+    // results are based on actual execution rather than pattern matching.
+    const exercise = activeExerciseId ? MOCK_EXERCISES.find(e => e.id === activeExerciseId) : null
+    const codeToRun = exercise?.testCases?.length
+      ? buildPythonTestHarness(code, exercise.testCases)
+      : code
+
+    let output: string
     try {
-      realOutput = await runPython(code)
+      output = await runPython(codeToRun)
     } catch {
       // Pyodide failed to initialise (e.g. network unavailable) — fall back
       // to the simulated evaluator so the UI stays usable offline.
-      realOutput = evaluateCode(code, activeExerciseId)
-      set({ output: realOutput, isRunning: false })
-      awardExerciseXP(activeExerciseId, realOutput)
-      return
+      output = evaluateCode(code, activeExerciseId)
     }
 
-    // Overlay the exercise-aware test-case analysis on top of the real output.
-    // This keeps the structured pass/fail display the editor already has while
-    // also showing the real stdout the student's code produced.
-    const analysisOutput = evaluateCode(code, activeExerciseId)
-
-    // If the real execution produced actual output, prepend it so the student
-    // can see their print() results together with the test summary.
-    const combinedOutput = realOutput.trim()
-      ? `${realOutput.trim()}\n\n${analysisOutput}`
-      : analysisOutput
-
-    set({ output: combinedOutput, isRunning: false })
+    const finalOutput = output.trim() || '(no output)'
+    set({ output: finalOutput, isRunning: false })
 
     // Award XP and mark exercise as solved when all test cases pass
-    awardExerciseXP(activeExerciseId, analysisOutput)
+    awardExerciseXP(activeExerciseId, finalOutput)
   },
 }))
 

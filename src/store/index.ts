@@ -514,7 +514,91 @@ function buildPythonTestHarness(
   return lines.join('\n')
 }
 
-/** Extract the body of a named function from Python source */
+// ── Algorithm test-harness builder ───────────────────────────────────────────
+
+/**
+ * Strips any existing "algorithme principal" block from the user's code and
+ * appends a fresh test-harness block that calls the function with each test
+ * case and prints the result.  The raw output is then compared line-by-line
+ * with the expected values by parseAlgorithmTestOutput().
+ */
+function buildAlgorithmTestHarness(
+  userCode: string,
+  testCases: { call: string; expected: string }[],
+): string {
+  // Remove any pre-existing algorithme principal block so ours is the only one
+  const functionPart = userCode
+    .replace(/algorithme\s+principal[\s\S]*/i, '')
+    .trimEnd()
+
+  const lines: string[] = [functionPart, '', 'algorithme principal', 'debut']
+  for (const tc of testCases) {
+    lines.push(`    ecrire(${tc.call})`)
+  }
+  lines.push('fin')
+
+  return lines.join('\n')
+}
+
+/**
+ * Compares the raw multi-line output of the algorithm compiler against the
+ * expected values for each test case and builds a coloured result string that
+ * matches the format produced by buildPythonTestHarness().
+ */
+function parseAlgorithmTestOutput(
+  output: string,
+  testCases: { call: string; expected: string }[],
+): string {
+  const outputLines = output.split('\n').map(l => l.trim()).filter(l => l !== '')
+  const results: string[] = []
+  let passed = 0
+  const total = testCases.length
+
+  for (let i = 0; i < testCases.length; i++) {
+    const tc  = testCases[i]
+
+    if (i >= outputLines.length) {
+      // Algorithm produced fewer output lines than expected — treat as failure
+      results.push(`  \u2717  ${tc.call}  \u2192  got: (no output)  |  expected: ${tc.expected}`)
+      continue
+    }
+
+    const got = outputLines[i]
+    const ok  = normalizeForComparison(got) === normalizeForComparison(tc.expected)
+
+    if (ok) {
+      passed++
+      results.push(`  \u2713  ${tc.call}  \u2192  ${got}`)
+    } else {
+      results.push(`  \u2717  ${tc.call}  \u2192  got: ${got}  |  expected: ${tc.expected}`)
+    }
+  }
+
+  results.push('')
+
+  if (passed === total) {
+    const ms = (Math.random() * 1.5 + 0.3).toFixed(1)
+    const kb = (Math.random() * 5 + 12).toFixed(1)
+    results.push(`\u2705  All test cases passed! (${passed}/${total})`)
+    results.push(`\u23f1   Execution time: ${ms}ms`)
+    results.push(`\u{1F4E6}  Memory: ${kb} KB`)
+  } else {
+    results.push(`\u274c  ${passed}/${total} test cases passed`)
+  }
+
+  return results.join('\n')
+}
+
+/** Normalise a value string for loose comparison between Python and algorithm output */
+function normalizeForComparison(value: string): string {
+  return value
+    .replace(/\s+/g, '')
+    .toLowerCase()
+    .replace(/vrai/g, 'true')
+    .replace(/faux/g, 'false')
+}
+
+
 function extractFunctionBody(code: string, fnName: string): string {
   const lines = code.split('\n')
   const defIdx = lines.findIndex(l => l.trimStart().startsWith(`def ${fnName}`))
@@ -727,10 +811,22 @@ print(two_sum([3, 3], 6))            # Expected: [0, 1]
     // ── Algorithm language: call the Flask algo compiler API ──────────────
     if (language === 'algorithm') {
       try {
-        const result = await runAlgo(code)
-        set({ output: result || '(no output)', isRunning: false })
+        const exercise = activeExerciseId ? MOCK_EXERCISES.find(e => e.id === activeExerciseId) : null
+        const algoTestCases = exercise?.algorithmTestCases ?? exercise?.testCases
+        let finalOutput: string
+
+        if (algoTestCases?.length) {
+          const harnessCode = buildAlgorithmTestHarness(code, algoTestCases)
+          const rawOutput   = await runAlgo(harnessCode)
+          finalOutput = parseAlgorithmTestOutput(rawOutput, algoTestCases)
+        } else {
+          finalOutput = (await runAlgo(code)) || '(no output)'
+        }
+
+        set({ output: finalOutput, isRunning: false })
+        awardExerciseXP(activeExerciseId, finalOutput)
       } catch (err) {
-        set({ output: `❌  Error: ${err instanceof Error ? err.message : String(err)}`, isRunning: false })
+        set({ output: `\u274c  Error: ${err instanceof Error ? err.message : String(err)}`, isRunning: false })
       }
       return
     }

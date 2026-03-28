@@ -139,6 +139,7 @@ function OutputPanel({ output, isRunning }: { output: string; isRunning: boolean
 
 // ── Problem description panel ─────────────────────────────────────────────────
 function ExercisePanel({ exercise }: { exercise: typeof MOCK_EXERCISES[0] }) {
+  const { t } = useTranslation()
   return (
     <div className="h-full overflow-auto p-5">
       <div className="mb-5">
@@ -158,12 +159,12 @@ function ExercisePanel({ exercise }: { exercise: typeof MOCK_EXERCISES[0] }) {
 
       {exercise.examples && exercise.examples.length > 0 && (
         <>
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">Examples</h4>
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">{t('editor.examples')}</h4>
           <div className="space-y-2 mb-5">
             {exercise.examples.map((ex, i) => (
               <div key={i} className="p-3 rounded-xl bg-surface-900 border border-white/5 font-mono text-xs">
-                <div><span className="text-surface-500">Input: </span><span className="text-surface-300">{ex.input}</span></div>
-                <div><span className="text-surface-500">Output: </span><span className="text-emerald-400">{ex.output}</span></div>
+                <div><span className="text-surface-500">{t('editor.input')}: </span><span className="text-surface-300">{ex.input}</span></div>
+                <div><span className="text-surface-500">{t('editor.output')}: </span><span className="text-emerald-400">{ex.output}</span></div>
                 {ex.note && <div className="text-surface-600 mt-1"># {ex.note}</div>}
               </div>
             ))}
@@ -173,7 +174,7 @@ function ExercisePanel({ exercise }: { exercise: typeof MOCK_EXERCISES[0] }) {
 
       {exercise.constraints && exercise.constraints.length > 0 && (
         <>
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">Constraints</h4>
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">{t('editor.constraints')}</h4>
           <ul className="space-y-1.5 text-sm text-surface-400 mb-5">
             {exercise.constraints.map(c => (
               <li key={c} className="flex items-center gap-2">
@@ -187,7 +188,7 @@ function ExercisePanel({ exercise }: { exercise: typeof MOCK_EXERCISES[0] }) {
       {exercise.hint && (
         <div className="p-3.5 rounded-xl bg-amber-500/8 border border-amber-500/20">
           <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold mb-1.5">
-            <Lightbulb size={13} /> Hint
+            <Lightbulb size={13} /> {t('editor.hint')}
           </div>
           <p className="text-surface-300 text-xs leading-relaxed">
             {exercise.hint}
@@ -203,6 +204,7 @@ export default function CodeEditorPage() {
   const [searchParams] = useSearchParams()
   const navigate       = useNavigate()
   const exerciseId     = searchParams.get('exercise') || 'ex-001'
+  const { t }          = useTranslation()
 
   const { code, output, isRunning, language, setCode, setLanguage, runCode, setActiveExercise } = useEditorStore()
   const exercise = MOCK_EXERCISES.find(e => e.id === exerciseId) ?? MOCK_EXERCISES[0]
@@ -273,15 +275,15 @@ export default function CodeEditorPage() {
           <button
             onClick={() => navigate('/sandbox')}
             className="btn-ghost py-1.5 px-3 text-xs"
-            title="Open Free Coding Sandbox"
+            title={t('editor.freeMode')}
           >
-            <ExternalLink size={13} /> Free Mode
+            <ExternalLink size={13} /> {t('editor.freeMode')}
           </button>
           <button
             onClick={() => setCode(exercise.starterCode)}
             className="btn-ghost py-1.5 px-3 text-xs"
           >
-            <RotateCcw size={13} /> Reset
+            <RotateCcw size={13} /> {t('editor.reset')}
           </button>
           <button
             onClick={() => runCode()}
@@ -289,8 +291,8 @@ export default function CodeEditorPage() {
             className={cn('btn-primary py-1.5 px-4 text-sm', isRunning && 'opacity-70 cursor-not-allowed')}
           >
             {isRunning
-              ? <><Loader2 size={14} className="animate-spin" /> Running…</>
-              : <><Play size={14} /> Run Code</>
+              ? <><Loader2 size={14} className="animate-spin" /> {t('editor.running')}</>
+              : <><Play size={14} /> {t('editor.run')}</>
             }
           </button>
         </div>

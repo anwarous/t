@@ -56,9 +56,18 @@
     },
     "howItWorks": {
       "title": "How it works",
-      "step1": { "title": "Choose a Topic", "desc": "Browse courses on sorting, graphs, DP, and more. Structured paths for every level." },
-      "step2": { "title": "Learn & Visualize", "desc": "Watch algorithms come alive. Pause at any step, adjust speed, and see the data change." },
-      "step3": { "title": "Practice & Earn", "desc": "Solve exercises, earn XP, unlock badges, and track your progress over time." }
+      "step1": {
+        "title": "Choose a Topic",
+        "desc": "Browse courses on sorting, graphs, DP, and more. Structured paths for every level."
+      },
+      "step2": {
+        "title": "Learn & Visualize",
+        "desc": "Watch algorithms come alive. Pause at any step, adjust speed, and see the data change."
+      },
+      "step3": {
+        "title": "Practice & Earn",
+        "desc": "Solve exercises, earn XP, unlock badges, and track your progress over time."
+      }
     },
     "cta": {
       "title": "Ready to level up",
@@ -69,7 +78,32 @@
     },
     "footer": {
       "tagline": "Master algorithms, one step at a time.",
-      "rights": "All rights reserved."
+      "rights": "All rights reserved.",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact"
+    },
+    "trust": {
+      "noCard": "No credit card",
+      "languages": "Python & more",
+      "free": "Free forever"
+    },
+    "reviews": {
+      "r1": {
+        "quote": "The visualizer completely changed how I understand recursion. I went from confused to confident in a week.",
+        "name": "Priya M.",
+        "role": "CS Student"
+      },
+      "r2": {
+        "quote": "The AI mentor caught a subtle bug in my merge sort that I'd been staring at for hours. Game changer.",
+        "name": "Marcus J.",
+        "role": "Software Engineer"
+      },
+      "r3": {
+        "quote": "Gamification keeps me coming back daily. 21-day streak and I've solved more problems than the entire last year.",
+        "name": "Sarah K.",
+        "role": "Bootcamp Graduate"
+      }
     }
   },
   "dashboard": {
@@ -94,7 +128,22 @@
     "startExercise": "Start",
     "resumeCourse": "Resume",
     "progress": "{{pct}}% complete",
-    "lessonsLeft": "{{count}} lessons left"
+    "lessonsLeft": "{{count}} lessons left",
+    "goodMorning": "Good morning 👋",
+    "leaderboardRank": "Leaderboard Rank",
+    "quickAccess": "Quick Access",
+    "codeEditorLabel": "Code Editor",
+    "visualizerLabel": "Visualizer",
+    "aiMentorLabel": "AI Mentor",
+    "yourProgress": "Your Progress",
+    "dayStreak": "day streak 🔥",
+    "levelProgress": "Level {{level}} progress",
+    "allCoursesLink": "All courses",
+    "allProblemsLink": "All problems",
+    "earnedCount": "{{count}} earned",
+    "solve": "Solve",
+    "continueBtn": "Continue",
+    "xpOf": "{{xp}} / {{max}} XP"
   },
   "learn": {
     "title": "Courses",
@@ -191,6 +240,36 @@
       "insertion": "Insertion Sort",
       "merge": "Merge Sort",
       "quick": "Quick Sort"
+    },
+    "algorithmLabel": "Algorithm",
+    "randomize": "Randomize",
+    "slow": "Slow",
+    "fast": "Fast",
+    "complexityLabel": "Complexity",
+    "timeLabel": "Time",
+    "spaceLabel": "Space",
+    "legend": {
+      "unsorted": "Unsorted",
+      "comparing": "Comparing",
+      "swapping": "Swapping",
+      "sorted": "Sorted"
+    },
+    "statusPlaying": "▶ Playing",
+    "statusPaused": "⏸ Paused",
+    "statusDone": "✓ Done",
+    "statusReady": "Ready",
+    "hintPlaying": "Click Pause anytime · Adjust speed while running",
+    "hintDone": "Click ↺ to replay with a new random array",
+    "hintIdle": "Click ▶ to run · or step through manually with ‹ ›",
+    "pressPlay": "Press Play to start the visualization",
+    "stats": {
+      "totalSteps": "Total Steps",
+      "currentStep": "Current Step",
+      "progressLabel": "Progress"
+    },
+    "desc": {
+      "bubble": "Repeatedly swaps adjacent elements that are out of order. Simple but slow on large inputs.",
+      "selection": "Finds the minimum element each pass and places it at the front. Fewer swaps than bubble sort."
     }
   },
   "mentor": {
@@ -210,6 +289,8 @@
   "profile": {
     "title": "Profile",
     "tabs": {
+      "profile": "Profile",
+      "achievements": "Achievements",
       "overview": "Overview",
       "badges": "Badges",
       "settings": "Settings",
@@ -219,7 +300,8 @@
       "xp": "Total XP",
       "streak": "Day Streak",
       "solved": "Problems Solved",
-      "rank": "Rank"
+      "rank": "Rank",
+      "level": "Level"
     },
     "badges": {
       "title": "Badges",
@@ -245,7 +327,45 @@
       "dark": "Dark",
       "light": "Light"
     },
-    "joinedAt": "Member since {{date}}"
+    "joinedAt": "Member since {{date}}",
+    "myProfileTitle": "My Profile",
+    "subtitle": "Manage your account, track achievements, and customize preferences",
+    "globalRank": "Global rank",
+    "editProfile": "Edit Profile",
+    "displayName": "Display Name",
+    "email": "Email",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell us about yourself...",
+    "namePlaceholder": "Your name",
+    "preferredLanguage": "Preferred Language",
+    "saveChanges": "Save Changes",
+    "saved": "Saved!",
+    "appearance": "Appearance",
+    "themeMode": "{{theme}} mode",
+    "editorFontSize": "Editor font size",
+    "passwordSecurity": "Password & Security",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "minEightChars": "Min. 8 characters",
+    "repeatPassword": "Repeat new password",
+    "updatePassword": "Update Password",
+    "dangerZone": "Danger Zone",
+    "dangerDesc": "These actions are permanent and cannot be undone.",
+    "resetProgress": "Reset Progress",
+    "deleteAccount": "Delete Account",
+    "recentNotifications": "Recent Notifications",
+    "notifPreferences": "Notification Preferences",
+    "notifs": {
+      "streakTitle": "Streak Reminders",
+      "streakDesc": "Daily nudge to keep your streak alive",
+      "challengesTitle": "New Challenges",
+      "challengesDesc": "Get notified when new exercises are added",
+      "mentorTitle": "AI Mentor Replies",
+      "mentorDesc": "When your AI Mentor has something to say",
+      "reportTitle": "Weekly Progress Report",
+      "reportDesc": "Summary of your week sent every Sunday"
+    }
   },
   "common": {
     "loading": "Loading…",
@@ -268,5 +388,49 @@
     "hard": "Hard",
     "xp": "XP",
     "min": "min"
+  },
+  "signin": {
+    "title": "Welcome back",
+    "subtitle": "Sign in to continue learning",
+    "usernameOrEmail": "Username or Email",
+    "password": "Password",
+    "submit": "Sign In",
+    "loading": "Signing in…",
+    "or": "or",
+    "noAccount": "Don't have an account?",
+    "createFree": "Create one free",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "features": {
+      "algorithms": "50+ algorithms",
+      "mentor": "AI mentor",
+      "free": "Free forever"
+    },
+    "failed": "Sign in failed. Please try again."
+  },
+  "signup": {
+    "title": "Create your account",
+    "subtitle": "Start your algorithm journey today — free forever",
+    "displayName": "Display Name",
+    "optional": "(optional)",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "minChars": "(min 6 chars)",
+    "submit": "Create Account",
+    "loading": "Creating account…",
+    "perks": {
+      "free": "Free forever — no credit card required",
+      "access": "Access 50+ algorithms & visualizations",
+      "mentor": "AI-powered mentor included"
+    },
+    "hasAccount": "already have an account?",
+    "signIn": "Sign In Instead",
+    "failed": "Registration failed. Please try again."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "desc": "This page doesn't exist yet — but many algorithms await you on the other side.",
+    "goBack": "Go back"
   }
 }

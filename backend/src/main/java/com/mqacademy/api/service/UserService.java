@@ -40,15 +40,16 @@ public class UserService {
     }
 
     @Transactional
-    public void addXp(String username, int xpAmount) {
+    public User addXp(String username, int xpAmount) {
         User user = findByUsername(username);
         int newXp = user.getXp() + xpAmount;
         user.setXp(newXp);
         user.setLevel(calculateLevel(newXp));
         user.setRank(calculateRank(newXp));
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
+    @Transactional
     public List<UserBadgeDto> getBadges(String username) {
         User user = findByUsername(username);
         return userBadgeRepository.findByUser(user).stream()

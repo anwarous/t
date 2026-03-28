@@ -43,6 +43,8 @@ export interface Exercise {
   xp: number
   description: string
   starterCode: string
+  algorithmStarterCode?: string
+  algorithmTestCases?: { call: string; expected: string }[]
   solution: string
   examples?: { input: string; output: string; note?: string }[]
   constraints?: string[]
@@ -409,6 +411,19 @@ print(two_sum([3, 3], 6))            # Expected: [0, 1]
       { call: 'two_sum([3, 2, 4], 6)',        expected: '[1, 2]' },
       { call: 'two_sum([3, 3], 6)',            expected: '[0, 1]' },
     ],
+    algorithmStarterCode: `fonction two_sum(nums : tableau, target : entier) : tableau
+debut
+    // Votre solution ici
+    retourner []
+fin
+
+algorithme principal
+debut
+    ecrire(two_sum([2, 7, 11, 15], 9))   // Attendu: [0, 1]
+    ecrire(two_sum([3, 2, 4], 6))         // Attendu: [1, 2]
+    ecrire(two_sum([3, 3], 6))            // Attendu: [0, 1]
+fin
+`,
   },
   {
     id: 'ex-002',
@@ -460,6 +475,20 @@ print(bubble_sort([5, 4, 3, 2, 1]))
       { call: 'bubble_sort([5, 4, 3, 2, 1])',               expected: '[1, 2, 3, 4, 5]' },
       { call: 'bubble_sort([1])',                            expected: '[1]' },
     ],
+    algorithmStarterCode: `fonction bubble_sort(arr : tableau) : tableau
+debut
+    // Votre solution ici
+    retourner arr
+fin
+
+algorithme principal
+debut
+    ecrire(bubble_sort([64, 34, 25, 12, 22, 11, 90]))
+    // Attendu: [11, 12, 22, 25, 34, 64, 90]
+    ecrire(bubble_sort([5, 4, 3, 2, 1]))
+    // Attendu: [1, 2, 3, 4, 5]
+fin
+`,
   },
   {
     id: 'ex-003',
@@ -511,6 +540,19 @@ print(binary_search([-1, 0, 3, 5, 9, 12], 2))   # Expected: -1
       { call: 'binary_search([-1, 0, 3, 5, 9, 12], 2)', expected: '-1' },
       { call: 'binary_search([5], 5)',                   expected: '0'  },
     ],
+    algorithmStarterCode: `fonction binary_search(nums : tableau, target : entier) : entier
+debut
+    // Votre solution ici
+    retourner -1
+fin
+
+algorithme principal
+debut
+    ecrire(binary_search([-1, 0, 3, 5, 9, 12], 9))   // Attendu: 4
+    ecrire(binary_search([-1, 0, 3, 5, 9, 12], 2))   // Attendu: -1
+    ecrire(binary_search([5], 5))                      // Attendu: 0
+fin
+`,
   },
   {
     id: 'ex-004',
@@ -566,6 +608,26 @@ print(is_valid("{[]}"))        # True
       { call: 'is_valid("(]")',     expected: 'False' },
       { call: 'is_valid("([)]")',   expected: 'False' },
     ],
+    algorithmStarterCode: `fonction is_valid(s : chaine) : booleen
+debut
+    // Votre solution ici
+    retourner faux
+fin
+
+algorithme principal
+debut
+    ecrire(is_valid("()"))       // Attendu: vrai
+    ecrire(is_valid("()[]{}"))   // Attendu: vrai
+    ecrire(is_valid("(]"))       // Attendu: faux
+    ecrire(is_valid("([)]"))     // Attendu: faux
+fin
+`,
+    algorithmTestCases: [
+      { call: 'is_valid("()")',     expected: 'vrai' },
+      { call: 'is_valid("()[]{}")', expected: 'vrai' },
+      { call: 'is_valid("(]")',     expected: 'faux' },
+      { call: 'is_valid("([)]")',   expected: 'faux' },
+    ],
   },
   // ── New exercises ─────────────────────────────────────────────────────────
   {
@@ -607,6 +669,22 @@ print(reverse_string(""))         # Expected: ""
       { call: "reverse_string('hello')",  expected: 'olleh'  },
       { call: "reverse_string('Hannah')", expected: 'hannaH' },
       { call: "reverse_string('')",       expected: ''       },
+    ],
+    algorithmStarterCode: `fonction reverse_string(s : chaine) : chaine
+debut
+    // Votre solution ici
+    retourner ""
+fin
+
+algorithme principal
+debut
+    ecrire(reverse_string("hello"))    // Attendu: olleh
+    ecrire(reverse_string("Hannah"))   // Attendu: hannaH
+fin
+`,
+    algorithmTestCases: [
+      { call: 'reverse_string("hello")',  expected: 'olleh'  },
+      { call: 'reverse_string("Hannah")', expected: 'hannaH' },
     ],
   },
   {
@@ -650,6 +728,26 @@ print(is_palindrome("Was it a car or a cat I saw?"))    # True
       { call: "is_palindrome('A man, a plan, a canal: Panama')", expected: 'True'  },
       { call: "is_palindrome('race a car')",                     expected: 'False' },
       { call: "is_palindrome('Was it a car or a cat I saw?')",   expected: 'True'  },
+    ],
+    algorithmStarterCode: `fonction is_palindrome(s : chaine) : booleen
+debut
+    // Votre solution ici
+    // Nettoyer la chaine : garder uniquement les caracteres alphanumeriques, en minuscules
+    // Verifier si elle est egale a son inverse
+    retourner faux
+fin
+
+algorithme principal
+debut
+    ecrire(is_palindrome("racecar"))   // Attendu: vrai
+    ecrire(is_palindrome("hello"))     // Attendu: faux
+    ecrire(is_palindrome("niveau"))    // Attendu: vrai
+fin
+`,
+    algorithmTestCases: [
+      { call: 'is_palindrome("racecar")', expected: 'vrai' },
+      { call: 'is_palindrome("hello")',   expected: 'faux' },
+      { call: 'is_palindrome("niveau")',  expected: 'vrai' },
     ],
   },
   {
@@ -701,6 +799,21 @@ print(fizz_buzz(15))
       { call: 'fizz_buzz(3)',  expected: "['1', '2', 'Fizz']"              },
       { call: 'fizz_buzz(15)', expected: "['1', '2', 'Fizz', '4', 'Buzz', 'Fizz', '7', '8', 'Fizz', 'Buzz', '11', 'Fizz', '13', '14', 'FizzBuzz']" },
     ],
+    algorithmStarterCode: `procedure fizz_buzz(n : entier)
+debut
+    // Pour chaque nombre de 1 a n :
+    // - multiple de 15 : ecrire "FizzBuzz"
+    // - multiple de 3  : ecrire "Fizz"
+    // - multiple de 5  : ecrire "Buzz"
+    // - sinon          : ecrire le nombre
+fin
+
+algorithme principal
+debut
+    fizz_buzz(5)
+    // Attendu: 1 2 Fizz 4 Buzz (une valeur par ligne)
+fin
+`,
   },
   {
     id: 'ex-008',
@@ -747,6 +860,20 @@ print(max_subarray([5, 4, -1, 7, 8]))                    # Expected: 23
       { call: 'max_subarray([5, 4, -1, 7, 8])',                 expected: '23' },
       { call: 'max_subarray([1])',                               expected: '1'  },
     ],
+    algorithmStarterCode: `fonction max_subarray(nums : tableau) : entier
+debut
+    // Algorithme de Kadane :
+    // A chaque position, choisir entre etendre le sous-tableau precedent ou repartir de zero
+    retourner 0
+fin
+
+algorithme principal
+debut
+    ecrire(max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))  // Attendu: 6
+    ecrire(max_subarray([5, 4, -1, 7, 8]))                   // Attendu: 23
+    ecrire(max_subarray([1]))                                 // Attendu: 1
+fin
+`,
   },
   {
     id: 'ex-009',
@@ -789,6 +916,20 @@ print(count_duplicates([1, 2, 3]))             # Expected: 0
       { call: 'count_duplicates([1, 1, 1, 1])',        expected: '1' },
       { call: 'count_duplicates([1, 2, 3])',            expected: '0' },
     ],
+    algorithmStarterCode: `fonction count_duplicates(nums : tableau) : entier
+debut
+    // Compter les elements qui apparaissent plus d'une fois
+    // Utiliser un tableau de comptage ou une autre structure
+    retourner 0
+fin
+
+algorithme principal
+debut
+    ecrire(count_duplicates([1, 2, 3, 2, 4, 3]))   // Attendu: 2
+    ecrire(count_duplicates([1, 1, 1, 1]))           // Attendu: 1
+    ecrire(count_duplicates([1, 2, 3]))              // Attendu: 0
+fin
+`,
   },
   {
     id: 'ex-010',
@@ -842,6 +983,21 @@ print(fib(30))  # Expected: 832040
       { call: 'fib(1)',  expected: '1'      },
       { call: 'fib(30)', expected: '832040' },
     ],
+    algorithmStarterCode: `fonction fib(n : entier) : entier
+debut
+    // Calculer le n-ieme nombre de Fibonacci avec memorisation
+    // fib(0) = 0, fib(1) = 1, fib(n) = fib(n-1) + fib(n-2)
+    retourner 0
+fin
+
+algorithme principal
+debut
+    ecrire(fib(10))   // Attendu: 55
+    ecrire(fib(0))    // Attendu: 0
+    ecrire(fib(1))    // Attendu: 1
+    ecrire(fib(30))   // Attendu: 832040
+fin
+`,
   },
   {
     id: 'ex-011',
@@ -891,6 +1047,25 @@ print(longest_common_prefix(["abc"]))                      # Expected: "abc"
       { call: "longest_common_prefix(['dog', 'racecar', 'car'])",         expected: ''      },
       { call: "longest_common_prefix(['interview', 'inter', 'interact'])", expected: 'inter' },
     ],
+    algorithmStarterCode: `fonction longest_common_prefix(strs : tableau) : chaine
+debut
+    // Trouver le plus long prefixe commun a tous les elements
+    // Commencer par le premier element et raccourcir jusqu'a ce que tous commencent par ce prefixe
+    retourner ""
+fin
+
+algorithme principal
+debut
+    ecrire(longest_common_prefix(["flower", "flow", "flight"]))        // Attendu: fl
+    ecrire(longest_common_prefix(["dog", "racecar", "car"]))           // Attendu: (vide)
+    ecrire(longest_common_prefix(["interview", "inter", "interact"]))  // Attendu: inter
+fin
+`,
+    algorithmTestCases: [
+      { call: 'longest_common_prefix(["flower", "flow", "flight"])',       expected: 'fl'    },
+      { call: 'longest_common_prefix(["dog", "racecar", "car"])',          expected: ''      },
+      { call: 'longest_common_prefix(["interview", "inter", "interact"])', expected: 'inter' },
+    ],
   },
   {
     id: 'ex-012',
@@ -939,6 +1114,20 @@ print(climb_stairs(10))  # Expected: 89
       { call: 'climb_stairs(3)', expected: '3' },
       { call: 'climb_stairs(5)', expected: '8' },
     ],
+    algorithmStarterCode: `fonction climb_stairs(n : entier) : entier
+debut
+    // Compter le nombre de facons de monter n marches (1 ou 2 marches a la fois)
+    // Remarque : ways(n) = ways(n-1) + ways(n-2) (suite de Fibonacci)
+    retourner 0
+fin
+
+algorithme principal
+debut
+    ecrire(climb_stairs(2))   // Attendu: 2
+    ecrire(climb_stairs(3))   // Attendu: 3
+    ecrire(climb_stairs(5))   // Attendu: 8
+fin
+`,
   },
   {
     id: 'ex-013',
@@ -984,6 +1173,19 @@ print(reverse_list([]))               # Expected: []
       { call: 'reverse_list([1, 2])',           expected: '[2, 1]'          },
       { call: 'reverse_list([])',               expected: '[]'              },
     ],
+    algorithmStarterCode: `fonction reverse_list(lst : tableau) : tableau
+debut
+    // Inverser le tableau en utilisant des pointeurs precedent/courant
+    // Ne pas utiliser de tranche ou de tableau inverse directement
+    retourner []
+fin
+
+algorithme principal
+debut
+    ecrire(reverse_list([1, 2, 3, 4, 5]))   // Attendu: [5, 4, 3, 2, 1]
+    ecrire(reverse_list([1, 2]))             // Attendu: [2, 1]
+fin
+`,
   },
   {
     id: 'ex-014',
@@ -1031,6 +1233,28 @@ print(max_depth([1, None, [2, None, None]]))  # Expected: 2
       { call: 'max_depth([3, [9, None, None], [20, [15, None, None], [7, None, None]]])', expected: '3' },
       { call: 'max_depth(None)',                                                          expected: '0' },
       { call: 'max_depth([1, None, None])',                                               expected: '1' },
+    ],
+    algorithmStarterCode: `fonction max_depth(arbre : tableau) : entier
+debut
+    // Trouver la profondeur maximale de l'arbre binaire
+    // Format : [valeur, sous_arbre_gauche, sous_arbre_droit]
+    // Un sous-arbre vide est represente par 0 ou un tableau vide
+    // profondeur = 1 + max(profondeur_gauche, profondeur_droite)
+    retourner 0
+fin
+
+algorithme principal
+debut
+    // Arbre : [3, [9, [], []], [20, [15, [], []], [7, [], []]]]
+    ecrire(max_depth([3, [9, [], []], [20, [15, [], []], [7, [], []]]]))  // Attendu: 3
+    ecrire(max_depth([]))                                                  // Attendu: 0
+    ecrire(max_depth([1, [], []]))                                         // Attendu: 1
+fin
+`,
+    algorithmTestCases: [
+      { call: 'max_depth([3, [9, [], []], [20, [15, [], []], [7, [], []]]])', expected: '3' },
+      { call: 'max_depth([])',                                                expected: '0' },
+      { call: 'max_depth([1, [], []])',                                       expected: '1' },
     ],
   },
   {
@@ -1084,6 +1308,20 @@ print(merge_sorted([], [1]))                   # Expected: [1]
       { call: 'merge_sorted([1, 2, 3], [])',         expected: '[1, 2, 3]'          },
       { call: 'merge_sorted([], [1])',               expected: '[1]'                },
     ],
+    algorithmStarterCode: `fonction merge_sorted(nums1 : tableau, nums2 : tableau) : tableau
+debut
+    // Fusionner deux tableaux tries en un seul tableau trie
+    // Utiliser deux pointeurs i et j, choisir le plus petit element a chaque etape
+    retourner []
+fin
+
+algorithme principal
+debut
+    ecrire(merge_sorted([1, 3, 5], [2, 4, 6]))   // Attendu: [1, 2, 3, 4, 5, 6]
+    ecrire(merge_sorted([1, 2, 3], []))           // Attendu: [1, 2, 3]
+    ecrire(merge_sorted([], [1]))                 // Attendu: [1]
+fin
+`,
   },
   {
     id: 'ex-016',
@@ -1133,6 +1371,21 @@ print(coin_change([1, 2, 5], 11))       # Expected: 3  (5+5+1)
       { call: 'coin_change([2], 3)',              expected: '-1' },
       { call: 'coin_change([1, 2, 5], 11)',       expected: '3'  },
     ],
+    algorithmStarterCode: `fonction coin_change(coins : tableau, amount : entier) : entier
+debut
+    // Programmation dynamique : dp[i] = nombre minimum de pieces pour le montant i
+    // Pour chaque montant, essayer toutes les pieces et prendre le minimum
+    // Retourner -1 si impossible
+    retourner -1
+fin
+
+algorithme principal
+debut
+    ecrire(coin_change([1, 5, 10, 25], 41))   // Attendu: 4  (25+10+5+1)
+    ecrire(coin_change([2], 3))                // Attendu: -1
+    ecrire(coin_change([1, 2, 5], 11))         // Attendu: 3  (5+5+1)
+fin
+`,
   },
 ]
 

@@ -219,7 +219,10 @@ export default function CodeEditorPage() {
   // Load starter code when exercise changes
   useEffect(() => {
     setActiveExercise(exerciseId)
-    setCode(exercise.starterCode)
+    const starter = language === 'algorithm' && exercise.algorithmStarterCode
+      ? exercise.algorithmStarterCode
+      : exercise.starterCode
+    setCode(starter)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exerciseId])
 
@@ -269,7 +272,14 @@ export default function CodeEditorPage() {
         <div className="flex items-center gap-2 flex-shrink-0">
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value)}
+            onChange={(e) => {
+              const newLang = e.target.value
+              setLanguage(newLang)
+              const starter = newLang === 'algorithm' && exercise.algorithmStarterCode
+                ? exercise.algorithmStarterCode
+                : exercise.starterCode
+              setCode(starter)
+            }}
             className="px-3 py-1.5 rounded-lg bg-surface-800 border border-white/8 text-sm text-surface-300 outline-none cursor-pointer"
           >
             <option value="python">Python</option>
@@ -283,7 +293,12 @@ export default function CodeEditorPage() {
             <ExternalLink size={13} /> {t('editor.freeMode')}
           </button>
           <button
-            onClick={() => setCode(exercise.starterCode)}
+            onClick={() => {
+              const starter = language === 'algorithm' && exercise.algorithmStarterCode
+                ? exercise.algorithmStarterCode
+                : exercise.starterCode
+              setCode(starter)
+            }}
             className="btn-ghost py-1.5 px-3 text-xs"
           >
             <RotateCcw size={13} /> {t('editor.reset')}

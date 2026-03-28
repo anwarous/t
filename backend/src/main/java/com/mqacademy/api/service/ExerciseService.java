@@ -69,7 +69,7 @@ public class ExerciseService {
         submissionRepository.save(submission);
 
         if (passed) {
-            userService.addXp(username, xpEarned);
+            user = userService.addXp(username, xpEarned);
             user.setTotalSolved((int) submissionRepository.countByUserAndPassedTrue(user));
             userRepository.save(user);
         }

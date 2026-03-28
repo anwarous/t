@@ -7,6 +7,7 @@ import { runAlgo } from '@/lib/algoCompiler'
 
 const TOKEN_KEY = 'mqa_token'
 const USER_KEY = 'mqa_user'
+const profileKey = (username: string) => `mqa_profile_${username}`
 
 interface AuthState {
   token: string | null
@@ -33,11 +34,14 @@ export const useAuthStore = create<AuthState>((set) => {
       localStorage.setItem(TOKEN_KEY, token)
       localStorage.setItem(USER_KEY, JSON.stringify(user))
       set({ token, isAuthenticated: true, authUser: user })
+      // Load (or create fresh) the user's progress profile
+      useUserStore.getState().initUser(user.username, user.displayName, user.email)
     },
     clearAuth: () => {
       localStorage.removeItem(TOKEN_KEY)
       localStorage.removeItem(USER_KEY)
       set({ token: null, isAuthenticated: false, authUser: null })
+      useUserStore.getState().resetUser()
     },
   }
 })
@@ -56,52 +60,136 @@ type UserProfile = typeof MOCK_USER & {
   }
 }
 
-const DEFAULT_USER: UserProfile = {
+function makeAvatar(name: string): string {
+  return name.split(' ').filter((n) => n).map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+}
+
+const GUEST_USER: UserProfile = {
   ...MOCK_USER,
-  bio: 'Passionate about algorithms and problem solving. Currently mastering dynamic programming!',
+  bio: '',
   language: 'Python',
   theme: 'dark',
-  notifications: {
-    streakReminders: true,
-    newChallenges: true,
-    mentorReplies: true,
-    weeklyReport: false,
-  },
+  notifications: { streakReminders: true, newChallenges: true, mentorReplies: true, weeklyReport: false },
+}
+
+function freshProfile(username: string, displayName: string, email: string): UserProfile {
+  const name = (displayName || username).trim()
+  return {
+    id: `usr_${username}`,
+    name,
+    email,
+    avatar: makeAvatar(name),
+    xp: 0,
+    level: 1,
+    streak: 0,
+    totalSolved: 0,
+    rank: 'Novice',
+    joinedAt: new Date().toISOString().slice(0, 10),
+    bio: '',
+    language: 'Python',
+    theme: 'dark',
+    notifications: {
+      streakReminders: true,
+      newChallenges: true,
+      mentorReplies: true,
+      weeklyReport: false,
+    },
+  }
+}
+
+function loadProfile(username: string): UserProfile | null {
+  try {
+    const raw = localStorage.getItem(profileKey(username))
+    return raw ? (JSON.parse(raw) as UserProfile) : null
+  } catch {
+    return null
+  }
+}
+
+function saveProfile(username: string, profile: UserProfile): void {
+  localStorage.setItem(profileKey(username), JSON.stringify(profile))
+}
+
+// Resolve the initial profile on app boot (when user is already logged in)
+function resolveInitialProfile(): { user: UserProfile; currentUsername: string | null } {
+  try {
+    const raw = localStorage.getItem(USER_KEY)
+    if (raw) {
+      const authUser = JSON.parse(raw) as { username: string; displayName: string; email: string }
+      const saved = loadProfile(authUser.username)
+      if (saved) return { user: saved, currentUsername: authUser.username }
+      const fresh = freshProfile(authUser.username, authUser.displayName, authUser.email)
+      saveProfile(authUser.username, fresh)
+      return { user: fresh, currentUsername: authUser.username }
+    }
+  } catch { /* fall through */ }
+  return { user: { ...GUEST_USER }, currentUsername: null }
 }
 
 interface UserState {
   user: UserProfile
+  currentUsername: string | null
   badges: Badge[]
   addXP: (amount: number) => void
   incrementStreak: () => void
   updateProfile: (patch: Partial<Pick<UserProfile, 'name' | 'email' | 'bio' | 'language'>>) => void
   updateNotifications: (patch: Partial<UserProfile['notifications']>) => void
   updateTheme: (theme: string) => void
+  initUser: (username: string, displayName: string, email: string) => void
+  resetUser: () => void
 }
 
+const { user: initialUser, currentUsername: initialUsername } = resolveInitialProfile()
+
 export const useUserStore = create<UserState>((set) => ({
-  user: DEFAULT_USER,
+  user: initialUser,
+  currentUsername: initialUsername,
   badges: MOCK_BADGES,
   addXP: (amount) =>
-    set((s) => ({ user: { ...s.user, xp: s.user.xp + amount } })),
+    set((s) => {
+      const user = { ...s.user, xp: s.user.xp + amount }
+      if (s.currentUsername) saveProfile(s.currentUsername, user)
+      return { user }
+    }),
   incrementStreak: () =>
-    set((s) => ({ user: { ...s.user, streak: s.user.streak + 1 } })),
+    set((s) => {
+      const user = { ...s.user, streak: s.user.streak + 1 }
+      if (s.currentUsername) saveProfile(s.currentUsername, user)
+      return { user }
+    }),
   updateProfile: (patch) =>
-    set((s) => ({
-      user: {
+    set((s) => {
+      const user = {
         ...s.user,
         ...patch,
         avatar: patch.name
-          ? patch.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
+          ? makeAvatar(patch.name)
           : s.user.avatar,
-      },
-    })),
+      }
+      if (s.currentUsername) saveProfile(s.currentUsername, user)
+      return { user }
+    }),
   updateNotifications: (patch) =>
-    set((s) => ({
-      user: { ...s.user, notifications: { ...s.user.notifications, ...patch } },
-    })),
+    set((s) => {
+      const user = { ...s.user, notifications: { ...s.user.notifications, ...patch } }
+      if (s.currentUsername) saveProfile(s.currentUsername, user)
+      return { user }
+    }),
   updateTheme: (theme) =>
-    set((s) => ({ user: { ...s.user, theme } })),
+    set((s) => {
+      const user = { ...s.user, theme }
+      if (s.currentUsername) saveProfile(s.currentUsername, user)
+      return { user }
+    }),
+  initUser: (username, displayName, email) => {
+    const saved = loadProfile(username)
+    const user = saved ?? freshProfile(username, displayName, email)
+    if (!saved) saveProfile(username, user)
+    set({ user, currentUsername: username })
+  },
+  resetUser: () => {
+    set({ user: { ...GUEST_USER }, currentUsername: null })
+  },
 }))
 
 // ─── Code Evaluation Engine ───────────────────────────────────────────────────

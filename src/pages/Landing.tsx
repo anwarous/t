@@ -97,7 +97,7 @@ export default function Landing() {
 
           {/* Trust line */}
           <motion.div variants={fadeUp} custom={4} className="mt-10 flex items-center justify-center gap-6 text-sm text-surface-500">
-            {['No credit card', 'Python & more', 'Free forever'].map((item) => (
+            {[t('landing.trust.noCard'), t('landing.trust.languages'), t('landing.trust.free')].map((item) => (
               <span key={item} className="flex items-center gap-1.5">
                 <CheckCircle size={13} className="text-accent-green" />
                 {item}
@@ -234,22 +234,16 @@ export default function Landing() {
       <section className="py-20 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-3 gap-5">
-            {[
-              {
-                quote: "The visualizer completely changed how I understand recursion. I went from confused to confident in a week.",
-                name: 'Priya M.', role: 'CS Student', stars: 5,
-              },
-              {
-                quote: "The AI mentor caught a subtle bug in my merge sort that I'd been staring at for hours. Game changer.",
-                name: 'Marcus J.', role: 'Software Engineer', stars: 5,
-              },
-              {
-                quote: "Gamification keeps me coming back daily. 21-day streak and I've solved more problems than the entire last year.",
-                name: 'Sarah K.', role: 'Bootcamp Graduate', stars: 5,
-              },
-            ].map((review, i) => (
+            {(['r1', 'r2', 'r3'] as const).map((key, i) => {
+              const review = {
+                quote: t(`landing.reviews.${key}.quote`),
+                name: t(`landing.reviews.${key}.name`),
+                role: t(`landing.reviews.${key}.role`),
+                stars: 5,
+              }
+              return (
               <motion.div
-                key={i}
+                key={key}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -272,7 +266,8 @@ export default function Landing() {
                   </div>
                 </div>
               </motion.div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>

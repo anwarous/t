@@ -174,7 +174,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold flex items-center gap-2">
                   <TrendingUp size={18} className="text-brand-400" />
-                  Continue Learning
+                  {t('dashboard.continueLearning')}
                 </h2>
                 <Link to="/learn" className="text-sm text-surface-400 hover:text-white transition-colors flex items-center gap-1">
                   {t('dashboard.allCoursesLink')} <ChevronRight size={14} />
@@ -197,7 +197,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold flex items-center gap-2">
                   <Target size={18} className="text-accent-cyan" />
-                  Recommended Exercises
+                  {t('dashboard.recommendedExercises')}
                 </h2>
                 <Link to="/editor" className="text-sm text-surface-400 hover:text-white transition-colors flex items-center gap-1">
                   {t('dashboard.allProblemsLink')} <ChevronRight size={14} />
@@ -232,7 +232,7 @@ export default function Dashboard() {
                         to={`/editor?exercise=${ex.id}`}
                         className="flex items-center gap-1.5 text-xs btn-primary py-1.5 px-3 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
-                        Solve <ArrowRight size={12} />
+                        {t('dashboard.solve')} <ArrowRight size={12} />
                       </Link>
                     </div>
                   </motion.div>
@@ -242,12 +242,12 @@ export default function Dashboard() {
 
             {/* Quick Access */}
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-              <h2 className="text-lg font-bold mb-4">Quick Access</h2>
+              <h2 className="text-lg font-bold mb-4">{t('dashboard.quickAccess')}</h2>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { to: '/editor', icon: Code2, label: 'Code Editor', color: 'text-brand-400', bg: 'bg-brand-500/10' },
-                  { to: '/visualize', icon: BookOpen, label: 'Visualizer', color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
-                  { to: '/mentor', icon: Star, label: 'AI Mentor', color: 'text-purple-400', bg: 'bg-purple-500/10' },
+                  { to: '/editor', icon: Code2, label: t('dashboard.codeEditorLabel'), color: 'text-brand-400', bg: 'bg-brand-500/10' },
+                  { to: '/visualize', icon: BookOpen, label: t('dashboard.visualizerLabel'), color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
+                  { to: '/mentor', icon: Star, label: t('dashboard.aiMentorLabel'), color: 'text-purple-400', bg: 'bg-purple-500/10' },
                 ].map(({ to, icon: Icon, label, color, bg }) => (
                   <Link
                     key={to}
@@ -274,21 +274,21 @@ export default function Dashboard() {
               transition={{ delay: 0.25 }}
               className="p-5 rounded-2xl glass border border-white/8"
             >
-              <h3 className="font-bold text-sm text-surface-400 uppercase tracking-wider mb-4">Your Progress</h3>
+              <h3 className="font-bold text-sm text-surface-400 uppercase tracking-wider mb-4">{t('dashboard.yourProgress')}</h3>
               <div className="flex items-center gap-4 mb-5">
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.3)]">
                   <Flame size={24} className="text-white" />
                 </div>
                 <div>
                   <div className="text-3xl font-display font-bold">{user.streak}</div>
-                  <div className="text-sm text-surface-400">day streak 🔥</div>
+                  <div className="text-sm text-surface-400">{t('dashboard.dayStreak')}</div>
                 </div>
               </div>
               <div className="space-y-3">
                 <div>
                   <div className="flex justify-between text-xs text-surface-400 mb-1.5">
-                    <span>Level {user.level} progress</span>
-                    <span>{user.xp} / {xpToNext} XP</span>
+                    <span>{t('dashboard.levelProgress', { level: user.level })}</span>
+                    <span>{t('dashboard.xpOf', { xp: user.xp, max: xpToNext })}</span>
                   </div>
                   <div className="progress-bar">
                     <motion.div
@@ -309,7 +309,7 @@ export default function Dashboard() {
               transition={{ delay: 0.3 }}
               className="p-5 rounded-2xl glass border border-white/8"
             >
-              <h3 className="font-bold text-sm text-surface-400 uppercase tracking-wider mb-4">Recent Activity</h3>
+              <h3 className="font-bold text-sm text-surface-400 uppercase tracking-wider mb-4">{t('dashboard.recentActivity')}</h3>
               <div className="space-y-3">
                 {RECENT_ACTIVITY.map((item, i) => (
                   <motion.div
@@ -345,8 +345,8 @@ export default function Dashboard() {
               className="p-5 rounded-2xl glass border border-white/8"
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-sm text-surface-400 uppercase tracking-wider">Badges</h3>
-                <span className="text-xs text-surface-500">{earnedBadges.length} earned</span>
+                <h3 className="font-bold text-sm text-surface-400 uppercase tracking-wider">{t('profile.badges.title')}</h3>
+                <span className="text-xs text-surface-500">{t('dashboard.earnedCount', { count: earnedBadges.length })}</span>
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {earnedBadges.map((badge, i) => (
@@ -376,7 +376,7 @@ export default function Dashboard() {
               transition={{ delay: 0.4 }}
               className="p-5 rounded-2xl glass border border-white/8"
             >
-              <h3 className="font-bold text-sm text-surface-400 uppercase tracking-wider mb-4">Leaderboard</h3>
+              <h3 className="font-bold text-sm text-surface-400 uppercase tracking-wider mb-4">{t('dashboard.leaderboard')}</h3>
               <div className="space-y-2.5">
                 {leaderboard.map((entry, i) => (
                   <motion.div

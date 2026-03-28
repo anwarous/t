@@ -56,9 +56,18 @@
     },
     "howItWorks": {
       "title": "Comment ça marche",
-      "step1": { "title": "Choisissez un Sujet", "desc": "Parcourez les cours sur le tri, les graphes, la PD et plus encore. Des parcours structurés pour chaque niveau." },
-      "step2": { "title": "Apprenez & Visualisez", "desc": "Regardez les algorithmes prendre vie. Mettez en pause à n'importe quelle étape, ajustez la vitesse et observez les données changer." },
-      "step3": { "title": "Pratiquez & Gagnez", "desc": "Résolvez des exercices, gagnez des XP, débloquez des badges et suivez vos progrès au fil du temps." }
+      "step1": {
+        "title": "Choisissez un Sujet",
+        "desc": "Parcourez les cours sur le tri, les graphes, la PD et plus encore. Des parcours structurés pour chaque niveau."
+      },
+      "step2": {
+        "title": "Apprenez & Visualisez",
+        "desc": "Regardez les algorithmes prendre vie. Mettez en pause à n'importe quelle étape, ajustez la vitesse et observez les données changer."
+      },
+      "step3": {
+        "title": "Pratiquez & Gagnez",
+        "desc": "Résolvez des exercices, gagnez des XP, débloquez des badges et suivez vos progrès au fil du temps."
+      }
     },
     "cta": {
       "title": "Prêt à améliorer",
@@ -69,7 +78,32 @@
     },
     "footer": {
       "tagline": "Maîtrisez les algorithmes, une étape à la fois.",
-      "rights": "Tous droits réservés."
+      "rights": "Tous droits réservés.",
+      "privacy": "Confidentialité",
+      "terms": "Conditions",
+      "contact": "Contact"
+    },
+    "trust": {
+      "noCard": "Aucune carte de crédit",
+      "languages": "Python & plus",
+      "free": "Gratuit pour toujours"
+    },
+    "reviews": {
+      "r1": {
+        "quote": "Le visualiseur a complètement changé ma façon de comprendre la récursivité. Je suis passé de confus à confiant en une semaine.",
+        "name": "Priya M.",
+        "role": "Étudiante en informatique"
+      },
+      "r2": {
+        "quote": "Le mentor IA a trouvé un bug subtil dans mon tri fusion sur lequel je fixais depuis des heures. Un vrai game changer.",
+        "name": "Marcus J.",
+        "role": "Ingénieur logiciel"
+      },
+      "r3": {
+        "quote": "La gamification me fait revenir chaque jour. 21 jours de suite et j'ai résolu plus de problèmes que toute l'année dernière.",
+        "name": "Sarah K.",
+        "role": "Diplômée de bootcamp"
+      }
     }
   },
   "dashboard": {
@@ -94,7 +128,22 @@
     "startExercise": "Commencer",
     "resumeCourse": "Reprendre",
     "progress": "{{pct}}% complété",
-    "lessonsLeft": "{{count}} leçons restantes"
+    "lessonsLeft": "{{count}} leçons restantes",
+    "goodMorning": "Bonjour 👋",
+    "leaderboardRank": "Rang du classement",
+    "quickAccess": "Accès rapide",
+    "codeEditorLabel": "Éditeur de code",
+    "visualizerLabel": "Visualiseur",
+    "aiMentorLabel": "Mentor IA",
+    "yourProgress": "Votre progression",
+    "dayStreak": "jours de suite 🔥",
+    "levelProgress": "Progression niveau {{level}}",
+    "allCoursesLink": "Tous les cours",
+    "allProblemsLink": "Tous les problèmes",
+    "earnedCount": "{{count}} obtenus",
+    "solve": "Résoudre",
+    "continueBtn": "Continuer",
+    "xpOf": "{{xp}} / {{max}} XP"
   },
   "learn": {
     "title": "Cours",
@@ -191,6 +240,36 @@
       "insertion": "Tri par insertion",
       "merge": "Tri fusion",
       "quick": "Tri rapide"
+    },
+    "algorithmLabel": "Algorithme",
+    "randomize": "Aléatoire",
+    "slow": "Lent",
+    "fast": "Rapide",
+    "complexityLabel": "Complexité",
+    "timeLabel": "Temps",
+    "spaceLabel": "Espace",
+    "legend": {
+      "unsorted": "Non trié",
+      "comparing": "Comparaison",
+      "swapping": "Échange",
+      "sorted": "Trié"
+    },
+    "statusPlaying": "▶ En cours",
+    "statusPaused": "⏸ En pause",
+    "statusDone": "✓ Terminé",
+    "statusReady": "Prêt",
+    "hintPlaying": "Cliquez sur Pause à tout moment · Ajustez la vitesse en cours d'exécution",
+    "hintDone": "Cliquez sur ↺ pour rejouer avec un nouveau tableau aléatoire",
+    "hintIdle": "Cliquez sur ▶ pour lancer · ou avancez manuellement avec ‹ ›",
+    "pressPlay": "Appuyez sur Lecture pour démarrer la visualisation",
+    "stats": {
+      "totalSteps": "Étapes totales",
+      "currentStep": "Étape actuelle",
+      "progressLabel": "Progression"
+    },
+    "desc": {
+      "bubble": "Échange répétitivement les éléments adjacents qui sont dans le désordre. Simple mais lent sur les grandes entrées.",
+      "selection": "Trouve l'élément minimum à chaque passage et le place au début. Moins d'échanges que le tri à bulles."
     }
   },
   "mentor": {
@@ -210,6 +289,8 @@
   "profile": {
     "title": "Profil",
     "tabs": {
+      "profile": "Profil",
+      "achievements": "Réalisations",
       "overview": "Vue d'ensemble",
       "badges": "Badges",
       "settings": "Paramètres",
@@ -219,7 +300,8 @@
       "xp": "XP Total",
       "streak": "Jours de Suite",
       "solved": "Problèmes Résolus",
-      "rank": "Rang"
+      "rank": "Rang",
+      "level": "Niveau"
     },
     "badges": {
       "title": "Badges",
@@ -245,7 +327,45 @@
       "dark": "Sombre",
       "light": "Clair"
     },
-    "joinedAt": "Membre depuis {{date}}"
+    "joinedAt": "Membre depuis {{date}}",
+    "myProfileTitle": "Mon Profil",
+    "subtitle": "Gérez votre compte, suivez vos réalisations et personnalisez vos préférences",
+    "globalRank": "Rang mondial",
+    "editProfile": "Modifier le profil",
+    "displayName": "Nom d'affichage",
+    "email": "Email",
+    "bio": "Biographie",
+    "bioPlaceholder": "Parlez-nous de vous...",
+    "namePlaceholder": "Votre nom",
+    "preferredLanguage": "Langage préféré",
+    "saveChanges": "Enregistrer les modifications",
+    "saved": "Enregistré !",
+    "appearance": "Apparence",
+    "themeMode": "Mode {{theme}}",
+    "editorFontSize": "Taille de police de l'éditeur",
+    "passwordSecurity": "Mot de passe & Sécurité",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "minEightChars": "Min. 8 caractères",
+    "repeatPassword": "Répéter le nouveau mot de passe",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "dangerZone": "Zone dangereuse",
+    "dangerDesc": "Ces actions sont permanentes et ne peuvent pas être annulées.",
+    "resetProgress": "Réinitialiser la progression",
+    "deleteAccount": "Supprimer le compte",
+    "recentNotifications": "Notifications récentes",
+    "notifPreferences": "Préférences de notification",
+    "notifs": {
+      "streakTitle": "Rappels de série",
+      "streakDesc": "Rappel quotidien pour maintenir votre série",
+      "challengesTitle": "Nouveaux défis",
+      "challengesDesc": "Soyez notifié quand de nouveaux exercices sont ajoutés",
+      "mentorTitle": "Réponses du Mentor IA",
+      "mentorDesc": "Quand votre Mentor IA a quelque chose à dire",
+      "reportTitle": "Rapport de progression hebdomadaire",
+      "reportDesc": "Résumé de votre semaine envoyé chaque dimanche"
+    }
   },
   "common": {
     "loading": "Chargement…",
@@ -268,5 +388,49 @@
     "hard": "Difficile",
     "xp": "XP",
     "min": "min"
+  },
+  "signin": {
+    "title": "Bon retour",
+    "subtitle": "Connectez-vous pour continuer à apprendre",
+    "usernameOrEmail": "Nom d'utilisateur ou Email",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "loading": "Connexion…",
+    "or": "ou",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "createFree": "Créez-en un gratuitement",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "features": {
+      "algorithms": "50+ algorithmes",
+      "mentor": "Mentor IA",
+      "free": "Gratuit pour toujours"
+    },
+    "failed": "Échec de la connexion. Veuillez réessayer."
+  },
+  "signup": {
+    "title": "Créer votre compte",
+    "subtitle": "Commencez votre parcours algorithmique dès aujourd'hui — gratuit pour toujours",
+    "displayName": "Nom d'affichage",
+    "optional": "(facultatif)",
+    "username": "Nom d'utilisateur",
+    "email": "Email",
+    "password": "Mot de passe",
+    "minChars": "(min 6 caractères)",
+    "submit": "Créer un compte",
+    "loading": "Création du compte…",
+    "perks": {
+      "free": "Gratuit pour toujours — aucune carte de crédit requise",
+      "access": "Accès à 50+ algorithmes et visualisations",
+      "mentor": "Mentor IA inclus"
+    },
+    "hasAccount": "vous avez déjà un compte ?",
+    "signIn": "Se connecter",
+    "failed": "Échec de l'inscription. Veuillez réessayer."
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "desc": "Cette page n'existe pas encore — mais de nombreux algorithmes vous attendent de l'autre côté.",
+    "goBack": "Retour"
   }
 }

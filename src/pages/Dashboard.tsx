@@ -5,6 +5,7 @@ import {
   Flame, Zap, Trophy, BookOpen, Code2, ArrowRight,
   CheckCircle, Clock, TrendingUp, Star, ChevronRight, Target
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useUserStore } from '@/store'
 import { MOCK_COURSES, MOCK_EXERCISES, RECENT_ACTIVITY, LEADERBOARD_OTHERS, type LeaderboardEntry } from '@/data/mockData'
 import { cn, getDifficultyBg } from '@/lib/utils'
@@ -40,6 +41,7 @@ function StatCard({ icon: Icon, value, label, color, bg }: {
 }
 
 function CourseCard({ course, index }: { course: typeof MOCK_COURSES[0]; index: number }) {
+  const { t } = useTranslation()
   return (
     <motion.div
       variants={fadeUp}
@@ -81,12 +83,12 @@ function CourseCard({ course, index }: { course: typeof MOCK_COURSES[0]; index: 
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-xs text-surface-500">{course.progress}% complete</span>
+        <span className="text-xs text-surface-500">{t('dashboard.progress', { pct: course.progress })}</span>
         <Link
           to={`/learn/${course.id}`}
           className="flex items-center gap-1 text-xs text-brand-400 hover:text-brand-300 font-medium opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          Continue <ChevronRight size={12} />
+          {t('dashboard.continueBtn')} <ChevronRight size={12} />
         </Link>
       </div>
     </motion.div>
@@ -94,6 +96,7 @@ function CourseCard({ course, index }: { course: typeof MOCK_COURSES[0]; index: 
 }
 
 export default function Dashboard() {
+  const { t } = useTranslation()
   const { user, badges } = useUserStore()
   const earnedBadges = badges.filter(b => b.earned)
   const inProgress = MOCK_COURSES.filter(c => c.progress > 0 && c.progress < 100)
@@ -127,14 +130,14 @@ export default function Dashboard() {
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-surface-400 text-sm mb-1">Good morning 👋</p>
+              <p className="text-surface-400 text-sm mb-1">{t('dashboard.goodMorning')}</p>
               <h1 className="text-3xl font-display font-bold">
-                Welcome back, <span className="gradient-text">{user.name.split(' ')[0]}</span>
+                {t('dashboard.greeting')}, <span className="gradient-text">{user.name.split(' ')[0]}</span>
               </h1>
-              <p className="text-surface-400 mt-1.5">You're on a {user.streak}-day streak. Keep it going!</p>
+              <p className="text-surface-400 mt-1.5">{t('dashboard.subGreeting', { streak: user.streak })}</p>
             </div>
             <div className="hidden sm:block text-right">
-              <div className="text-xs text-surface-500 mb-1">Level {user.level} • {user.rank}</div>
+              <div className="text-xs text-surface-500 mb-1">{t('dashboard.level', { level: user.level })} • {user.rank}</div>
               <div className="progress-bar w-32">
                 <motion.div
                   className="progress-fill"
@@ -143,7 +146,7 @@ export default function Dashboard() {
                   transition={{ duration: 1, delay: 0.3 }}
                 />
               </div>
-              <div className="text-xs text-surface-500 mt-1">{user.xp.toLocaleString()} / {xpToNext.toLocaleString()} XP</div>
+              <div className="text-xs text-surface-500 mt-1">{t('dashboard.xpOf', { xp: user.xp.toLocaleString(), max: xpToNext.toLocaleString() })}</div>
             </div>
           </div>
         </motion.div>
@@ -155,10 +158,10 @@ export default function Dashboard() {
           animate="visible"
           className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
         >
-          <StatCard icon={Zap} value={user.xp.toLocaleString()} label="Total XP" color="text-brand-400" bg="bg-brand-500/10" />
-          <StatCard icon={Flame} value={`${user.streak} days`} label="Current Streak" color="text-amber-400" bg="bg-amber-500/10" />
-          <StatCard icon={CheckCircle} value={user.totalSolved.toString()} label="Problems Solved" color="text-emerald-400" bg="bg-emerald-500/10" />
-          <StatCard icon={Trophy} value={`#${myRank}`} label="Leaderboard Rank" color="text-purple-400" bg="bg-purple-500/10" />
+          <StatCard icon={Zap} value={user.xp.toLocaleString()} label={t('dashboard.totalXP')} color="text-brand-400" bg="bg-brand-500/10" />
+          <StatCard icon={Flame} value={`${user.streak} ${t('dashboard.days')}`} label={t('dashboard.currentStreak')} color="text-amber-400" bg="bg-amber-500/10" />
+          <StatCard icon={CheckCircle} value={user.totalSolved.toString()} label={t('dashboard.problemsSolved')} color="text-emerald-400" bg="bg-emerald-500/10" />
+          <StatCard icon={Trophy} value={`#${myRank}`} label={t('dashboard.leaderboardRank')} color="text-purple-400" bg="bg-purple-500/10" />
         </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-6">
@@ -174,7 +177,7 @@ export default function Dashboard() {
                   Continue Learning
                 </h2>
                 <Link to="/learn" className="text-sm text-surface-400 hover:text-white transition-colors flex items-center gap-1">
-                  All courses <ChevronRight size={14} />
+                  {t('dashboard.allCoursesLink')} <ChevronRight size={14} />
                 </Link>
               </div>
               <motion.div
@@ -197,7 +200,7 @@ export default function Dashboard() {
                   Recommended Exercises
                 </h2>
                 <Link to="/editor" className="text-sm text-surface-400 hover:text-white transition-colors flex items-center gap-1">
-                  All problems <ChevronRight size={14} />
+                  {t('dashboard.allProblemsLink')} <ChevronRight size={14} />
                 </Link>
               </div>
               <div className="space-y-3">

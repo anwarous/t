@@ -316,9 +316,9 @@ export default function Landing() {
           </div>
           <p className="text-surface-500 text-sm">© 2025 MQAcademy. {t('landing.footer.tagline')}</p>
           <div className="flex gap-6 text-sm text-surface-500">
-            <a href="#" className="hover:text-white transition-colors">Privacy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms</a>
-            <a href="#" className="hover:text-white transition-colors">Contact</a>
+            <a href="#" className="hover:text-white transition-colors">{t('landing.footer.privacy')}</a>
+            <a href="#" className="hover:text-white transition-colors">{t('landing.footer.terms')}</a>
+            <a href="#" className="hover:text-white transition-colors">{t('landing.footer.contact')}</a>
           </div>
         </div>
       </footer>

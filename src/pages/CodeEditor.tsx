@@ -6,6 +6,7 @@ import {
   Lightbulb, Terminal, Code2, Loader2, BookOpen, ExternalLink
 } from 'lucide-react'
 import { useEditorStore } from '@/store'
+import { useUserStore } from '@/store'
 import { MOCK_EXERCISES } from '@/data/mockData'
 import { cn, getDifficultyBg } from '@/lib/utils'
 import { registerAlgorithmLanguage } from '@/lib/algorithmLanguage'
@@ -207,6 +208,8 @@ export default function CodeEditorPage() {
   const { t }          = useTranslation()
 
   const { code, output, isRunning, language, setCode, setLanguage, runCode, setActiveExercise } = useEditorStore()
+  const { user } = useUserStore()
+  const completedExercises = user.completedExercises ?? []
   const exercise = MOCK_EXERCISES.find(e => e.id === exerciseId) ?? MOCK_EXERCISES[0]
 
   // Language → Monaco language id & file extension
@@ -255,7 +258,7 @@ export default function CodeEditorPage() {
                     : 'text-surface-500 hover:text-white hover:bg-white/5'
                 )}
               >
-                {ex.completed && <CheckCircle2 size={11} className="text-emerald-400" />}
+                {ex.completed || completedExercises.includes(ex.id) ? <CheckCircle2 size={11} className="text-emerald-400" /> : null}
                 {ex.title}
               </a>
             ))}

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { MOCK_USER, MOCK_BADGES, MOCK_CHAT_MESSAGES, type ChatMessage, type Badge } from '@/data/mockData'
+import { MOCK_USER, MOCK_BADGES, MOCK_CHAT_MESSAGES, MOCK_EXERCISES, type ChatMessage, type Badge } from '@/data/mockData'
 import { runPython } from '@/lib/pythonCompiler'
 import { runAlgo } from '@/lib/algoCompiler'
 
@@ -52,6 +52,7 @@ type UserProfile = typeof MOCK_USER & {
   bio: string
   language: string
   theme: string
+  completedExercises: string[]
   notifications: {
     streakReminders: boolean
     newChallenges: boolean
@@ -69,6 +70,7 @@ const GUEST_USER: UserProfile = {
   bio: '',
   language: 'Python',
   theme: 'dark',
+  completedExercises: [],
   notifications: { streakReminders: true, newChallenges: true, mentorReplies: true, weeklyReport: false },
 }
 
@@ -88,6 +90,7 @@ function freshProfile(username: string, displayName: string, email: string): Use
     bio: '',
     language: 'Python',
     theme: 'dark',
+    completedExercises: [],
     notifications: {
       streakReminders: true,
       newChallenges: true,
@@ -132,6 +135,7 @@ interface UserState {
   badges: Badge[]
   addXP: (amount: number) => void
   incrementStreak: () => void
+  markExerciseSolved: (id: string, xp: number) => void
   updateProfile: (patch: Partial<Pick<UserProfile, 'name' | 'email' | 'bio' | 'language'>>) => void
   updateNotifications: (patch: Partial<UserProfile['notifications']>) => void
   updateTheme: (theme: string) => void
@@ -154,6 +158,15 @@ export const useUserStore = create<UserState>((set) => ({
   incrementStreak: () =>
     set((s) => {
       const user = { ...s.user, streak: s.user.streak + 1 }
+      if (s.currentUsername) saveProfile(s.currentUsername, user)
+      return { user }
+    }),
+  markExerciseSolved: (id, xp) =>
+    set((s) => {
+      const alreadyDone = (s.user.completedExercises ?? []).includes(id)
+      if (alreadyDone) return {}
+      const completedExercises = [...(s.user.completedExercises ?? []), id]
+      const user = { ...s.user, xp: s.user.xp + xp, totalSolved: s.user.totalSolved + 1, completedExercises }
       if (s.currentUsername) saveProfile(s.currentUsername, user)
       return { user }
     }),
@@ -451,6 +464,18 @@ export function evaluateCode(code: string, exerciseId: string | null): string {
 
 // ─── Editor Store ─────────────────────────────────────────────────────────────
 
+function isAllTestsPassed(output: string): boolean {
+  return output.includes('✅') && !output.includes('❌') && !output.includes('✗')
+}
+
+function awardExerciseXP(exerciseId: string | null, output: string): void {
+  if (!exerciseId || !isAllTestsPassed(output)) return
+  const exercise = MOCK_EXERCISES.find(e => e.id === exerciseId)
+  if (exercise) {
+    useUserStore.getState().markExerciseSolved(exerciseId, exercise.xp)
+  }
+}
+
 interface EditorState {
   code: string
   language: string
@@ -514,6 +539,7 @@ print(two_sum([3, 3], 6))            # Expected: [0, 1]
       // to the simulated evaluator so the UI stays usable offline.
       realOutput = evaluateCode(code, activeExerciseId)
       set({ output: realOutput, isRunning: false })
+      awardExerciseXP(activeExerciseId, realOutput)
       return
     }
 
@@ -529,6 +555,9 @@ print(two_sum([3, 3], 6))            # Expected: [0, 1]
       : analysisOutput
 
     set({ output: combinedOutput, isRunning: false })
+
+    // Award XP and mark exercise as solved when all test cases pass
+    awardExerciseXP(activeExerciseId, analysisOutput)
   },
 }))
 

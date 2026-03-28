@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -5,7 +6,7 @@ import {
   CheckCircle, Clock, TrendingUp, Star, ChevronRight, Target
 } from 'lucide-react'
 import { useUserStore } from '@/store'
-import { MOCK_COURSES, MOCK_EXERCISES, RECENT_ACTIVITY, LEADERBOARD } from '@/data/mockData'
+import { MOCK_COURSES, MOCK_EXERCISES, RECENT_ACTIVITY, LEADERBOARD_OTHERS, type LeaderboardEntry } from '@/data/mockData'
 import { cn, getDifficultyBg } from '@/lib/utils'
 
 const fadeUp = {
@@ -98,6 +99,19 @@ export default function Dashboard() {
   const inProgress = MOCK_COURSES.filter(c => c.progress > 0 && c.progress < 100)
   const recommended = MOCK_EXERCISES.filter(e => !e.completed).slice(0, 3)
 
+  // Build dynamic leaderboard with the real current-user entry
+  const leaderboard = useMemo((): (LeaderboardEntry & { rank: number })[] => {
+    const entries: LeaderboardEntry[] = [
+      ...LEADERBOARD_OTHERS,
+      { name: user.name, xp: user.xp, streak: user.streak, avatar: user.avatar, isCurrentUser: true },
+    ]
+    return entries
+      .sort((a, b) => b.xp - a.xp)
+      .map((e, i) => ({ ...e, rank: i + 1 }))
+  }, [user.name, user.xp, user.streak, user.avatar])
+
+  const myRank = leaderboard.find((e) => e.isCurrentUser)?.rank ?? '-'
+
   const xpToNext = 4000
   const xpProgress = (user.xp / xpToNext) * 100
 
@@ -144,7 +158,7 @@ export default function Dashboard() {
           <StatCard icon={Zap} value={user.xp.toLocaleString()} label="Total XP" color="text-brand-400" bg="bg-brand-500/10" />
           <StatCard icon={Flame} value={`${user.streak} days`} label="Current Streak" color="text-amber-400" bg="bg-amber-500/10" />
           <StatCard icon={CheckCircle} value={user.totalSolved.toString()} label="Problems Solved" color="text-emerald-400" bg="bg-emerald-500/10" />
-          <StatCard icon={Trophy} value={`#4`} label="Leaderboard Rank" color="text-purple-400" bg="bg-purple-500/10" />
+          <StatCard icon={Trophy} value={`#${myRank}`} label="Leaderboard Rank" color="text-purple-400" bg="bg-purple-500/10" />
         </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-6">
@@ -361,7 +375,7 @@ export default function Dashboard() {
             >
               <h3 className="font-bold text-sm text-surface-400 uppercase tracking-wider mb-4">Leaderboard</h3>
               <div className="space-y-2.5">
-                {LEADERBOARD.map((entry, i) => (
+                {leaderboard.map((entry, i) => (
                   <motion.div
                     key={entry.rank}
                     initial={{ opacity: 0 }}
@@ -369,7 +383,7 @@ export default function Dashboard() {
                     transition={{ delay: 0.45 + i * 0.05 }}
                     className={cn(
                       'flex items-center gap-3 p-2.5 rounded-xl transition-colors',
-                      (entry as any).isCurrentUser ? 'bg-brand-500/10 border border-brand-500/20' : 'hover:bg-white/3'
+                      entry.isCurrentUser ? 'bg-brand-500/10 border border-brand-500/20' : 'hover:bg-white/3'
                     )}
                   >
                     <span className={cn(
@@ -382,7 +396,7 @@ export default function Dashboard() {
                       {entry.avatar}
                     </div>
                     <div className="flex-1">
-                      <div className={cn('text-xs font-medium', (entry as any).isCurrentUser && 'text-brand-300')}>
+                      <div className={cn('text-xs font-medium', entry.isCurrentUser && 'text-brand-300')}>
                         {entry.name}
                       </div>
                       <div className="text-xs text-surface-500">{entry.xp.toLocaleString()} XP</div>

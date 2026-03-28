@@ -22,7 +22,7 @@ export default function SignUp() {
     setError('')
     setLoading(true)
     try {
-      const res = await authApi.register({ username, email, password, displayName: displayName || undefined })
+      const res = await authApi.register({ username, email, password, displayName: displayName.trim() || undefined })
       setAuth(res.token, {
         username: res.username,
         email: res.email,

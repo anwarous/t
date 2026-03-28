@@ -6,6 +6,7 @@ import { runAlgo } from '@/lib/algoCompiler'
 // ─── Auth Store ───────────────────────────────────────────────────────────────
 
 const TOKEN_KEY = 'mqa_token'
+const USER_KEY = 'mqa_user'
 
 interface AuthState {
   token: string | null
@@ -15,28 +16,31 @@ interface AuthState {
   clearAuth: () => void
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  token: localStorage.getItem(TOKEN_KEY),
-  isAuthenticated: !!localStorage.getItem(TOKEN_KEY),
-  authUser: (() => {
-    try {
-      const raw = localStorage.getItem('mqa_user')
-      return raw ? JSON.parse(raw) : null
-    } catch {
-      return null
-    }
-  })(),
-  setAuth: (token, user) => {
-    localStorage.setItem(TOKEN_KEY, token)
-    localStorage.setItem('mqa_user', JSON.stringify(user))
-    set({ token, isAuthenticated: true, authUser: user })
-  },
-  clearAuth: () => {
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem('mqa_user')
-    set({ token: null, isAuthenticated: false, authUser: null })
-  },
-}))
+export const useAuthStore = create<AuthState>((set) => {
+  const token = localStorage.getItem(TOKEN_KEY)
+  return {
+    token,
+    isAuthenticated: !!token,
+    authUser: (() => {
+      try {
+        const raw = localStorage.getItem(USER_KEY)
+        return raw ? JSON.parse(raw) : null
+      } catch {
+        return null
+      }
+    })(),
+    setAuth: (token, user) => {
+      localStorage.setItem(TOKEN_KEY, token)
+      localStorage.setItem(USER_KEY, JSON.stringify(user))
+      set({ token, isAuthenticated: true, authUser: user })
+    },
+    clearAuth: () => {
+      localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem(USER_KEY)
+      set({ token: null, isAuthenticated: false, authUser: null })
+    },
+  }
+})
 
 // ─── User / Gamification Store ────────────────────────────────────────────────
 

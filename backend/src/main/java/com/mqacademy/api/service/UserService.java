@@ -7,7 +7,6 @@ import com.mqacademy.api.model.User;
 import com.mqacademy.api.repository.UserBadgeRepository;
 import com.mqacademy.api.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,7 +26,6 @@ public class UserService {
         return toProfileDto(user);
     }
 
-    @Transactional
     public UserProfileDto updateProfile(String username, UpdateProfileRequest request) {
         User user = findByUsername(username);
         if (request.displayName() != null && !request.displayName().isBlank()) {
@@ -39,7 +37,6 @@ public class UserService {
         return toProfileDto(userRepository.save(user));
     }
 
-    @Transactional
     public User addXp(String username, int xpAmount) {
         User user = findByUsername(username);
         int newXp = user.getXp() + xpAmount;
@@ -49,7 +46,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @Transactional
     public List<UserBadgeDto> getBadges(String username) {
         User user = findByUsername(username);
         return userBadgeRepository.findByUser(user).stream()
@@ -67,7 +63,7 @@ public class UserService {
 
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException(
+                .orElseThrow(() -> new com.mqacademy.api.exception.NotFoundException(
                         "User not found: " + username));
     }
 

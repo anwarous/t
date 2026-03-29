@@ -1,15 +1,15 @@
 package com.mqacademy.api.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
-@Entity
-@Table(name = "users")
+@Document(collection = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,18 +17,15 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
-    @Column(unique = true, nullable = false)
+    @Indexed(unique = true)
     private String username;
 
-    @Column(unique = true, nullable = false)
+    @Indexed(unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
-
     private String displayName;
     private String avatarInitials;
 
@@ -50,9 +47,6 @@ public class User {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
     @Builder.Default
     private Set<String> roles = new HashSet<>(Set.of("USER"));
 }

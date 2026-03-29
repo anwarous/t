@@ -1,13 +1,13 @@
 package com.mqacademy.api.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-@Entity
-@Table(name = "exercises")
+@Document(collection = "exercises")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,40 +17,21 @@ public class Exercise {
     public enum Difficulty { EASY, MEDIUM, HARD }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
-    @Column(unique = true, nullable = false)
+    @Indexed(unique = true)
     private String slug;
 
-    @Column(nullable = false)
     private String title;
-
-    @Column(columnDefinition = "TEXT")
     private String description;
-
-    @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
-
     private String category;
     private int xpReward;
-
-    @Column(columnDefinition = "TEXT")
     private String starterCode;
-
-    @Column(columnDefinition = "TEXT")
     private String solutionCode;
-
-    @Column(columnDefinition = "TEXT")
     private String hints;
-
-    @Column(columnDefinition = "TEXT")
     private String examples;
-
-    @Column(columnDefinition = "TEXT")
     private String constraints;
-
-    @Column(name = "test_cases", columnDefinition = "TEXT")
     private String testCases;
 
     @Builder.Default

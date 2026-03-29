@@ -4,36 +4,32 @@ import com.mqacademy.api.dto.course.ChapterDto;
 import com.mqacademy.api.dto.course.CourseDetailDto;
 import com.mqacademy.api.dto.course.CourseDto;
 import com.mqacademy.api.dto.course.LessonDto;
+import com.mqacademy.api.exception.NotFoundException;
 import com.mqacademy.api.model.Chapter;
 import com.mqacademy.api.model.Course;
 import com.mqacademy.api.model.Lesson;
-import com.mqacademy.api.repository.ChapterRepository;
 import com.mqacademy.api.repository.CourseRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
 public class CourseService {
 
     private final CourseRepository courseRepository;
-    private final ChapterRepository chapterRepository;
 
-    public CourseService(CourseRepository courseRepository, ChapterRepository chapterRepository) {
+    public CourseService(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
-        this.chapterRepository = chapterRepository;
     }
 
     public List<CourseDto> listAll() {
         return courseRepository.findAll().stream().map(this::toDto).toList();
     }
 
-    @Transactional(readOnly = true)
     public CourseDetailDto getBySlug(String slug) {
         Course course = courseRepository.findBySlug(slug)
-                .orElseThrow(() -> new EntityNotFoundException("Course not found: " + slug));
+                .orElseThrow(() -> new NotFoundException("Course not found: " + slug));
         return toDetailDto(course);
     }
 
@@ -52,8 +48,10 @@ public class CourseService {
     }
 
     private CourseDetailDto toDetailDto(Course c) {
-        List<Chapter> chapters = chapterRepository.findByCourseOrderByOrderIndexAsc(c);
-        List<ChapterDto> chapterDtos = chapters.stream().map(this::toChapterDto).toList();
+        List<ChapterDto> chapterDtos = c.getChapters().stream()
+                .sorted(Comparator.comparingInt(Chapter::getOrderIndex))
+                .map(this::toChapterDto)
+                .toList();
         return new CourseDetailDto(
                 c.getId(), c.getSlug(), c.getTitle(), c.getDescription(),
                 c.getCategory(), c.getDifficulty().name(), c.getTotalLessons(),
@@ -63,7 +61,10 @@ public class CourseService {
     }
 
     private ChapterDto toChapterDto(Chapter ch) {
-        List<LessonDto> lessons = ch.getLessons().stream().map(this::toLessonDto).toList();
+        List<LessonDto> lessons = ch.getLessons().stream()
+                .sorted(Comparator.comparingInt(Lesson::getOrderIndex))
+                .map(this::toLessonDto)
+                .toList();
         return new ChapterDto(ch.getId(), ch.getTitle(), lessons);
     }
 

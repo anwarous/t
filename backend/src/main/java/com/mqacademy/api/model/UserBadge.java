@@ -1,13 +1,13 @@
 package com.mqacademy.api.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-@Entity
-@Table(name = "user_badges")
+@Document(collection = "user_badges")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,15 +15,12 @@ import java.util.UUID;
 public class UserBadge {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @DBRef
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "badge_id", nullable = false)
+    @DBRef
     private Badge badge;
 
     @Builder.Default

@@ -1,14 +1,13 @@
 package com.mqacademy.api.service;
 
 import com.mqacademy.api.dto.progress.ProgressDto;
+import com.mqacademy.api.exception.NotFoundException;
 import com.mqacademy.api.model.Course;
 import com.mqacademy.api.model.User;
 import com.mqacademy.api.model.UserProgress;
 import com.mqacademy.api.repository.CourseRepository;
 import com.mqacademy.api.repository.UserProgressRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,15 +32,18 @@ public class ProgressService {
         return progressRepository.findByUser(user).stream().map(this::toDto).toList();
     }
 
-    @Transactional
     public ProgressDto markLessonComplete(String username, String courseSlug, String lessonId) {
         User user = userService.findByUsername(username);
         Course course = courseRepository.findBySlug(courseSlug)
-                .orElseThrow(() -> new EntityNotFoundException("Course not found: " + courseSlug));
+                .orElseThrow(() -> new NotFoundException("Course not found: " + courseSlug));
 
         UserProgress progress = progressRepository
-                .findByUserAndCourse_Slug(user, courseSlug)
-                .orElseGet(() -> UserProgress.builder().user(user).course(course).build());
+                .findByUserAndCourseSlug(user, courseSlug)
+                .orElseGet(() -> UserProgress.builder()
+                        .user(user)
+                        .course(course)
+                        .courseSlug(courseSlug)
+                        .build());
 
         int newCompleted = Math.min(progress.getCompletedLessons() + 1, course.getTotalLessons());
         int newPercent = course.getTotalLessons() > 0

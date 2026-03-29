@@ -1,12 +1,11 @@
 package com.mqacademy.api.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.UUID;
-
-@Entity
-@Table(name = "badges")
+@Document(collection = "badges")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,18 +15,13 @@ public class Badge {
     public enum Rarity { COMMON, RARE, EPIC, LEGENDARY }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
-    @Column(unique = true, nullable = false)
+    @Indexed(unique = true)
     private String slug;
 
-    @Column(nullable = false)
     private String name;
-
     private String description;
     private String icon;
-
-    @Enumerated(EnumType.STRING)
     private Rarity rarity;
 }

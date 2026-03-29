@@ -1,9 +1,7 @@
 package com.mqacademy.api.dto.course;
 
-import java.util.UUID;
-
 public record CourseDto(
-        UUID id,
+        String id,
         String slug,
         String title,
         String description,

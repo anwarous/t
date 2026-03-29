@@ -1,11 +1,10 @@
 package com.mqacademy.api.dto.progress;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public record ProgressDto(
-        UUID id,
-        UUID courseId,
+        String id,
+        String courseId,
         String courseSlug,
         String courseTitle,
         int completedLessons,

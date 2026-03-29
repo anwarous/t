@@ -1,13 +1,15 @@
 package com.mqacademy.api.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
-@Entity
-@Table(name = "courses")
+@Document(collection = "courses")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,31 +19,24 @@ public class Course {
     public enum Difficulty { BEGINNER, INTERMEDIATE, ADVANCED }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
-    @Column(unique = true, nullable = false)
+    @Indexed(unique = true)
     private String slug;
 
-    @Column(nullable = false)
     private String title;
-
-    @Column(columnDefinition = "TEXT")
     private String description;
-
     private String category;
-
-    @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
-
     private int totalLessons;
     private int durationMinutes;
     private int xpReward;
     private String colorHex;
     private String icon;
-
-    @Column(name = "tags")
     private String tags;
+
+    @Builder.Default
+    private List<Chapter> chapters = new ArrayList<>();
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

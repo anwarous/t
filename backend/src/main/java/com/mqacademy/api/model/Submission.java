@@ -1,13 +1,13 @@
 package com.mqacademy.api.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-@Entity
-@Table(name = "submissions")
+@Document(collection = "submissions")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,20 +15,17 @@ import java.util.UUID;
 public class Submission {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @DBRef
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "exercise_id", nullable = false)
+    @DBRef
     private Exercise exercise;
 
-    @Column(columnDefinition = "TEXT")
+    private String exerciseSlug;
+    private String exerciseTitle;
     private String code;
-
     private boolean passed;
     private int xpEarned;
 

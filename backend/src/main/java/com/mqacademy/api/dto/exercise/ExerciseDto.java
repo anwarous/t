@@ -1,9 +1,7 @@
 package com.mqacademy.api.dto.exercise;
 
-import java.util.UUID;
-
 public record ExerciseDto(
-        UUID id,
+        String id,
         String slug,
         String title,
         String description,

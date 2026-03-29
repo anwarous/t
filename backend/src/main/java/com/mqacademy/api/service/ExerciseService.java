@@ -4,15 +4,14 @@ import com.mqacademy.api.dto.exercise.ExerciseDetailDto;
 import com.mqacademy.api.dto.exercise.ExerciseDto;
 import com.mqacademy.api.dto.exercise.SubmissionDto;
 import com.mqacademy.api.dto.exercise.SubmitCodeRequest;
+import com.mqacademy.api.exception.NotFoundException;
 import com.mqacademy.api.model.Exercise;
 import com.mqacademy.api.model.Submission;
 import com.mqacademy.api.model.User;
 import com.mqacademy.api.repository.ExerciseRepository;
 import com.mqacademy.api.repository.SubmissionRepository;
 import com.mqacademy.api.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class ExerciseService {
 
     public ExerciseDetailDto getBySlug(String slug) {
         Exercise ex = exerciseRepository.findBySlug(slug)
-                .orElseThrow(() -> new EntityNotFoundException("Exercise not found: " + slug));
+                .orElseThrow(() -> new NotFoundException("Exercise not found: " + slug));
         return toDetailDto(ex);
     }
 
@@ -48,10 +47,9 @@ public class ExerciseService {
         return exerciseRepository.findByCategory(category).stream().map(this::toDto).toList();
     }
 
-    @Transactional
     public SubmissionDto submit(String slug, String username, SubmitCodeRequest request) {
         Exercise exercise = exerciseRepository.findBySlug(slug)
-                .orElseThrow(() -> new EntityNotFoundException("Exercise not found: " + slug));
+                .orElseThrow(() -> new NotFoundException("Exercise not found: " + slug));
         User user = userService.findByUsername(username);
 
         // Simulate pass/fail: code is considered passing if non-blank and length > 20
@@ -61,6 +59,8 @@ public class ExerciseService {
         Submission submission = Submission.builder()
                 .user(user)
                 .exercise(exercise)
+                .exerciseSlug(exercise.getSlug())
+                .exerciseTitle(exercise.getTitle())
                 .code(request.code())
                 .passed(passed)
                 .xpEarned(xpEarned)
@@ -98,8 +98,8 @@ public class ExerciseService {
         return new SubmissionDto(
                 s.getId(),
                 s.getExercise().getId(),
-                s.getExercise().getSlug(),
-                s.getExercise().getTitle(),
+                s.getExerciseSlug(),
+                s.getExerciseTitle(),
                 s.getCode(),
                 s.isPassed(),
                 s.getXpEarned(),

@@ -4,6 +4,7 @@ import {
   Play, Pause, SkipForward, SkipBack,
   RefreshCw, ChevronLeft, ChevronRight, Info, Zap,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useVisualizationStore } from '@/store'
 import { cn } from '@/lib/utils'
 
@@ -19,6 +20,7 @@ const COMPLEXITIES: Record<string, { time: string; space: string; desc: string }
 
 // ── Bars ──────────────────────────────────────────────────────────────────────
 function SortBars() {
+  const { t } = useTranslation()
   const { steps, currentStep, array } = useVisualizationStore()
   const step       = steps.length > 0 ? steps[currentStep] : null
   const displayArr = step ? step.array : array
@@ -47,7 +49,7 @@ function SortBars() {
           ) : (
             <p key="idle" className="text-sm text-surface-500 flex items-center gap-2">
               <Info size={13} />
-              Press <strong className="text-white mx-1">Play</strong> to start the visualization
+              {t('visualize.pressPlay')}
             </p>
           )}
         </AnimatePresence>
@@ -97,14 +99,14 @@ function SortBars() {
       {/* Legend */}
       <div className="flex items-center gap-4 px-5 pb-4 flex-wrap flex-shrink-0">
         {[
-          { color: '#3b7bff',  label: 'Unsorted'  },
-          { color: '#f59e0b',  label: 'Comparing' },
-          { color: '#f43f5e',  label: 'Swapping'  },
-          { color: '#10b981',  label: 'Sorted'    },
-        ].map(({ color, label }) => (
-          <div key={label} className="flex items-center gap-1.5">
+          { color: '#3b7bff',  key: 'unsorted'  },
+          { color: '#f59e0b',  key: 'comparing' },
+          { color: '#f43f5e',  key: 'swapping'  },
+          { color: '#10b981',  key: 'sorted'    },
+        ].map(({ color, key }) => (
+          <div key={key} className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: color }} />
-            <span className="text-xs text-surface-500">{label}</span>
+            <span className="text-xs text-surface-500">{t(`visualize.legend.${key}`)}</span>
           </div>
         ))}
       </div>
@@ -114,6 +116,7 @@ function SortBars() {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function VisualizationPage() {
+  const { t } = useTranslation()
   const {
     algorithm, steps, currentStep, state, speed, arraySize,
     setAlgorithm, generateArray, setSpeed, setArraySize,
@@ -134,7 +137,7 @@ export default function VisualizationPage() {
   const progress  = steps.length > 1 ? (currentStep / (steps.length - 1)) * 100 : 0
   const algoInfo  = COMPLEXITIES[algorithm]
 
-  const statusLabel = isPlaying ? '▶ Playing' : isDone ? '✓ Done' : state === 'paused' ? '⏸ Paused' : 'Ready'
+  const statusLabel = isPlaying ? t('visualize.statusPlaying') : isDone ? t('visualize.statusDone') : state === 'paused' ? t('visualize.statusPaused') : t('visualize.statusReady')
   const statusColor = isPlaying
     ? 'bg-emerald-500/15 text-emerald-400'
     : isDone
@@ -149,9 +152,9 @@ export default function VisualizationPage() {
 
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <h1 className="text-3xl font-display font-bold mb-1">
-            Algorithm <span className="gradient-text">Visualizer</span>
+            {t('visualize.title')}
           </h1>
-          <p className="text-surface-400">Watch sorting algorithms execute step by step</p>
+          <p className="text-surface-400">{t('visualize.subtitle')}</p>
         </motion.div>
 
         <div className="grid xl:grid-cols-4 gap-5">
@@ -165,7 +168,7 @@ export default function VisualizationPage() {
           >
             {/* Algorithm picker */}
             <div className="p-4 rounded-2xl glass border border-white/8">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">Algorithm</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">{t('visualize.algorithmLabel')}</h3>
               <div className="space-y-1.5">
                 {ALGORITHMS.map(algo => (
                   <button
@@ -178,7 +181,7 @@ export default function VisualizationPage() {
                         : 'text-surface-400 hover:text-white hover:bg-white/5 border border-transparent'
                     )}
                   >
-                    <span>{algo.label}</span>
+                    <span>{t(`visualize.algorithms.${algo.id}`)}</span>
                     <span className="font-mono text-xs text-surface-500">{algo.complexity}</span>
                   </button>
                 ))}
@@ -188,7 +191,7 @@ export default function VisualizationPage() {
             {/* Array size */}
             <div className="p-4 rounded-2xl glass border border-white/8">
               <div className="flex justify-between text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">
-                <span>Array Size</span>
+                <span>{t('visualize.arraySize')}</span>
                 <span className="text-white">{arraySize}</span>
               </div>
               <input
@@ -202,15 +205,15 @@ export default function VisualizationPage() {
                 disabled={isPlaying}
                 className="w-full btn-ghost text-xs py-2 justify-center disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                <RefreshCw size={13} /> Randomize
+                <RefreshCw size={13} /> {t('visualize.randomize')}
               </button>
             </div>
 
             {/* Speed */}
             <div className="p-4 rounded-2xl glass border border-white/8">
               <div className="flex justify-between text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">
-                <span>Speed</span>
-                <span className="text-white">{speed <= 200 ? 'Fast' : speed <= 500 ? 'Normal' : 'Slow'}</span>
+                <span>{t('visualize.speed')}</span>
+                <span className="text-white">{speed <= 200 ? t('visualize.fast') : speed <= 500 ? t('visualize.normal') : t('visualize.slow')}</span>
               </div>
               {/* Inverted: slider right = faster = lower ms */}
               <input
@@ -220,25 +223,25 @@ export default function VisualizationPage() {
                 className="w-full accent-brand-500 cursor-pointer"
               />
               <div className="flex justify-between text-xs text-surface-600 mt-1">
-                <span>Slow</span><span>Fast</span>
+                <span>{t('visualize.slow')}</span><span>{t('visualize.fast')}</span>
               </div>
             </div>
 
             {/* Complexity */}
             {algoInfo && (
               <div className="p-4 rounded-2xl glass border border-white/8">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">Complexity</h3>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">{t('visualize.complexityLabel')}</h3>
                 <div className="space-y-2 mb-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-surface-400">Time</span>
+                    <span className="text-surface-400">{t('visualize.timeLabel')}</span>
                     <span className="font-mono text-amber-400">{algoInfo.time}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-surface-400">Space</span>
+                    <span className="text-surface-400">{t('visualize.spaceLabel')}</span>
                     <span className="font-mono text-emerald-400">{algoInfo.space}</span>
                   </div>
                 </div>
-                <p className="text-xs text-surface-500 leading-relaxed">{algoInfo.desc}</p>
+                <p className="text-xs text-surface-500 leading-relaxed">{t(`visualize.desc.${algorithm}`)}</p>
               </div>
             )}
           </motion.div>
@@ -258,7 +261,7 @@ export default function VisualizationPage() {
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 flex-shrink-0">
                 <div className="flex items-center gap-3">
                   <h3 className="font-semibold">
-                    {ALGORITHMS.find(a => a.id === algorithm)?.label}
+                    {t(`visualize.algorithms.${algorithm}`)}
                   </h3>
                   <span className={cn('text-xs px-2.5 py-0.5 rounded-full font-medium', statusColor)}>
                     {statusLabel}
@@ -267,7 +270,7 @@ export default function VisualizationPage() {
                 <div className="flex items-center gap-2 text-xs text-surface-500">
                   <Zap size={12} className="text-brand-400" />
                   {steps.length > 0
-                    ? `Step ${currentStep + 1} / ${steps.length}`
+                    ? t('visualize.stepOf', { current: currentStep + 1, total: steps.length })
                     : `${arraySize} elements`}
                 </div>
               </div>
@@ -387,10 +390,10 @@ export default function VisualizationPage() {
                 {/* Hint text */}
                 <p className="text-center text-xs text-surface-600 mt-3">
                   {isPlaying
-                    ? 'Click Pause anytime · Adjust speed while running'
+                    ? t('visualize.hintPlaying')
                     : isDone
-                    ? 'Click ↺ to replay with a new random array'
-                    : 'Click ▶ to run · or step through manually with ‹ ›'}
+                    ? t('visualize.hintDone')
+                    : t('visualize.hintIdle')}
                 </p>
               </div>
             </div>
@@ -403,13 +406,13 @@ export default function VisualizationPage() {
                 className="grid grid-cols-3 gap-3 mt-4"
               >
                 {[
-                  { label: 'Total Steps',  value: steps.length                },
-                  { label: 'Current Step', value: currentStep + 1             },
-                  { label: 'Progress',     value: `${Math.round(progress)}%` },
-                ].map(({ label, value }) => (
-                  <div key={label} className="p-4 rounded-xl glass border border-white/8 text-center">
+                  { labelKey: 'visualize.stats.totalSteps',  value: steps.length                },
+                  { labelKey: 'visualize.stats.currentStep', value: currentStep + 1             },
+                  { labelKey: 'visualize.stats.progressLabel', value: `${Math.round(progress)}%` },
+                ].map(({ labelKey, value }) => (
+                  <div key={labelKey} className="p-4 rounded-xl glass border border-white/8 text-center">
                     <div className="text-2xl font-display font-bold gradient-text">{value}</div>
-                    <div className="text-xs text-surface-500 mt-1">{label}</div>
+                    <div className="text-xs text-surface-500 mt-1">{t(labelKey)}</div>
                   </div>
                 ))}
               </motion.div>

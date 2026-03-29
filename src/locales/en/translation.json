@@ -245,6 +245,7 @@
     "randomize": "Randomize",
     "slow": "Slow",
     "fast": "Fast",
+    "normal": "Normal",
     "complexityLabel": "Complexity",
     "timeLabel": "Time",
     "spaceLabel": "Space",
@@ -306,6 +307,8 @@
     "badges": {
       "title": "Badges",
       "earned": "Earned",
+      "total": "Total",
+      "all": "All",
       "locked": "Locked",
       "rarity": {
         "common": "Common",
@@ -356,6 +359,24 @@
     "deleteAccount": "Delete Account",
     "recentNotifications": "Recent Notifications",
     "notifPreferences": "Notification Preferences",
+    "mockNotifs": {
+      "streak": {
+        "title": "Streak milestone!",
+        "body": "You've reached a 7-day streak. Keep it up!"
+      },
+      "badge": {
+        "title": "Badge earned",
+        "body": "You earned the \"Week Warrior\" badge."
+      },
+      "challenge": {
+        "title": "New challenge",
+        "body": "Try the new \"Linked List Reversal\" problem."
+      },
+      "report": {
+        "title": "Weekly report",
+        "body": "You solved 8 problems this week. Great work!"
+      }
+    },
     "notifs": {
       "streakTitle": "Streak Reminders",
       "streakDesc": "Daily nudge to keep your streak alive",

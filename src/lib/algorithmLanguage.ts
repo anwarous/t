@@ -22,7 +22,9 @@ export function registerAlgorithmLanguage(monaco: any) {
 
     builtins: ['lire', 'ecrire', 'écrire', 'convch', 'long', 'majus'],
 
-    typeKeywords: ['entier', 'reel', 'réel', 'booleen', 'booléen', 'chaine', 'chaîne', 'tableau'],
+    typeKeywords: ['entier', 'reel', 'réel', 'booleen', 'booléen', 'chaine', 'chaîne', 'tableau', 'enregistrement'],
+
+    structKeywords: ['tdo', 'tdnt'],
 
     constants: ['vrai', 'faux'],
 
@@ -56,11 +58,12 @@ export function registerAlgorithmLanguage(monaco: any) {
         // Identifiers and keywords (supports accented Latin letters)
         [/[a-zA-ZÀ-öø-ÿ_][a-zA-ZÀ-öø-ÿ0-9_]*/, {
           cases: {
-            '@keywords':     'keyword',
-            '@builtins':     'function',
-            '@typeKeywords': 'type',
-            '@constants':    'number',
-            '@default':      'identifier',
+            '@keywords':      'keyword',
+            '@builtins':      'function',
+            '@typeKeywords':  'type',
+            '@structKeywords':'keyword.struct',
+            '@constants':     'number',
+            '@default':       'identifier',
           },
         }],
 

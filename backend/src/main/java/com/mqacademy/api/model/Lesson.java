@@ -19,7 +19,7 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "chapter_id", nullable = false)
     private Chapter chapter;
 

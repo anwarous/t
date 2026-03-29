@@ -7,13 +7,7 @@ import {
 import { useMentorStore } from '@/store'
 import { cn } from '@/lib/utils'
 import type { ChatMessage } from '@/data/mockData'
-
-const QUICK_PROMPTS = [
-  { icon: Bug, label: 'Debug my code', text: 'Can you help me debug this code? It\'s giving me an unexpected result.' },
-  { icon: Lightbulb, label: 'Give me a hint', text: 'Can you give me a hint for the current problem without spoiling the solution?' },
-  { icon: BookOpen, label: 'Explain concept', text: 'Can you explain the key concept behind this algorithm in simple terms?' },
-  { icon: Zap, label: 'Optimize code', text: 'How can I improve the time complexity of my current solution?' },
-]
+import { useTranslation } from 'react-i18next'
 
 function TypingIndicator() {
   return (
@@ -110,9 +104,17 @@ function MessageBubble({ message }: { message: ChatMessage }) {
 
 export default function MentorPage() {
   const { messages, isTyping, sendMessage, clearMessages } = useMentorStore()
+  const { t } = useTranslation()
   const [input, setInput] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  const QUICK_PROMPTS = [
+    { icon: Bug, label: t('mentor.quickPrompts.debugLabel'), text: t('mentor.quickPrompts.debugText') },
+    { icon: Lightbulb, label: t('mentor.quickPrompts.hintLabel'), text: t('mentor.quickPrompts.hintText') },
+    { icon: BookOpen, label: t('mentor.quickPrompts.explainLabel'), text: t('mentor.quickPrompts.explainText') },
+    { icon: Zap, label: t('mentor.quickPrompts.optimizeLabel'), text: t('mentor.quickPrompts.optimizeText') },
+  ]
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -147,16 +149,16 @@ export default function MentorPage() {
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-500/20 to-accent-cyan/20 border border-brand-500/30 flex items-center justify-center">
                 <Brain size={20} className="text-brand-400" />
               </div>
-              AI <span className="gradient-text">Mentor</span>
+              {t('mentor.titlePart1')}<span className="gradient-text">{t('mentor.titlePart2')}</span>
             </h1>
-            <p className="text-surface-400 mt-1 ml-14">Your personal algorithm tutor, available 24/7</p>
+            <p className="text-surface-400 mt-1 ml-14">{t('mentor.subtitle')}</p>
           </div>
           <button
             onClick={clearMessages}
             className="btn-ghost text-xs py-2"
           >
             <Trash2 size={13} />
-            Clear chat
+            {t('mentor.clearChat')}
           </button>
         </motion.div>
 
@@ -171,7 +173,7 @@ export default function MentorPage() {
           >
             {/* Quick prompts */}
             <div className="p-4 rounded-2xl glass border border-white/8">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">Quick Prompts</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">{t('mentor.quickPromptsTitle')}</h3>
               <div className="space-y-2">
                 {QUICK_PROMPTS.map(({ icon: Icon, label, text }) => (
                   <button
@@ -188,15 +190,15 @@ export default function MentorPage() {
 
             {/* Capabilities */}
             <div className="p-4 rounded-2xl glass border border-white/8">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">What I can help with</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">{t('mentor.whatICanHelpTitle')}</h3>
               <div className="space-y-3 text-sm text-surface-400">
                 {[
-                  '🐛 Debug your code & explain errors',
-                  '💡 Give step-by-step hints',
-                  '📖 Explain algorithm concepts',
-                  '⚡ Suggest optimizations',
-                  '🎯 Guide problem-solving strategy',
-                  '🔁 Walk through example inputs',
+                  t('mentor.capabilities.debug'),
+                  t('mentor.capabilities.hint'),
+                  t('mentor.capabilities.explain'),
+                  t('mentor.capabilities.optimize'),
+                  t('mentor.capabilities.strategy'),
+                  t('mentor.capabilities.examples'),
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-2 text-xs leading-relaxed">
                     {item}
@@ -209,10 +211,10 @@ export default function MentorPage() {
             <div className="p-4 rounded-2xl bg-brand-500/8 border border-brand-500/20">
               <div className="flex items-center gap-2 text-brand-400 text-xs font-semibold mb-2">
                 <Sparkles size={13} />
-                Pro Tip
+                {t('mentor.proTip')}
               </div>
               <p className="text-xs text-surface-400 leading-relaxed">
-                Paste your code directly in the chat for instant debugging help. I'll analyze it and explain what's going wrong!
+                {t('mentor.proTipDesc')}
               </p>
             </div>
           </motion.div>
@@ -233,15 +235,15 @@ export default function MentorPage() {
                 <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 rounded-full border-2 border-surface-900" />
               </div>
               <div>
-                <div className="font-semibold text-sm">MQ Mentor</div>
+                <div className="font-semibold text-sm">{t('mentor.chatTitle')}</div>
                 <div className="text-xs text-emerald-400 flex items-center gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Online · Powered by Claude
+                  {t('mentor.online')}
                 </div>
               </div>
               <div className="ml-auto flex items-center gap-1.5 text-xs text-surface-500">
                 <ChevronDown size={14} />
-                {messages.length} messages
+                {t('mentor.messagesCount', { count: messages.length })}
               </div>
             </div>
 
@@ -279,7 +281,7 @@ export default function MentorPage() {
                       e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px'
                     }}
                     onKeyDown={handleKeyDown}
-                    placeholder="Ask about algorithms, paste your code, request hints..."
+                    placeholder={t('mentor.placeholder')}
                     className="input-field resize-none leading-relaxed py-3 min-h-[44px] max-h-[120px] overflow-y-auto"
                     style={{ height: '44px' }}
                   />
@@ -303,7 +305,7 @@ export default function MentorPage() {
                 </motion.button>
               </div>
               <p className="text-xs text-surface-600 mt-2 text-center">
-                Press <kbd className="px-1 py-0.5 rounded bg-surface-800 font-mono text-surface-400">Enter</kbd> to send, <kbd className="px-1 py-0.5 rounded bg-surface-800 font-mono text-surface-400">Shift+Enter</kbd> for new line
+                {t('mentor.pressEnterHint')}
               </p>
             </div>
           </motion.div>

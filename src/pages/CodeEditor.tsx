@@ -22,8 +22,9 @@ const MONACO_THEME = {
     { token: 'keyword',  foreground: '3b7bff' },
     { token: 'string',   foreground: '10b981' },
     { token: 'number',   foreground: 'f59e0b' },
-    { token: 'function', foreground: '00d4ff' },
-    { token: 'type',     foreground: 'a78bfa' },
+    { token: 'function',        foreground: 'a78bfa' },
+    { token: 'type',            foreground: 'a78bfa' },
+    { token: 'keyword.struct',  foreground: 'f97316' },
   ],
   colors: {
     'editor.background':                '#090e1f',

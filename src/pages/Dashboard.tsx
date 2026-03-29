@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -7,7 +6,8 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useUserStore } from '@/store'
-import { MOCK_COURSES, MOCK_EXERCISES, RECENT_ACTIVITY, LEADERBOARD_OTHERS, type LeaderboardEntry } from '@/data/mockData'
+import { RECENT_ACTIVITY, type LeaderboardEntry } from '@/data/mockData'
+import { useCourses, useExercises, useLeaderboard } from '@/hooks/useData'
 import { cn, getDifficultyBg } from '@/lib/utils'
 
 const fadeUp = {
@@ -40,7 +40,7 @@ function StatCard({ icon: Icon, value, label, color, bg }: {
   )
 }
 
-function CourseCard({ course, index }: { course: typeof MOCK_COURSES[0]; index: number }) {
+function CourseCard({ course, index }: { course: import('@/data/mockData').Course; index: number }) {
   const { t } = useTranslation()
   return (
     <motion.div
@@ -99,19 +99,12 @@ export default function Dashboard() {
   const { t } = useTranslation()
   const { user, badges } = useUserStore()
   const earnedBadges = badges.filter(b => b.earned)
-  const inProgress = MOCK_COURSES.filter(c => c.progress > 0 && c.progress < 100)
-  const recommended = MOCK_EXERCISES.filter(e => !e.completed).slice(0, 3)
+  const { courses } = useCourses()
+  const { exercises } = useExercises()
+  const { entries: leaderboard } = useLeaderboard()
 
-  // Build dynamic leaderboard with the real current-user entry
-  const leaderboard = useMemo((): (LeaderboardEntry & { rank: number })[] => {
-    const entries: LeaderboardEntry[] = [
-      ...LEADERBOARD_OTHERS,
-      { name: user.name, xp: user.xp, streak: user.streak, avatar: user.avatar, isCurrentUser: true },
-    ]
-    return entries
-      .sort((a, b) => b.xp - a.xp)
-      .map((e, i) => ({ ...e, rank: i + 1 }))
-  }, [user.name, user.xp, user.streak, user.avatar])
+  const inProgress = courses.filter(c => c.progress > 0 && c.progress < 100)
+  const recommended = exercises.filter(e => !e.completed).slice(0, 3)
 
   const myRank = leaderboard.find((e) => e.isCurrentUser)?.rank ?? '-'
 

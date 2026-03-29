@@ -6,7 +6,8 @@ import {
   Lock, Video, FileText, Code2, HelpCircle, Zap,
   ArrowLeft, Star, Users, BarChart2
 } from 'lucide-react'
-import { MOCK_COURSES, type Course, type Lesson } from '@/data/mockData'
+import { type Course, type Lesson } from '@/data/mockData'
+import { useCourses, useCourse } from '@/hooks/useData'
 import { cn, getDifficultyBg } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 
@@ -388,6 +389,7 @@ function CourseDetail({ course }: { course: Course }) {
 function CoursesListing() {
   const [filter, setFilter] = useState<string>('All')
   const { t } = useTranslation()
+  const { courses, loading } = useCourses()
   const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced']
   const difficultyLabels: Record<string, string> = {
     All: t('learn.all'),
@@ -397,8 +399,8 @@ function CoursesListing() {
   }
 
   const filtered = filter === 'All'
-    ? MOCK_COURSES
-    : MOCK_COURSES.filter(c => c.difficulty === filter)
+    ? courses
+    : courses.filter(c => c.difficulty === filter)
 
   return (
     <div className="min-h-screen px-4 py-8">
@@ -434,11 +436,19 @@ function CoursesListing() {
           <span className="ml-auto text-sm text-surface-500">{filtered.length} {t('learn.courses')}</span>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-5">
-          {filtered.map((course, i) => (
-            <CourseCard key={course.id} course={course} index={i} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="grid md:grid-cols-2 gap-5">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="h-64 rounded-2xl bg-surface-800/50 animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-5">
+            {filtered.map((course, i) => (
+              <CourseCard key={course.id} course={course} index={i} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -446,19 +456,39 @@ function CoursesListing() {
 
 // ─── Router entry point ────────────────────────────────────────────────────────
 
-export default function LearnPage() {
-  const { courseId } = useParams<{ courseId?: string }>()
+function CourseDetailLoader({ courseId }: { courseId: string }) {
+  const { course, loading, error } = useCourse(courseId)
   const { t } = useTranslation()
 
-  if (courseId) {
-    const course = MOCK_COURSES.find(c => c.id === courseId)
-    if (!course) return (
+  if (loading) {
+    return (
+      <div className="min-h-screen px-4 py-8">
+        <div className="max-w-5xl mx-auto space-y-4">
+          <div className="h-8 w-32 rounded-xl bg-surface-800/50 animate-pulse" />
+          <div className="h-48 rounded-2xl bg-surface-800/50 animate-pulse" />
+          <div className="h-64 rounded-2xl bg-surface-800/50 animate-pulse" />
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !course) {
+    return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <h2 className="text-2xl font-bold">{t('common.error')}</h2>
         <Link to="/learn" className="btn-primary">{t('learn.allCourses')}</Link>
       </div>
     )
-    return <CourseDetail course={course} />
+  }
+
+  return <CourseDetail course={course} />
+}
+
+export default function LearnPage() {
+  const { courseId } = useParams<{ courseId?: string }>()
+
+  if (courseId) {
+    return <CourseDetailLoader courseId={courseId} />
   }
 
   return <CoursesListing />

@@ -1,7 +1,7 @@
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? ''
 
 // When no API base URL is configured, use demo mode (mock auth backed by localStorage).
-const DEMO_MODE = BASE_URL === ''
+export const DEMO_MODE = BASE_URL === ''
 
 export interface AuthResponse {
   token: string
@@ -150,5 +150,314 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify(payload),
     })
+  },
+}
+
+// ---------------------------------------------------------------------------
+// Auth header helper
+// ---------------------------------------------------------------------------
+function getAuthHeaders(): Record<string, string> {
+  const token = localStorage.getItem('mqa_token')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+// ---------------------------------------------------------------------------
+// Mapping helpers
+// ---------------------------------------------------------------------------
+function formatDuration(minutes: number): string {
+  if (minutes < 60) return `${minutes} min`
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return m > 0 ? `${h}h ${m}m` : `${h}h`
+}
+
+function mapCourseDifficulty(d: string): 'Beginner' | 'Intermediate' | 'Advanced' {
+  if (d === 'INTERMEDIATE') return 'Intermediate'
+  if (d === 'ADVANCED') return 'Advanced'
+  return 'Beginner'
+}
+
+function mapExerciseDifficulty(d: string): 'Easy' | 'Medium' | 'Hard' {
+  if (d === 'MEDIUM') return 'Medium'
+  if (d === 'HARD') return 'Hard'
+  return 'Easy'
+}
+
+function mapLessonType(t: string): 'video' | 'reading' | 'practice' | 'quiz' {
+  const lower = t.toLowerCase()
+  if (lower === 'video') return 'video'
+  if (lower === 'reading') return 'reading'
+  if (lower === 'practice') return 'practice'
+  if (lower === 'quiz') return 'quiz'
+  return 'reading'
+}
+
+function safeParse<T>(json: string | null | undefined, fallback: T): T {
+  if (!json) return fallback
+  try { return JSON.parse(json) as T } catch { return fallback }
+}
+
+// ---------------------------------------------------------------------------
+// API DTO interfaces
+// ---------------------------------------------------------------------------
+export interface ApiCourseDto {
+  id: string
+  slug: string
+  title: string
+  description: string
+  category: string
+  difficulty: string
+  totalLessons: number
+  durationMinutes: number
+  xpReward: number
+  colorHex: string
+  icon: string
+  tags: string
+}
+
+export interface ApiLessonDto {
+  id: string
+  title: string
+  type: string
+  durationMinutes: number
+  xpReward: number
+  videoUrl: string | null
+  locked: boolean
+}
+
+export interface ApiChapterDto {
+  id: string
+  title: string
+  lessons: ApiLessonDto[]
+}
+
+export interface ApiCourseDetailDto extends ApiCourseDto {
+  chapters: ApiChapterDto[]
+}
+
+export interface ApiExerciseDto {
+  id: string
+  slug: string
+  title: string
+  description: string
+  difficulty: string
+  category: string
+  xpReward: number
+}
+
+export interface ApiExerciseDetailDto extends ApiExerciseDto {
+  starterCode: string
+  hints: string | null
+  examples: string | null
+  constraints: string | null
+  testCases: string | null
+}
+
+export interface ApiProgressDto {
+  id: string
+  courseId: string
+  courseSlug: string
+  courseTitle: string
+  completedLessons: number
+  totalLessons: number
+  progressPercent: number
+  lastActivityAt: string
+}
+
+export interface ApiLeaderboardEntryDto {
+  position: number
+  userId: string
+  username: string
+  displayName: string
+  avatarInitials: string
+  xp: number
+  level: number
+  rank: string
+  totalSolved: number
+}
+
+export interface ApiSubmissionDto {
+  id: string
+  exerciseId: string
+  exerciseSlug: string
+  exerciseTitle: string
+  code: string
+  passed: boolean
+  xpEarned: number
+  submittedAt: string
+}
+
+// ---------------------------------------------------------------------------
+// Converter: backend DTOs → frontend Course/Exercise types
+// ---------------------------------------------------------------------------
+import type { Course, Exercise } from '@/data/mockData'
+
+export function apiCourseToFrontend(dto: ApiCourseDto, progress?: ApiProgressDto): Course {
+  return {
+    id: dto.slug,
+    title: dto.title,
+    description: dto.description,
+    category: dto.category,
+    difficulty: mapCourseDifficulty(dto.difficulty),
+    progress: progress?.progressPercent ?? 0,
+    totalLessons: dto.totalLessons,
+    completedLessons: progress?.completedLessons ?? 0,
+    duration: formatDuration(dto.durationMinutes),
+    xpReward: dto.xpReward,
+    color: dto.colorHex,
+    icon: dto.icon,
+    tags: dto.tags ? dto.tags.split(',').map(t => t.trim()) : [],
+    chapters: [],
+  }
+}
+
+export function apiCourseDetailToFrontend(dto: ApiCourseDetailDto, progress?: ApiProgressDto): Course {
+  const completedLessonIds = new Set<string>()
+  return {
+    id: dto.slug,
+    title: dto.title,
+    description: dto.description,
+    category: dto.category,
+    difficulty: mapCourseDifficulty(dto.difficulty),
+    progress: progress?.progressPercent ?? 0,
+    totalLessons: dto.totalLessons,
+    completedLessons: progress?.completedLessons ?? 0,
+    duration: formatDuration(dto.durationMinutes),
+    xpReward: dto.xpReward,
+    color: dto.colorHex,
+    icon: dto.icon,
+    tags: dto.tags ? dto.tags.split(',').map(t => t.trim()) : [],
+    chapters: dto.chapters.map(ch => ({
+      id: ch.id,
+      title: ch.title,
+      lessons: ch.lessons.map(l => ({
+        id: l.id,
+        title: l.title,
+        type: mapLessonType(l.type),
+        duration: formatDuration(l.durationMinutes),
+        completed: completedLessonIds.has(l.id),
+        locked: l.locked,
+        xp: l.xpReward,
+      })),
+    })),
+  }
+}
+
+export function apiExerciseToFrontend(dto: ApiExerciseDto): Exercise {
+  return {
+    id: dto.slug,
+    title: dto.title,
+    difficulty: mapExerciseDifficulty(dto.difficulty),
+    category: dto.category,
+    completed: false,
+    attempts: 0,
+    xp: dto.xpReward,
+    description: dto.description,
+    starterCode: '',
+    solution: '',
+  }
+}
+
+export function apiExerciseDetailToFrontend(dto: ApiExerciseDetailDto): Exercise {
+  const examples = safeParse<{ input: string; output: string; explanation?: string }[]>(dto.examples, [])
+  const constraints = safeParse<string[]>(dto.constraints, [])
+  return {
+    id: dto.slug,
+    title: dto.title,
+    difficulty: mapExerciseDifficulty(dto.difficulty),
+    category: dto.category,
+    completed: false,
+    attempts: 0,
+    xp: dto.xpReward,
+    description: dto.description,
+    starterCode: dto.starterCode ?? '',
+    solution: '',
+    hint: dto.hints ?? undefined,
+    examples: examples.map(e => ({ input: e.input, output: e.output, note: e.explanation })),
+    constraints,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Courses API
+// ---------------------------------------------------------------------------
+export const coursesApi = {
+  list: (): Promise<ApiCourseDto[]> =>
+    request<ApiCourseDto[]>('/courses', { method: 'GET' }),
+
+  getBySlug: (slug: string): Promise<ApiCourseDetailDto> =>
+    request<ApiCourseDetailDto>(`/courses/${slug}`, { method: 'GET' }),
+}
+
+// ---------------------------------------------------------------------------
+// Exercises API
+// ---------------------------------------------------------------------------
+export const exercisesApi = {
+  list: (): Promise<ApiExerciseDto[]> =>
+    request<ApiExerciseDto[]>('/exercises', { method: 'GET' }),
+
+  getBySlug: (slug: string): Promise<ApiExerciseDetailDto> =>
+    request<ApiExerciseDetailDto>(`/exercises/${slug}`, { method: 'GET' }),
+
+  submit: (slug: string, code: string): Promise<ApiSubmissionDto> => {
+    if (DEMO_MODE) {
+      return Promise.resolve({
+        id: 'demo-sub',
+        exerciseId: slug,
+        exerciseSlug: slug,
+        exerciseTitle: slug,
+        code,
+        passed: code.trim().length > 20,
+        xpEarned: code.trim().length > 20 ? 50 : 0,
+        submittedAt: new Date().toISOString(),
+      })
+    }
+    return request<ApiSubmissionDto>(`/exercises/${slug}/submit`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ code, language: 'javascript' }),
+    })
+  },
+}
+
+// ---------------------------------------------------------------------------
+// Progress API
+// ---------------------------------------------------------------------------
+export const progressApi = {
+  get: (): Promise<ApiProgressDto[]> => {
+    if (DEMO_MODE) return Promise.resolve([])
+    return request<ApiProgressDto[]>('/progress', {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    })
+  },
+
+  markLessonComplete: (courseSlug: string, lessonId: string): Promise<ApiProgressDto> => {
+    if (DEMO_MODE) {
+      return Promise.resolve({
+        id: 'demo',
+        courseId: '',
+        courseSlug,
+        courseTitle: '',
+        completedLessons: 1,
+        totalLessons: 1,
+        progressPercent: 100,
+        lastActivityAt: new Date().toISOString(),
+      })
+    }
+    return request<ApiProgressDto>(`/progress/${courseSlug}/lessons/${lessonId}/complete`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    })
+  },
+}
+
+// ---------------------------------------------------------------------------
+// Leaderboard API
+// ---------------------------------------------------------------------------
+export const leaderboardApi = {
+  get: (): Promise<ApiLeaderboardEntryDto[]> => {
+    if (DEMO_MODE) return Promise.resolve([])
+    return request<ApiLeaderboardEntryDto[]>('/leaderboard', { method: 'GET' })
   },
 }

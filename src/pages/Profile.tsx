@@ -258,7 +258,7 @@ function BadgesTab() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: t('profile.badges.earned'), value: earned.length,            color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: 'Total',                    value: badges.length,            color: 'text-surface-300', bg: 'bg-surface-800'    },
+          { label: t('profile.badges.total'),   value: badges.length,            color: 'text-surface-300', bg: 'bg-surface-800'    },
           { label: t('profile.badges.rarity.legendary'), value: badges.filter(b => b.rarity === 'legendary' && b.earned).length, color: 'text-amber-400', bg: 'bg-amber-500/10' },
           { label: t('profile.badges.rarity.epic'),      value: badges.filter(b => b.rarity === 'epic'      && b.earned).length, color: 'text-purple-400', bg: 'bg-purple-500/10' },
         ].map(({ label, value, color, bg }) => (
@@ -282,7 +282,7 @@ function BadgesTab() {
                 : 'text-surface-400 bg-surface-800/60 border border-white/5 hover:border-white/15 hover:text-white'
             )}
           >
-            {f === 'all' ? 'all' : f === 'earned' ? t('profile.badges.earned') : t(`profile.badges.rarity.${f}`)}
+            {f === 'all' ? t('profile.badges.all') : f === 'earned' ? t('profile.badges.earned') : t(`profile.badges.rarity.${f}`)}
           </button>
         ))}
       </div>
@@ -549,12 +549,12 @@ function NotificationsTab() {
       <div className="p-6 rounded-2xl glass border border-white/8">
         <h3 className="font-bold mb-4">{t('profile.recentNotifications')}</h3>
         <div className="space-y-2">
-          {[
-            { icon: '🔥', title: 'Streak milestone!', body: 'You\'ve reached a 7-day streak. Keep it up!', time: '2h ago', unread: true },
-            { icon: '🏅', title: 'Badge earned',       body: 'You earned the "Week Warrior" badge.',          time: '2d ago', unread: true },
-            { icon: '⚡', title: 'New challenge',      body: 'Try the new "Linked List Reversal" problem.',   time: '3d ago', unread: true },
-            { icon: '📊', title: 'Weekly report',      body: 'You solved 8 problems this week. Great work!',  time: '7d ago', unread: false },
-          ].map((n, i) => (
+          {([
+            { icon: '🔥', titleKey: 'profile.mockNotifs.streak.title', bodyKey: 'profile.mockNotifs.streak.body', time: '2h ago', unread: true },
+            { icon: '🏅', titleKey: 'profile.mockNotifs.badge.title',   bodyKey: 'profile.mockNotifs.badge.body',   time: '2d ago', unread: true },
+            { icon: '⚡', titleKey: 'profile.mockNotifs.challenge.title', bodyKey: 'profile.mockNotifs.challenge.body', time: '3d ago', unread: true },
+            { icon: '📊', titleKey: 'profile.mockNotifs.report.title',  bodyKey: 'profile.mockNotifs.report.body',  time: '7d ago', unread: false },
+          ] as const).map((n, i) => (
             <div
               key={i}
               className={cn(
@@ -565,10 +565,10 @@ function NotificationsTab() {
               <div className="text-2xl flex-shrink-0 mt-0.5">{n.icon}</div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium text-sm">{n.title}</span>
+                  <span className="font-medium text-sm">{t(n.titleKey)}</span>
                   {n.unread && <span className="w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0" />}
                 </div>
-                <p className="text-xs text-surface-400 mt-0.5">{n.body}</p>
+                <p className="text-xs text-surface-400 mt-0.5">{t(n.bodyKey)}</p>
                 <p className="text-xs text-surface-600 mt-1">{n.time}</p>
               </div>
             </div>
@@ -585,8 +585,8 @@ export default function ProfilePage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const tab = searchParams.get('tab') || 'profile'
 
-  function setTab(t: string) {
-    setSearchParams({ tab: t })
+  function setTab(id: string) {
+    setSearchParams({ tab: id })
   }
 
   const tabContent: Record<string, React.ReactNode> = {
@@ -622,7 +622,7 @@ export default function ProfilePage() {
             className="lg:w-52 flex-shrink-0"
           >
             <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0">
-              {TABS.map(({ id, label, icon: Icon }) => (
+              {TABS.map(({ id, tKey, icon: Icon }) => (
                 <button
                   key={id}
                   onClick={() => setTab(id)}
@@ -634,7 +634,7 @@ export default function ProfilePage() {
                   )}
                 >
                   <Icon size={16} />
-                  {label}
+                  {t(tKey)}
                   {id === 'notifications' && (
                     <span className="ml-auto text-xs bg-brand-500 text-white rounded-full w-4 h-4 flex items-center justify-center font-bold">
                       3

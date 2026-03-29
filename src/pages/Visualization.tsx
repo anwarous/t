@@ -213,7 +213,7 @@ export default function VisualizationPage() {
             <div className="p-4 rounded-2xl glass border border-white/8">
               <div className="flex justify-between text-xs font-semibold uppercase tracking-wider text-surface-500 mb-3">
                 <span>{t('visualize.speed')}</span>
-                <span className="text-white">{speed <= 200 ? t('visualize.fast') : speed <= 500 ? 'Normal' : t('visualize.slow')}</span>
+                <span className="text-white">{speed <= 200 ? t('visualize.fast') : speed <= 500 ? t('visualize.normal') : t('visualize.slow')}</span>
               </div>
               {/* Inverted: slider right = faster = lower ms */}
               <input

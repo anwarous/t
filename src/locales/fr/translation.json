@@ -245,6 +245,7 @@
     "randomize": "Aléatoire",
     "slow": "Lent",
     "fast": "Rapide",
+    "normal": "Normal",
     "complexityLabel": "Complexité",
     "timeLabel": "Temps",
     "spaceLabel": "Espace",
@@ -306,6 +307,8 @@
     "badges": {
       "title": "Badges",
       "earned": "Obtenu",
+      "total": "Total",
+      "all": "Tous",
       "locked": "Verrouillé",
       "rarity": {
         "common": "Commun",
@@ -356,6 +359,24 @@
     "deleteAccount": "Supprimer le compte",
     "recentNotifications": "Notifications récentes",
     "notifPreferences": "Préférences de notification",
+    "mockNotifs": {
+      "streak": {
+        "title": "Jalon de série !",
+        "body": "Vous avez atteint une série de 7 jours. Continuez comme ça !"
+      },
+      "badge": {
+        "title": "Badge obtenu",
+        "body": "Vous avez obtenu le badge « Week Warrior »."
+      },
+      "challenge": {
+        "title": "Nouveau défi",
+        "body": "Essayez le nouveau problème « Inversion de liste chaînée »."
+      },
+      "report": {
+        "title": "Rapport hebdomadaire",
+        "body": "Vous avez résolu 8 problèmes cette semaine. Bravo !"
+      }
+    },
     "notifs": {
       "streakTitle": "Rappels de série",
       "streakDesc": "Rappel quotidien pour maintenir votre série",

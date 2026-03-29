@@ -16,5 +16,5 @@ public record CourseDetailDto(
         String colorHex,
         String icon,
         String tags,
-        List<String> chapters
+        List<ChapterDto> chapters
 ) {}

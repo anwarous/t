@@ -44,6 +44,15 @@ public class Exercise {
     @Column(columnDefinition = "TEXT")
     private String hints;
 
+    @Column(columnDefinition = "TEXT")
+    private String examples;
+
+    @Column(columnDefinition = "TEXT")
+    private String constraints;
+
+    @Column(name = "test_cases", columnDefinition = "TEXT")
+    private String testCases;
+
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

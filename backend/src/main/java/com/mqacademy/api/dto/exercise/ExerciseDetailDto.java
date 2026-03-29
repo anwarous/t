@@ -11,5 +11,8 @@ public record ExerciseDetailDto(
         String category,
         int xpReward,
         String starterCode,
-        String hints
+        String hints,
+        String examples,
+        String constraints,
+        String testCases
 ) {}

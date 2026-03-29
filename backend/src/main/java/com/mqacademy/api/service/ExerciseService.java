@@ -91,7 +91,7 @@ public class ExerciseService {
     private ExerciseDetailDto toDetailDto(Exercise e) {
         return new ExerciseDetailDto(e.getId(), e.getSlug(), e.getTitle(), e.getDescription(),
                 e.getDifficulty().name(), e.getCategory(), e.getXpReward(),
-                e.getStarterCode(), e.getHints());
+                e.getStarterCode(), e.getHints(), e.getExamples(), e.getConstraints(), e.getTestCases());
     }
 
     private SubmissionDto toSubmissionDto(Submission s) {

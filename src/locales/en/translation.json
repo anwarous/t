@@ -275,16 +275,45 @@
   },
   "mentor": {
     "title": "AI Mentor",
-    "subtitle": "Your personal algorithm guide",
-    "placeholder": "Ask me anything about algorithms, data structures, or your code…",
+    "titlePart1": "AI ",
+    "titlePart2": "Mentor",
+    "subtitle": "Your personal algorithm tutor, available 24/7",
+    "placeholder": "Ask about algorithms, paste your code, request hints...",
     "send": "Send",
-    "clearChat": "Clear Chat",
+    "clearChat": "Clear chat",
     "thinking": "Thinking…",
+    "quickPromptsTitle": "Quick Prompts",
+    "whatICanHelpTitle": "What I can help with",
+    "capabilities": {
+      "debug": "🐛 Debug your code & explain errors",
+      "hint": "💡 Give step-by-step hints",
+      "explain": "📖 Explain algorithm concepts",
+      "optimize": "⚡ Suggest optimizations",
+      "strategy": "🎯 Guide problem-solving strategy",
+      "examples": "🔁 Walk through example inputs"
+    },
+    "proTip": "Pro Tip",
+    "proTipDesc": "Paste your code directly in the chat for instant debugging help. I'll analyze it and explain what's going wrong!",
+    "chatTitle": "MQ Mentor",
+    "online": "Online · Powered by Claude",
+    "messagesCount_one": "{{count}} message",
+    "messagesCount_other": "{{count}} messages",
+    "pressEnterHint": "Press Enter to send, Shift+Enter for new line",
     "suggestions": {
       "bubbleSort": "Explain bubble sort complexity",
       "bfs": "How does BFS work?",
       "dp": "What is dynamic programming?",
       "debug": "Help me debug my code"
+    },
+    "quickPrompts": {
+      "debugLabel": "Debug my code",
+      "debugText": "Can you help me debug this code? It's giving me an unexpected result.",
+      "hintLabel": "Give me a hint",
+      "hintText": "Can you give me a hint for the current problem without spoiling the solution?",
+      "explainLabel": "Explain concept",
+      "explainText": "Can you explain the key concept behind this algorithm in simple terms?",
+      "optimizeLabel": "Optimize code",
+      "optimizeText": "How can I improve the time complexity of my current solution?"
     }
   },
   "profile": {

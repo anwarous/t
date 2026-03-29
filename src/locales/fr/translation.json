@@ -275,16 +275,45 @@
   },
   "mentor": {
     "title": "Mentor IA",
-    "subtitle": "Votre guide personnel en algorithmique",
-    "placeholder": "Posez-moi une question sur les algorithmes, les structures de données ou votre code…",
+    "titlePart1": "Mentor ",
+    "titlePart2": "IA",
+    "subtitle": "Votre tuteur personnel en algorithmique, disponible 24h/24",
+    "placeholder": "Posez une question sur les algorithmes, collez votre code, demandez des indices...",
     "send": "Envoyer",
-    "clearChat": "Effacer la conversation",
+    "clearChat": "Effacer le chat",
     "thinking": "Réflexion…",
+    "quickPromptsTitle": "Suggestions rapides",
+    "whatICanHelpTitle": "Ce que je peux vous aider à faire",
+    "capabilities": {
+      "debug": "🐛 Déboguer votre code et expliquer les erreurs",
+      "hint": "💡 Donner des indices étape par étape",
+      "explain": "📖 Expliquer les concepts d'algorithmes",
+      "optimize": "⚡ Suggérer des optimisations",
+      "strategy": "🎯 Guider la stratégie de résolution de problèmes",
+      "examples": "🔁 Parcourir des exemples d'entrées"
+    },
+    "proTip": "Astuce Pro",
+    "proTipDesc": "Collez votre code directement dans le chat pour une aide au débogage instantanée. Je l'analyserai et expliquerai ce qui ne va pas !",
+    "chatTitle": "MQ Mentor",
+    "online": "En ligne · Propulsé par Claude",
+    "messagesCount_one": "{{count}} message",
+    "messagesCount_other": "{{count}} messages",
+    "pressEnterHint": "Appuyez sur Entrée pour envoyer, Maj+Entrée pour une nouvelle ligne",
     "suggestions": {
       "bubbleSort": "Expliquer la complexité du tri à bulles",
       "bfs": "Comment fonctionne BFS ?",
       "dp": "Qu'est-ce que la programmation dynamique ?",
       "debug": "Aidez-moi à déboguer mon code"
+    },
+    "quickPrompts": {
+      "debugLabel": "Déboguer mon code",
+      "debugText": "Pouvez-vous m'aider à déboguer ce code ? Il me donne un résultat inattendu.",
+      "hintLabel": "Donnez-moi un indice",
+      "hintText": "Pouvez-vous me donner un indice pour le problème actuel sans révéler la solution ?",
+      "explainLabel": "Expliquer le concept",
+      "explainText": "Pouvez-vous expliquer le concept clé de cet algorithme en termes simples ?",
+      "optimizeLabel": "Optimiser le code",
+      "optimizeText": "Comment puis-je améliorer la complexité temporelle de ma solution actuelle ?"
     }
   },
   "profile": {

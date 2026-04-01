@@ -1,0 +1,146 @@
+[
+  {
+    "_id": "up-001",
+    "userId": "usr_001",
+    "courseId": "sorting-algorithms",
+    "completedLessons": 5,
+    "progressPercent": 42,
+    "lastActivityAt": { "$date": "2024-03-28T10:00:00.000Z" }
+  },
+  {
+    "_id": "up-002",
+    "userId": "usr_001",
+    "courseId": "data-structures",
+    "completedLessons": 10,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2024-03-15T14:30:00.000Z" }
+  },
+  {
+    "_id": "up-003",
+    "userId": "usr_001",
+    "courseId": "dynamic-programming",
+    "completedLessons": 3,
+    "progressPercent": 17,
+    "lastActivityAt": { "$date": "2024-04-01T09:00:00.000Z" }
+  },
+  {
+    "_id": "up-004",
+    "userId": "usr_002",
+    "courseId": "sorting-algorithms",
+    "completedLessons": 12,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2024-02-05T11:00:00.000Z" }
+  },
+  {
+    "_id": "up-005",
+    "userId": "usr_002",
+    "courseId": "graph-algorithms",
+    "completedLessons": 9,
+    "progressPercent": 60,
+    "lastActivityAt": { "$date": "2024-03-20T16:00:00.000Z" }
+  },
+  {
+    "_id": "up-006",
+    "userId": "usr_004",
+    "courseId": "sorting-algorithms",
+    "completedLessons": 12,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2023-12-28T08:00:00.000Z" }
+  },
+  {
+    "_id": "up-007",
+    "userId": "usr_004",
+    "courseId": "graph-algorithms",
+    "completedLessons": 15,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2024-01-10T10:00:00.000Z" }
+  },
+  {
+    "_id": "up-008",
+    "userId": "usr_004",
+    "courseId": "dynamic-programming",
+    "completedLessons": 18,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2024-01-25T12:00:00.000Z" }
+  },
+  {
+    "_id": "up-009",
+    "userId": "usr_004",
+    "courseId": "data-structures",
+    "completedLessons": 10,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2024-01-20T09:00:00.000Z" }
+  },
+  {
+    "_id": "up-010",
+    "userId": "usr_006",
+    "courseId": "sorting-algorithms",
+    "completedLessons": 12,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2023-11-15T07:00:00.000Z" }
+  },
+  {
+    "_id": "up-011",
+    "userId": "usr_006",
+    "courseId": "graph-algorithms",
+    "completedLessons": 15,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2023-11-20T08:00:00.000Z" }
+  },
+  {
+    "_id": "up-012",
+    "userId": "usr_006",
+    "courseId": "dynamic-programming",
+    "completedLessons": 18,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2023-12-01T07:30:00.000Z" }
+  },
+  {
+    "_id": "up-013",
+    "userId": "usr_006",
+    "courseId": "recursion",
+    "completedLessons": 10,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2023-12-15T08:00:00.000Z" }
+  },
+  {
+    "_id": "up-014",
+    "userId": "usr_009",
+    "courseId": "sorting-algorithms",
+    "completedLessons": 12,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2023-09-10T06:00:00.000Z" }
+  },
+  {
+    "_id": "up-015",
+    "userId": "usr_009",
+    "courseId": "graph-algorithms",
+    "completedLessons": 15,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2023-09-20T06:00:00.000Z" }
+  },
+  {
+    "_id": "up-016",
+    "userId": "usr_009",
+    "courseId": "dynamic-programming",
+    "completedLessons": 18,
+    "progressPercent": 100,
+    "lastActivityAt": { "$date": "2023-10-05T06:00:00.000Z" }
+  },
+  {
+    "_id": "up-017",
+    "userId": "usr_003",
+    "courseId": "data-structures",
+    "completedLessons": 6,
+    "progressPercent": 60,
+    "lastActivityAt": { "$date": "2024-03-10T10:00:00.000Z" }
+  },
+  {
+    "_id": "up-018",
+    "userId": "usr_005",
+    "courseId": "sorting-algorithms",
+    "completedLessons": 3,
+    "progressPercent": 25,
+    "lastActivityAt": { "$date": "2024-03-25T12:00:00.000Z" }
+  }
+]

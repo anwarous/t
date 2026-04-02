@@ -1,0 +1,92 @@
+[
+  {
+    "_id": "sub-001",
+    "userId": "usr_001",
+    "exerciseId": "ex-001",
+    "code": "def two_sum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return []",
+    "passed": true,
+    "xpEarned": 100,
+    "submittedAt": { "$date": "2024-01-16T09:00:00.000Z" }
+  },
+  {
+    "_id": "sub-002",
+    "userId": "usr_001",
+    "exerciseId": "ex-003",
+    "code": "def binary_search(nums, target):\n    left, right = 0, len(nums) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1",
+    "passed": true,
+    "xpEarned": 120,
+    "submittedAt": { "$date": "2024-01-18T11:30:00.000Z" }
+  },
+  {
+    "_id": "sub-003",
+    "userId": "usr_001",
+    "exerciseId": "ex-002",
+    "code": "def bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n-i-1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n    return arr",
+    "passed": true,
+    "xpEarned": 150,
+    "submittedAt": { "$date": "2024-01-20T14:00:00.000Z" }
+  },
+  {
+    "_id": "sub-004",
+    "userId": "usr_001",
+    "exerciseId": "ex-002",
+    "code": "def bubble_sort(arr):\n    # first attempt with bug\n    for i in range(len(arr)):\n        for j in range(len(arr)):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n    return arr",
+    "passed": false,
+    "xpEarned": 0,
+    "submittedAt": { "$date": "2024-01-19T10:00:00.000Z" }
+  },
+  {
+    "_id": "sub-005",
+    "userId": "usr_002",
+    "exerciseId": "ex-001",
+    "code": "def two_sum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return []",
+    "passed": true,
+    "xpEarned": 100,
+    "submittedAt": { "$date": "2024-01-12T08:00:00.000Z" }
+  },
+  {
+    "_id": "sub-006",
+    "userId": "usr_002",
+    "exerciseId": "ex-008",
+    "code": "def max_subarray(nums):\n    max_sum = current_sum = nums[0]\n    for num in nums[1:]:\n        current_sum = max(num, current_sum + num)\n        max_sum = max(max_sum, current_sum)\n    return max_sum",
+    "passed": true,
+    "xpEarned": 220,
+    "submittedAt": { "$date": "2024-01-14T15:00:00.000Z" }
+  },
+  {
+    "_id": "sub-007",
+    "userId": "usr_004",
+    "exerciseId": "ex-016",
+    "code": "def coin_change(coins, amount):\n    dp = [float('inf')] * (amount + 1)\n    dp[0] = 0\n    for i in range(1, amount + 1):\n        for coin in coins:\n            if coin <= i:\n                dp[i] = min(dp[i], dp[i - coin] + 1)\n    return dp[amount] if dp[amount] != float('inf') else -1",
+    "passed": true,
+    "xpEarned": 250,
+    "submittedAt": { "$date": "2024-01-05T10:00:00.000Z" }
+  },
+  {
+    "_id": "sub-008",
+    "userId": "usr_004",
+    "exerciseId": "ex-010",
+    "code": "def fib(n, memo=None):\n    if memo is None:\n        memo = {}\n    if n in memo:\n        return memo[n]\n    if n <= 1:\n        return n\n    memo[n] = fib(n - 1, memo) + fib(n - 2, memo)\n    return memo[n]",
+    "passed": true,
+    "xpEarned": 180,
+    "submittedAt": { "$date": "2024-01-06T09:30:00.000Z" }
+  },
+  {
+    "_id": "sub-009",
+    "userId": "usr_006",
+    "exerciseId": "ex-001",
+    "code": "def two_sum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        if target - num in seen:\n            return [seen[target - num], i]\n        seen[num] = i\n    return []",
+    "passed": true,
+    "xpEarned": 100,
+    "submittedAt": { "$date": "2023-11-10T07:00:00.000Z" }
+  },
+  {
+    "_id": "sub-010",
+    "userId": "usr_009",
+    "exerciseId": "ex-016",
+    "code": "def coin_change(coins, amount):\n    dp = [float('inf')] * (amount + 1)\n    dp[0] = 0\n    for i in range(1, amount + 1):\n        for coin in coins:\n            if coin <= i:\n                dp[i] = min(dp[i], dp[i - coin] + 1)\n    return dp[amount] if dp[amount] != float('inf') else -1",
+    "passed": true,
+    "xpEarned": 250,
+    "submittedAt": { "$date": "2023-09-15T06:00:00.000Z" }
+  }
+]

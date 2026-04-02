@@ -1,0 +1,373 @@
+[
+  {
+    "_id": "ex-001",
+    "slug": "two-sum",
+    "title": "Two Sum",
+    "difficulty": "EASY",
+    "category": "Arrays",
+    "xpReward": 100,
+    "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+    "starterCode": "def two_sum(nums: list[int], target: int) -> list[int]:\n    # Your solution here\n    pass\n\nprint(two_sum([2, 7, 11, 15], 9))   # Expected: [0, 1]\nprint(two_sum([3, 2, 4], 6))         # Expected: [1, 2]\nprint(two_sum([3, 3], 6))            # Expected: [0, 1]\n",
+    "solutionCode": "def two_sum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return []",
+    "hints": "For each element x, you need target − x. Can you check for it in O(1) using a hash map?",
+    "examples": [
+      { "input": "[2, 7, 11, 15], target = 9", "output": "[0, 1]", "note": "nums[0] + nums[1] = 2 + 7 = 9" },
+      { "input": "[3, 2, 4], target = 6",       "output": "[1, 2]" }
+    ],
+    "constraints": ["2 ≤ nums.length ≤ 10⁴", "-10⁹ ≤ nums[i] ≤ 10⁹", "Only one valid answer exists"],
+    "testCases": [
+      { "call": "two_sum([2, 7, 11, 15], 9)", "expected": "[0, 1]" },
+      { "call": "two_sum([3, 2, 4], 6)",       "expected": "[1, 2]" },
+      { "call": "two_sum([3, 3], 6)",           "expected": "[0, 1]" }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-002",
+    "slug": "implement-bubble-sort",
+    "title": "Implement Bubble Sort",
+    "difficulty": "EASY",
+    "category": "Sorting",
+    "xpReward": 150,
+    "description": "Implement the bubble sort algorithm to sort an array of integers in ascending order.",
+    "starterCode": "def bubble_sort(arr: list[int]) -> list[int]:\n    # Your solution here\n    pass\n\nprint(bubble_sort([64, 34, 25, 12, 22, 11, 90]))\n# Expected: [11, 12, 22, 25, 34, 64, 90]\n",
+    "solutionCode": "def bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n-i-1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n    return arr",
+    "hints": "Compare adjacent elements and swap them if they are in the wrong order. Repeat until no swaps are needed.",
+    "examples": [
+      { "input": "[64, 34, 25, 12, 22, 11, 90]", "output": "[11, 12, 22, 25, 34, 64, 90]" },
+      { "input": "[5, 4, 3, 2, 1]",               "output": "[1, 2, 3, 4, 5]" }
+    ],
+    "constraints": ["1 ≤ arr.length ≤ 10⁴", "-10⁴ ≤ arr[i] ≤ 10⁴", "Must sort in ascending order"],
+    "testCases": [
+      { "call": "bubble_sort([64, 34, 25, 12, 22, 11, 90])", "expected": "[11, 12, 22, 25, 34, 64, 90]" },
+      { "call": "bubble_sort([5, 4, 3, 2, 1])",               "expected": "[1, 2, 3, 4, 5]" },
+      { "call": "bubble_sort([1])",                            "expected": "[1]" }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-003",
+    "slug": "binary-search",
+    "title": "Binary Search",
+    "difficulty": "EASY",
+    "category": "Searching",
+    "xpReward": 120,
+    "description": "Implement binary search to find a target value in a sorted array. Return the index, or -1 if not found.",
+    "starterCode": "def binary_search(nums: list[int], target: int) -> int:\n    # Your solution here\n    pass\n\nprint(binary_search([-1, 0, 3, 5, 9, 12], 9))   # Expected: 4\nprint(binary_search([-1, 0, 3, 5, 9, 12], 2))   # Expected: -1\n",
+    "solutionCode": "def binary_search(nums, target):\n    left, right = 0, len(nums) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1",
+    "hints": "Use two pointers (left and right) and repeatedly halve the search space by comparing the middle element to the target.",
+    "examples": [
+      { "input": "[-1, 0, 3, 5, 9, 12], target = 9", "output": "4",  "note": "nums[4] = 9" },
+      { "input": "[-1, 0, 3, 5, 9, 12], target = 2", "output": "-1", "note": "2 does not exist" }
+    ],
+    "constraints": ["1 ≤ nums.length ≤ 10⁴", "nums is sorted in ascending order", "All values in nums are unique"],
+    "testCases": [
+      { "call": "binary_search([-1, 0, 3, 5, 9, 12], 9)", "expected": "4"  },
+      { "call": "binary_search([-1, 0, 3, 5, 9, 12], 2)", "expected": "-1" },
+      { "call": "binary_search([5], 5)",                   "expected": "0"  }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-004",
+    "slug": "valid-parentheses",
+    "title": "Valid Parentheses",
+    "difficulty": "MEDIUM",
+    "category": "Stacks",
+    "xpReward": 200,
+    "description": "Given a string s containing just the characters (, ), {, }, [ and ], determine if the input string is valid.",
+    "starterCode": "def is_valid(s: str) -> bool:\n    # Your solution here\n    pass\n\nprint(is_valid(\"()\"))        # True\nprint(is_valid(\"()[]{}\"))    # True\nprint(is_valid(\"(]\"))        # False\n",
+    "solutionCode": "def is_valid(s):\n    stack = []\n    pairs = {')': '(', '}': '{', ']': '['}\n    for c in s:\n        if c in '({[':\n            stack.append(c)\n        elif stack and stack[-1] == pairs[c]:\n            stack.pop()\n        else:\n            return False\n    return len(stack) == 0",
+    "hints": "Use a stack. Push opening brackets, and when you see a closing bracket check if it matches the top of the stack.",
+    "examples": [
+      { "input": "s = \"()\"",     "output": "True" },
+      { "input": "s = \"()[]{}\",", "output": "True" },
+      { "input": "s = \"(]\"",     "output": "False" }
+    ],
+    "constraints": ["1 ≤ s.length ≤ 10⁴", "s consists of ( ) { } [ ] only"],
+    "testCases": [
+      { "call": "is_valid(\"()\")",     "expected": "True"  },
+      { "call": "is_valid(\"()[]{}\"),", "expected": "True"  },
+      { "call": "is_valid(\"(]\")",     "expected": "False" },
+      { "call": "is_valid(\"([)]\")",   "expected": "False" }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-005",
+    "slug": "reverse-a-string",
+    "title": "Reverse a String",
+    "difficulty": "EASY",
+    "category": "Strings",
+    "xpReward": 80,
+    "description": "Write a function that reverses a string.",
+    "starterCode": "def reverse_string(s: str) -> str:\n    # Your solution here\n    pass\n\nprint(reverse_string(\"hello\"))   # Expected: olleh\n",
+    "solutionCode": "def reverse_string(s):\n    return s[::-1]",
+    "hints": "Python has a very elegant one-liner for this using slice notation.",
+    "examples": [
+      { "input": "\"hello\"",  "output": "\"olleh\"" },
+      { "input": "\"Hannah\"", "output": "\"hannaH\"" }
+    ],
+    "constraints": ["0 ≤ s.length ≤ 10⁵", "s consists of printable ASCII characters"],
+    "testCases": [
+      { "call": "reverse_string('hello')",  "expected": "olleh"  },
+      { "call": "reverse_string('Hannah')", "expected": "hannaH" },
+      { "call": "reverse_string('')",       "expected": ""       }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-006",
+    "slug": "palindrome-check",
+    "title": "Palindrome Check",
+    "difficulty": "EASY",
+    "category": "Strings",
+    "xpReward": 90,
+    "description": "Given a string s, return true if it is a palindrome (reads the same forward and backward), ignoring case and non-alphanumeric characters.",
+    "starterCode": "def is_palindrome(s: str) -> bool:\n    # Your solution here\n    pass\n\nprint(is_palindrome(\"A man, a plan, a canal: Panama\"))  # True\nprint(is_palindrome(\"race a car\"))                       # False\n",
+    "solutionCode": "def is_palindrome(s):\n    cleaned = ''.join(c.lower() for c in s if c.isalnum())\n    return cleaned == cleaned[::-1]",
+    "hints": "First clean the string (keep only alphanumeric, lowercase), then check if it equals its reverse.",
+    "examples": [
+      { "input": "\"A man, a plan, a canal: Panama\"", "output": "True" },
+      { "input": "\"race a car\"",                      "output": "False" }
+    ],
+    "constraints": ["1 ≤ s.length ≤ 2 × 10⁵", "s consists only of printable ASCII characters"],
+    "testCases": [
+      { "call": "is_palindrome('A man, a plan, a canal: Panama')", "expected": "True"  },
+      { "call": "is_palindrome('race a car')",                     "expected": "False" },
+      { "call": "is_palindrome('Was it a car or a cat I saw?')",   "expected": "True"  }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-007",
+    "slug": "fizzbuzz",
+    "title": "FizzBuzz",
+    "difficulty": "EASY",
+    "category": "Basics",
+    "xpReward": 60,
+    "description": "Given an integer n, return a list of strings from 1 to n. For multiples of 3 output \"Fizz\", for multiples of 5 output \"Buzz\", for multiples of both output \"FizzBuzz\", otherwise output the number.",
+    "starterCode": "def fizz_buzz(n: int) -> list[str]:\n    # Your solution here\n    pass\n\nprint(fizz_buzz(15))\n",
+    "solutionCode": "def fizz_buzz(n):\n    result = []\n    for i in range(1, n + 1):\n        if i % 15 == 0:\n            result.append(\"FizzBuzz\")\n        elif i % 3 == 0:\n            result.append(\"Fizz\")\n        elif i % 5 == 0:\n            result.append(\"Buzz\")\n        else:\n            result.append(str(i))\n    return result",
+    "hints": "Check divisibility by 15 first (both 3 and 5), then by 3, then by 5.",
+    "examples": [
+      { "input": "n = 5",  "output": "[\"1\",\"2\",\"Fizz\",\"4\",\"Buzz\"]" },
+      { "input": "n = 15", "output": "[\"1\",...,\"FizzBuzz\"]" }
+    ],
+    "constraints": ["1 ≤ n ≤ 10⁴"],
+    "testCases": [
+      { "call": "fizz_buzz(5)",  "expected": "['1', '2', 'Fizz', '4', 'Buzz']" },
+      { "call": "fizz_buzz(3)",  "expected": "['1', '2', 'Fizz']"              },
+      { "call": "fizz_buzz(15)", "expected": "['1', '2', 'Fizz', '4', 'Buzz', 'Fizz', '7', '8', 'Fizz', 'Buzz', '11', 'Fizz', '13', '14', 'FizzBuzz']" }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-008",
+    "slug": "maximum-subarray",
+    "title": "Maximum Subarray",
+    "difficulty": "MEDIUM",
+    "category": "Arrays",
+    "xpReward": 220,
+    "description": "Given an integer array nums, find the subarray with the largest sum and return its sum. (Kadane's Algorithm)",
+    "starterCode": "def max_subarray(nums: list[int]) -> int:\n    # Your solution here\n    pass\n\nprint(max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))  # Expected: 6\n",
+    "solutionCode": "def max_subarray(nums):\n    max_sum = current_sum = nums[0]\n    for num in nums[1:]:\n        current_sum = max(num, current_sum + num)\n        max_sum = max(max_sum, current_sum)\n    return max_sum",
+    "hints": "At each position, decide: is it better to extend the previous subarray or start fresh? That's Kadane's key insight.",
+    "examples": [
+      { "input": "[-2,1,-3,4,-1,2,1,-5,4]", "output": "6",  "note": "[4,-1,2,1] has the largest sum = 6" },
+      { "input": "[5,4,-1,7,8]",             "output": "23" }
+    ],
+    "constraints": ["1 ≤ nums.length ≤ 10⁵", "-10⁴ ≤ nums[i] ≤ 10⁴"],
+    "testCases": [
+      { "call": "max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4])", "expected": "6"  },
+      { "call": "max_subarray([5, 4, -1, 7, 8])",                 "expected": "23" },
+      { "call": "max_subarray([1])",                               "expected": "1"  }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-009",
+    "slug": "count-duplicates",
+    "title": "Count Duplicates",
+    "difficulty": "EASY",
+    "category": "Arrays",
+    "xpReward": 90,
+    "description": "Given an integer array, return the count of elements that appear more than once.",
+    "starterCode": "def count_duplicates(nums: list[int]) -> int:\n    # Your solution here\n    pass\n\nprint(count_duplicates([1, 2, 3, 2, 4, 3]))  # Expected: 2\n",
+    "solutionCode": "def count_duplicates(nums):\n    from collections import Counter\n    return sum(1 for count in Counter(nums).values() if count > 1)",
+    "hints": "Use a Counter (hash map) to count occurrences, then count how many values exceed 1.",
+    "examples": [
+      { "input": "[1, 2, 3, 2, 4, 3]", "output": "2" },
+      { "input": "[1, 1, 1, 1]",        "output": "1" }
+    ],
+    "constraints": ["1 ≤ nums.length ≤ 10⁴", "-10⁴ ≤ nums[i] ≤ 10⁴"],
+    "testCases": [
+      { "call": "count_duplicates([1, 2, 3, 2, 4, 3])", "expected": "2" },
+      { "call": "count_duplicates([1, 1, 1, 1])",        "expected": "1" },
+      { "call": "count_duplicates([1, 2, 3])",            "expected": "0" }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-010",
+    "slug": "fibonacci-memoization",
+    "title": "Fibonacci with Memoization",
+    "difficulty": "MEDIUM",
+    "category": "Dynamic Programming",
+    "xpReward": 180,
+    "description": "Implement the Fibonacci sequence using memoization (top-down DP) to achieve O(n) time complexity.",
+    "starterCode": "def fib(n: int, memo: dict = None) -> int:\n    # Your solution here\n    pass\n\nprint(fib(10))   # Expected: 55\nprint(fib(30))   # Expected: 832040\n",
+    "solutionCode": "def fib(n, memo=None):\n    if memo is None:\n        memo = {}\n    if n in memo:\n        return memo[n]\n    if n <= 1:\n        return n\n    memo[n] = fib(n - 1, memo) + fib(n - 2, memo)\n    return memo[n]",
+    "hints": "Store already-computed results in a dictionary. Before computing fib(n), check if it's already in the cache.",
+    "examples": [
+      { "input": "n = 10", "output": "55" },
+      { "input": "n = 30", "output": "832040" }
+    ],
+    "constraints": ["0 ≤ n ≤ 40"],
+    "testCases": [
+      { "call": "fib(10)", "expected": "55"     },
+      { "call": "fib(0)",  "expected": "0"      },
+      { "call": "fib(1)",  "expected": "1"      },
+      { "call": "fib(30)", "expected": "832040" }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-011",
+    "slug": "longest-common-prefix",
+    "title": "Longest Common Prefix",
+    "difficulty": "EASY",
+    "category": "Strings",
+    "xpReward": 100,
+    "description": "Write a function to find the longest common prefix string amongst an array of strings. Return an empty string if there is no common prefix.",
+    "starterCode": "def longest_common_prefix(strs: list[str]) -> str:\n    # Your solution here\n    pass\n\nprint(longest_common_prefix([\"flower\",\"flow\",\"flight\"]))  # fl\n",
+    "solutionCode": "def longest_common_prefix(strs):\n    if not strs:\n        return \"\"\n    prefix = strs[0]\n    for s in strs[1:]:\n        while not s.startswith(prefix):\n            prefix = prefix[:-1]\n            if not prefix:\n                return \"\"\n    return prefix",
+    "hints": "Start with the first string as the prefix, then shorten it until all other strings start with it.",
+    "examples": [
+      { "input": "[\"flower\",\"flow\",\"flight\"]", "output": "\"fl\"" },
+      { "input": "[\"dog\",\"racecar\",\"car\"]",    "output": "\"\"" }
+    ],
+    "constraints": ["1 ≤ strs.length ≤ 200", "0 ≤ strs[i].length ≤ 200"],
+    "testCases": [
+      { "call": "longest_common_prefix(['flower', 'flow', 'flight'])",      "expected": "fl"    },
+      { "call": "longest_common_prefix(['dog', 'racecar', 'car'])",         "expected": ""      },
+      { "call": "longest_common_prefix(['interview', 'inter', 'interact'])", "expected": "inter" }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-012",
+    "slug": "climbing-stairs",
+    "title": "Climbing Stairs",
+    "difficulty": "EASY",
+    "category": "Dynamic Programming",
+    "xpReward": 130,
+    "description": "You are climbing a staircase with n steps. Each time you can climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
+    "starterCode": "def climb_stairs(n: int) -> int:\n    # Your solution here\n    pass\n\nprint(climb_stairs(2))   # Expected: 2\nprint(climb_stairs(3))   # Expected: 3\n",
+    "solutionCode": "def climb_stairs(n):\n    if n <= 2:\n        return n\n    a, b = 1, 2\n    for _ in range(3, n + 1):\n        a, b = b, a + b\n    return b",
+    "hints": "Notice that ways(n) = ways(n-1) + ways(n-2). This is just Fibonacci! Use two variables to track the last two values.",
+    "examples": [
+      { "input": "n = 2", "output": "2", "note": "1 step + 1 step, or 2 steps" },
+      { "input": "n = 3", "output": "3", "note": "1+1+1, 1+2, 2+1" }
+    ],
+    "constraints": ["1 ≤ n ≤ 45"],
+    "testCases": [
+      { "call": "climb_stairs(2)", "expected": "2" },
+      { "call": "climb_stairs(3)", "expected": "3" },
+      { "call": "climb_stairs(5)", "expected": "8" }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-013",
+    "slug": "reverse-linked-list",
+    "title": "Reverse Linked List",
+    "difficulty": "EASY",
+    "category": "Linked Lists",
+    "xpReward": 140,
+    "description": "Reverse a singly linked list represented as a Python list. Return the reversed list.",
+    "starterCode": "def reverse_list(head: list) -> list:\n    # Implement iterative reversal using prev/current pointers\n    # Do NOT use slicing or reversed()\n    pass\n\nprint(reverse_list([1, 2, 3, 4, 5]))  # Expected: [5, 4, 3, 2, 1]\n",
+    "solutionCode": "def reverse_list(head):\n    prev = []\n    for val in head:\n        prev.insert(0, val)\n    return prev",
+    "hints": "Think of three pointers: previous, current, next. Redirect each node's pointer to the previous node.",
+    "examples": [
+      { "input": "[1, 2, 3, 4, 5]", "output": "[5, 4, 3, 2, 1]" },
+      { "input": "[1, 2]",           "output": "[2, 1]" }
+    ],
+    "constraints": ["0 ≤ list.length ≤ 5000", "-5000 ≤ node.val ≤ 5000"],
+    "testCases": [
+      { "call": "reverse_list([1, 2, 3, 4, 5])", "expected": "[5, 4, 3, 2, 1]" },
+      { "call": "reverse_list([1, 2])",           "expected": "[2, 1]"          },
+      { "call": "reverse_list([])",               "expected": "[]"              }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-014",
+    "slug": "max-depth-binary-tree",
+    "title": "Find Maximum Depth of Tree",
+    "difficulty": "EASY",
+    "category": "Trees",
+    "xpReward": 130,
+    "description": "Given a binary tree represented as a nested list [val, left, right], find its maximum depth.",
+    "starterCode": "def max_depth(root) -> int:\n    # Your solution here (hint: use recursion!)\n    pass\n\ntree1 = [3, [9, None, None], [20, [15, None, None], [7, None, None]]]\nprint(max_depth(tree1))   # Expected: 3\n",
+    "solutionCode": "def max_depth(root):\n    if root is None:\n        return 0\n    val, left, right = root[0], root[1], root[2]\n    return 1 + max(max_depth(left), max_depth(right))",
+    "hints": "The depth of a tree = 1 + max(depth of left subtree, depth of right subtree). Base case: None returns 0.",
+    "examples": [
+      { "input": "[3,[9,None,None],[20,[15,None,None],[7,None,None]]]", "output": "3" },
+      { "input": "None", "output": "0" }
+    ],
+    "constraints": ["0 ≤ number of nodes ≤ 10⁴", "-100 ≤ Node.val ≤ 100"],
+    "testCases": [
+      { "call": "max_depth([3, [9, None, None], [20, [15, None, None], [7, None, None]]])", "expected": "3" },
+      { "call": "max_depth(None)",             "expected": "0" },
+      { "call": "max_depth([1, None, None])",  "expected": "1" }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-015",
+    "slug": "merge-two-sorted-arrays",
+    "title": "Merge Two Sorted Arrays",
+    "difficulty": "EASY",
+    "category": "Arrays",
+    "xpReward": 110,
+    "description": "Given two sorted arrays nums1 and nums2, merge them into a single sorted array and return it.",
+    "starterCode": "def merge_sorted(nums1: list[int], nums2: list[int]) -> list[int]:\n    # Your solution here\n    pass\n\nprint(merge_sorted([1, 3, 5], [2, 4, 6]))  # Expected: [1, 2, 3, 4, 5, 6]\n",
+    "solutionCode": "def merge_sorted(nums1, nums2):\n    result = []\n    i = j = 0\n    while i < len(nums1) and j < len(nums2):\n        if nums1[i] <= nums2[j]:\n            result.append(nums1[i]); i += 1\n        else:\n            result.append(nums2[j]); j += 1\n    result.extend(nums1[i:])\n    result.extend(nums2[j:])\n    return result",
+    "hints": "Use two pointers i and j, picking the smaller element from each array at each step.",
+    "examples": [
+      { "input": "[1,3,5], [2,4,6]", "output": "[1,2,3,4,5,6]" },
+      { "input": "[1,2,3], []",      "output": "[1,2,3]" }
+    ],
+    "constraints": ["0 ≤ nums1.length, nums2.length ≤ 10⁴", "-10⁴ ≤ values ≤ 10⁴"],
+    "testCases": [
+      { "call": "merge_sorted([1, 3, 5], [2, 4, 6])", "expected": "[1, 2, 3, 4, 5, 6]" },
+      { "call": "merge_sorted([1, 2, 3], [])",         "expected": "[1, 2, 3]"          },
+      { "call": "merge_sorted([], [1])",               "expected": "[1]"                }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "ex-016",
+    "slug": "coin-change",
+    "title": "Coin Change",
+    "difficulty": "MEDIUM",
+    "category": "Dynamic Programming",
+    "xpReward": 250,
+    "description": "Given an array of coin denominations and an amount, return the fewest number of coins needed to make up the amount. Return -1 if not possible.",
+    "starterCode": "def coin_change(coins: list[int], amount: int) -> int:\n    # Your solution here\n    pass\n\nprint(coin_change([1, 5, 10, 25], 41))  # Expected: 4\nprint(coin_change([2], 3))              # Expected: -1\n",
+    "solutionCode": "def coin_change(coins, amount):\n    dp = [float('inf')] * (amount + 1)\n    dp[0] = 0\n    for i in range(1, amount + 1):\n        for coin in coins:\n            if coin <= i:\n                dp[i] = min(dp[i], dp[i - coin] + 1)\n    return dp[amount] if dp[amount] != float('inf') else -1",
+    "hints": "Build a DP table where dp[i] = minimum coins for amount i. For each amount, try all coins and take the minimum.",
+    "examples": [
+      { "input": "coins = [1,5,10,25], amount = 41", "output": "4",  "note": "25+10+5+1" },
+      { "input": "coins = [2], amount = 3",           "output": "-1" }
+    ],
+    "constraints": ["1 ≤ coins.length ≤ 12", "1 ≤ coins[i] ≤ 2³¹ − 1", "0 ≤ amount ≤ 10⁴"],
+    "testCases": [
+      { "call": "coin_change([1, 5, 10, 25], 41)", "expected": "4"  },
+      { "call": "coin_change([2], 3)",              "expected": "-1" },
+      { "call": "coin_change([1, 2, 5], 11)",       "expected": "3"  }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  }
+]

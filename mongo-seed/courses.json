@@ -1,0 +1,269 @@
+[
+  {
+    "_id": "sorting-algorithms",
+    "slug": "sorting-algorithms",
+    "title": "Sorting Algorithms",
+    "description": "Master the art of ordering — from bubble sort to quicksort with interactive visualizations.",
+    "category": "Algorithms",
+    "difficulty": "BEGINNER",
+    "totalLessons": 12,
+    "durationMinutes": 270,
+    "xpReward": 800,
+    "colorHex": "#1a5cff",
+    "icon": "↕",
+    "tags": ["Arrays", "Time Complexity", "Comparison"],
+    "chapters": [
+      {
+        "id": "ch-1",
+        "title": "Introduction to Sorting",
+        "lessons": [
+          { "id": "l-1",  "title": "What is Sorting?",          "type": "video",    "durationMinutes": 8,  "xp": 30  },
+          { "id": "l-2",  "title": "Time Complexity Basics",    "type": "reading",  "durationMinutes": 12, "xp": 20  },
+          { "id": "l-3",  "title": "Comparison Operators",      "type": "practice", "durationMinutes": 15, "xp": 50  }
+        ]
+      },
+      {
+        "id": "ch-2",
+        "title": "Elementary Sorting",
+        "lessons": [
+          { "id": "l-4",  "title": "Bubble Sort",                    "type": "video",    "durationMinutes": 10, "xp": 40  },
+          { "id": "l-5",  "title": "Bubble Sort Visualization",      "type": "practice", "durationMinutes": 20, "xp": 80  },
+          { "id": "l-6",  "title": "Selection Sort",                 "type": "video",    "durationMinutes": 9,  "xp": 40  },
+          { "id": "l-7",  "title": "Insertion Sort",                 "type": "video",    "durationMinutes": 11, "xp": 40  },
+          { "id": "l-8",  "title": "Practice: Elementary Sorts",     "type": "quiz",     "durationMinutes": 25, "xp": 100 }
+        ]
+      },
+      {
+        "id": "ch-3",
+        "title": "Efficient Sorting",
+        "lessons": [
+          { "id": "l-9",  "title": "Merge Sort Deep Dive",   "type": "video",    "durationMinutes": 15, "xp": 60  },
+          { "id": "l-10", "title": "Quick Sort Strategy",    "type": "video",    "durationMinutes": 18, "xp": 60  },
+          { "id": "l-11", "title": "Heap Sort",              "type": "reading",  "durationMinutes": 14, "xp": 40  },
+          { "id": "l-12", "title": "Final Challenge",        "type": "practice", "durationMinutes": 40, "xp": 200 }
+        ]
+      }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "graph-algorithms",
+    "slug": "graph-algorithms",
+    "title": "Graph Algorithms",
+    "description": "Traverse networks, find shortest paths, and detect cycles using BFS, DFS, and Dijkstra.",
+    "category": "Algorithms",
+    "difficulty": "INTERMEDIATE",
+    "totalLessons": 15,
+    "durationMinutes": 375,
+    "xpReward": 1200,
+    "colorHex": "#7c3aed",
+    "icon": "◈",
+    "tags": ["Graphs", "BFS", "DFS", "Shortest Path"],
+    "chapters": [
+      {
+        "id": "g-ch-1",
+        "title": "Graph Fundamentals",
+        "lessons": [
+          { "id": "g-l-1", "title": "Graph Representations",       "type": "video",   "durationMinutes": 12, "xp": 40 },
+          { "id": "g-l-2", "title": "Adjacency Matrix vs List",    "type": "reading", "durationMinutes": 10, "xp": 30 },
+          { "id": "g-l-3", "title": "Types of Graphs",             "type": "reading", "durationMinutes": 8,  "xp": 25 },
+          { "id": "g-l-4", "title": "Graph Quiz",                  "type": "quiz",    "durationMinutes": 15, "xp": 70 }
+        ]
+      },
+      {
+        "id": "g-ch-2",
+        "title": "Traversal Algorithms",
+        "lessons": [
+          { "id": "g-l-5", "title": "Breadth First Search",  "type": "video",    "durationMinutes": 16, "xp": 60  },
+          { "id": "g-l-6", "title": "Depth First Search",    "type": "video",    "durationMinutes": 14, "xp": 60  },
+          { "id": "g-l-7", "title": "Practice: BFS & DFS",   "type": "practice", "durationMinutes": 35, "xp": 150 }
+        ]
+      },
+      {
+        "id": "g-ch-3",
+        "title": "Shortest Paths",
+        "lessons": [
+          { "id": "g-l-8",  "title": "Dijkstra's Algorithm",     "type": "video",    "durationMinutes": 20, "xp": 80  },
+          { "id": "g-l-9",  "title": "Bellman-Ford Algorithm",   "type": "reading",  "durationMinutes": 15, "xp": 50  },
+          { "id": "g-l-10", "title": "Practice: Shortest Path",  "type": "practice", "durationMinutes": 40, "xp": 200 }
+        ]
+      },
+      {
+        "id": "g-ch-4",
+        "title": "Advanced Graph Topics",
+        "lessons": [
+          { "id": "g-l-11", "title": "Cycle Detection",          "type": "video",    "durationMinutes": 12, "xp": 60  },
+          { "id": "g-l-12", "title": "Topological Sort",         "type": "reading",  "durationMinutes": 14, "xp": 55  },
+          { "id": "g-l-13", "title": "Kruskal's MST",            "type": "video",    "durationMinutes": 18, "xp": 70  },
+          { "id": "g-l-14", "title": "Practice: MST",            "type": "practice", "durationMinutes": 35, "xp": 150 },
+          { "id": "g-l-15", "title": "Graph Algorithms Final",   "type": "quiz",     "durationMinutes": 30, "xp": 250 }
+        ]
+      }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "dynamic-programming",
+    "slug": "dynamic-programming",
+    "title": "Dynamic Programming",
+    "description": "Break complex problems into overlapping subproblems with memoization and tabulation.",
+    "category": "Techniques",
+    "difficulty": "ADVANCED",
+    "totalLessons": 18,
+    "durationMinutes": 525,
+    "xpReward": 2000,
+    "colorHex": "#f59e0b",
+    "icon": "⟳",
+    "tags": ["Memoization", "Tabulation", "Optimization"],
+    "chapters": [
+      {
+        "id": "dp-ch-1",
+        "title": "DP Foundations",
+        "lessons": [
+          { "id": "dp-l-1", "title": "Intro to Dynamic Programming", "type": "video",    "durationMinutes": 20, "xp": 50  },
+          { "id": "dp-l-2", "title": "Fibonacci with Memoization",   "type": "practice", "durationMinutes": 30, "xp": 100 },
+          { "id": "dp-l-3", "title": "Top-down vs Bottom-up",        "type": "reading",  "durationMinutes": 15, "xp": 40  }
+        ]
+      },
+      {
+        "id": "dp-ch-2",
+        "title": "Classic DP Problems",
+        "lessons": [
+          { "id": "dp-l-4", "title": "Climbing Stairs",                 "type": "practice", "durationMinutes": 20, "xp": 80  },
+          { "id": "dp-l-5", "title": "Coin Change Problem",             "type": "video",    "durationMinutes": 22, "xp": 70  },
+          { "id": "dp-l-6", "title": "0/1 Knapsack",                   "type": "reading",  "durationMinutes": 18, "xp": 60  },
+          { "id": "dp-l-7", "title": "Longest Common Subsequence",     "type": "video",    "durationMinutes": 25, "xp": 90  },
+          { "id": "dp-l-8", "title": "Practice: Classic DP",           "type": "practice", "durationMinutes": 50, "xp": 200 }
+        ]
+      },
+      {
+        "id": "dp-ch-3",
+        "title": "Advanced DP Patterns",
+        "lessons": [
+          { "id": "dp-l-9",  "title": "DP on Trees",                  "type": "video",    "durationMinutes": 20, "xp": 80  },
+          { "id": "dp-l-10", "title": "Bitmask DP",                   "type": "reading",  "durationMinutes": 25, "xp": 100 },
+          { "id": "dp-l-11", "title": "Matrix Chain Multiplication",  "type": "video",    "durationMinutes": 28, "xp": 110 },
+          { "id": "dp-l-12", "title": "Edit Distance",                "type": "practice", "durationMinutes": 35, "xp": 150 },
+          { "id": "dp-l-13", "title": "DP Final Challenge",           "type": "quiz",     "durationMinutes": 45, "xp": 300 }
+        ]
+      }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "data-structures",
+    "slug": "data-structures",
+    "title": "Data Structures",
+    "description": "Stacks, queues, trees, heaps — build a rock-solid foundation for algorithmic thinking.",
+    "category": "Foundations",
+    "difficulty": "BEGINNER",
+    "totalLessons": 10,
+    "durationMinutes": 200,
+    "xpReward": 600,
+    "colorHex": "#10b981",
+    "icon": "◳",
+    "tags": ["Arrays", "Trees", "Stacks", "Queues"],
+    "chapters": [
+      {
+        "id": "ds-ch-1",
+        "title": "Linear Structures",
+        "lessons": [
+          { "id": "ds-l-1", "title": "Arrays & Lists",              "type": "video",    "durationMinutes": 12, "xp": 40  },
+          { "id": "ds-l-2", "title": "Stacks",                      "type": "video",    "durationMinutes": 10, "xp": 40  },
+          { "id": "ds-l-3", "title": "Queues & Deques",             "type": "video",    "durationMinutes": 11, "xp": 40  },
+          { "id": "ds-l-4", "title": "Linked Lists",                "type": "reading",  "durationMinutes": 14, "xp": 50  },
+          { "id": "ds-l-5", "title": "Practice: Linear Structures", "type": "practice", "durationMinutes": 25, "xp": 100 }
+        ]
+      },
+      {
+        "id": "ds-ch-2",
+        "title": "Trees & Heaps",
+        "lessons": [
+          { "id": "ds-l-6",  "title": "Binary Trees",           "type": "video",   "durationMinutes": 15, "xp": 50  },
+          { "id": "ds-l-7",  "title": "Binary Search Trees",    "type": "video",   "durationMinutes": 18, "xp": 60  },
+          { "id": "ds-l-8",  "title": "Heaps & Priority Queues","type": "reading", "durationMinutes": 16, "xp": 55  },
+          { "id": "ds-l-9",  "title": "Hash Tables",            "type": "video",   "durationMinutes": 14, "xp": 50  },
+          { "id": "ds-l-10", "title": "Data Structures Final",  "type": "quiz",    "durationMinutes": 30, "xp": 200 }
+        ]
+      }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "recursion",
+    "slug": "recursion",
+    "title": "Recursion & Backtracking",
+    "description": "Master the art of self-referential problem solving and learn to explore solution spaces efficiently.",
+    "category": "Techniques",
+    "difficulty": "INTERMEDIATE",
+    "totalLessons": 10,
+    "durationMinutes": 240,
+    "xpReward": 900,
+    "colorHex": "#ec4899",
+    "icon": "↺",
+    "tags": ["Recursion", "Backtracking", "Call Stack"],
+    "chapters": [
+      {
+        "id": "rec-ch-1",
+        "title": "Recursion Fundamentals",
+        "lessons": [
+          { "id": "rec-l-1", "title": "What is Recursion?",         "type": "video",    "durationMinutes": 10, "xp": 40 },
+          { "id": "rec-l-2", "title": "Base Cases & Induction",     "type": "reading",  "durationMinutes": 12, "xp": 35 },
+          { "id": "rec-l-3", "title": "Call Stack Visualization",   "type": "practice", "durationMinutes": 20, "xp": 80 },
+          { "id": "rec-l-4", "title": "Recursion vs Iteration",     "type": "quiz",     "durationMinutes": 15, "xp": 60 }
+        ]
+      },
+      {
+        "id": "rec-ch-2",
+        "title": "Backtracking Patterns",
+        "lessons": [
+          { "id": "rec-l-5",  "title": "N-Queens Problem",              "type": "video",    "durationMinutes": 22, "xp": 90  },
+          { "id": "rec-l-6",  "title": "Sudoku Solver",                 "type": "video",    "durationMinutes": 25, "xp": 100 },
+          { "id": "rec-l-7",  "title": "Permutations & Combinations",   "type": "reading",  "durationMinutes": 18, "xp": 65  },
+          { "id": "rec-l-8",  "title": "Subset Generation",             "type": "practice", "durationMinutes": 30, "xp": 120 },
+          { "id": "rec-l-9",  "title": "Maze Solving",                  "type": "practice", "durationMinutes": 35, "xp": 140 },
+          { "id": "rec-l-10", "title": "Backtracking Final",            "type": "quiz",     "durationMinutes": 30, "xp": 200 }
+        ]
+      }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  },
+  {
+    "_id": "string-algorithms",
+    "slug": "string-algorithms",
+    "title": "String Algorithms",
+    "description": "Pattern matching, substring search, and manipulation — essential skills for coding interviews.",
+    "category": "Algorithms",
+    "difficulty": "INTERMEDIATE",
+    "totalLessons": 9,
+    "durationMinutes": 210,
+    "xpReward": 850,
+    "colorHex": "#06b6d4",
+    "icon": "Aa",
+    "tags": ["Strings", "Pattern Matching", "KMP"],
+    "chapters": [
+      {
+        "id": "str-ch-1",
+        "title": "String Basics",
+        "lessons": [
+          { "id": "str-l-1", "title": "String Manipulation",        "type": "video",   "durationMinutes": 10, "xp": 35 },
+          { "id": "str-l-2", "title": "Sliding Window Technique",   "type": "video",   "durationMinutes": 15, "xp": 60 },
+          { "id": "str-l-3", "title": "Two Pointer on Strings",     "type": "reading", "durationMinutes": 12, "xp": 45 }
+        ]
+      },
+      {
+        "id": "str-ch-2",
+        "title": "Pattern Matching",
+        "lessons": [
+          { "id": "str-l-4", "title": "Naive Pattern Search",         "type": "video",    "durationMinutes": 12, "xp": 50  },
+          { "id": "str-l-5", "title": "KMP Algorithm",                "type": "video",    "durationMinutes": 22, "xp": 90  },
+          { "id": "str-l-6", "title": "Rabin-Karp Hashing",           "type": "reading",  "durationMinutes": 16, "xp": 65  },
+          { "id": "str-l-7", "title": "Practice: Pattern Matching",   "type": "practice", "durationMinutes": 35, "xp": 150 },
+          { "id": "str-l-8", "title": "Anagram Detection",            "type": "practice", "durationMinutes": 25, "xp": 100 },
+          { "id": "str-l-9", "title": "String Algorithms Final",      "type": "quiz",     "durationMinutes": 25, "xp": 180 }
+        ]
+      }
+    ],
+    "createdAt": { "$date": "2024-01-01T00:00:00.000Z" }
+  }
+]

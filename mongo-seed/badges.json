@@ -1,0 +1,98 @@
+[
+  {
+    "_id": "b-001",
+    "slug": "first-steps",
+    "name": "First Steps",
+    "description": "Complete your first lesson",
+    "icon": "🚀",
+    "rarity": "COMMON"
+  },
+  {
+    "_id": "b-002",
+    "slug": "sort-savant",
+    "name": "Sort Savant",
+    "description": "Complete all sorting algorithm lessons",
+    "icon": "↕️",
+    "rarity": "RARE"
+  },
+  {
+    "_id": "b-003",
+    "slug": "speed-coder",
+    "name": "Speed Coder",
+    "description": "Solve 5 exercises in under 10 minutes each",
+    "icon": "⚡",
+    "rarity": "RARE"
+  },
+  {
+    "_id": "b-004",
+    "slug": "week-warrior",
+    "name": "Week Warrior",
+    "description": "Maintain a 7-day learning streak",
+    "icon": "🔥",
+    "rarity": "EPIC"
+  },
+  {
+    "_id": "b-005",
+    "slug": "graph-guru",
+    "name": "Graph Guru",
+    "description": "Complete the entire Graph Algorithms course",
+    "icon": "◈",
+    "rarity": "EPIC"
+  },
+  {
+    "_id": "b-006",
+    "slug": "dp-master",
+    "name": "DP Master",
+    "description": "Solve 10 dynamic programming problems",
+    "icon": "🧠",
+    "rarity": "LEGENDARY"
+  },
+  {
+    "_id": "b-007",
+    "slug": "century-club",
+    "name": "Century Club",
+    "description": "Solve 100 problems",
+    "icon": "💯",
+    "rarity": "LEGENDARY"
+  },
+  {
+    "_id": "b-008",
+    "slug": "bug-hunter",
+    "name": "Bug Hunter",
+    "description": "Find and fix 20 bugs in practice mode",
+    "icon": "🐛",
+    "rarity": "COMMON"
+  },
+  {
+    "_id": "b-009",
+    "slug": "string-wizard",
+    "name": "String Wizard",
+    "description": "Solve 5 string manipulation problems",
+    "icon": "🔤",
+    "rarity": "RARE"
+  },
+  {
+    "_id": "b-010",
+    "slug": "recursion-ninja",
+    "name": "Recursion Ninja",
+    "description": "Complete the Recursion & Backtracking course",
+    "icon": "🥷",
+    "rarity": "EPIC"
+  },
+  {
+    "_id": "b-011",
+    "slug": "polyglot",
+    "name": "Polyglot",
+    "description": "Submit solutions in both Python and pseudocode",
+    "icon": "🌍",
+    "rarity": "RARE"
+  },
+  {
+    "_id": "b-012",
+    "slug": "iron-coder",
+    "name": "Iron Coder",
+    "description": "Maintain a 30-day learning streak",
+    "icon": "⚔️",
+    "rarity": "LEGENDARY"
+  }
+]

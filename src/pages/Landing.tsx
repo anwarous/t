@@ -312,9 +312,9 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-accent-cyan flex items-center justify-center text-xs font-bold">MQ</div>
-            <span className="font-display font-bold text-sm">MQAcademy</span>
+            <span className="font-display font-bold text-sm">Learning++</span>
           </div>
-          <p className="text-surface-500 text-sm">© 2025 MQAcademy. {t('landing.footer.tagline')}</p>
+          <p className="text-surface-500 text-sm">© 2025 Learning++. {t('landing.footer.tagline')}</p>
           <div className="flex gap-6 text-sm text-surface-500">
             <a href="#" className="hover:text-white transition-colors">{t('landing.footer.privacy')}</a>
             <a href="#" className="hover:text-white transition-colors">{t('landing.footer.terms')}</a>

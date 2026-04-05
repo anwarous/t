@@ -16,7 +16,7 @@
     <artifactId>mqacademy-api</artifactId>
     <version>1.0.0</version>
     <name>mqacademy-api</name>
-    <description>MQAcademy - Algorithm Learning Platform API</description>
+    <description>Learning++ - Algorithm Learning Platform API</description>
 
     <properties>
         <java.version>17</java.version>

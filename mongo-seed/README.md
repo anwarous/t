@@ -1,6 +1,6 @@
 # MongoDB Seed Data
 
-This directory contains JSON seed files for the **MQAcademy** MongoDB database.  
+This directory contains JSON seed files for the **Learning++** MongoDB database.  
 Import them with `mongoimport` to populate every collection from scratch.
 
 ---

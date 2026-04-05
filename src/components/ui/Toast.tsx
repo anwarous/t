@@ -19,7 +19,7 @@ export function showToast(toast: Omit<Toast, 'id'>) {
   setTimeout(() => {
     toastQueue = toastQueue.filter(t => t.id !== newToast.id)
     listeners.forEach(l => l([...toastQueue]))
-  }, 3500)
+  }, 3000)
 }
 
 export function ToastProvider() {
@@ -31,36 +31,89 @@ export function ToastProvider() {
     return () => { listeners = listeners.filter(l => l !== listener) }
   }, [])
 
-  const icons = { xp: Zap, badge: Trophy, streak: Flame }
-  const colors = {
-    xp: 'from-brand-500/20 to-brand-600/10 border-brand-500/30',
-    badge: 'from-amber-500/20 to-amber-600/10 border-amber-500/30',
-    streak: 'from-orange-500/20 to-red-500/10 border-orange-500/30',
+  const config = {
+    xp: {
+      icon: Zap,
+      color: 'var(--color-accent)',
+      bg: 'rgba(0,245,212,0.08)',
+      border: 'rgba(0,245,212,0.25)',
+      glow: 'rgba(0,245,212,0.2)',
+      label: 'XP EARNED',
+    },
+    badge: {
+      icon: Trophy,
+      color: 'var(--color-xp)',
+      bg: 'rgba(240,160,48,0.08)',
+      border: 'rgba(240,160,48,0.25)',
+      glow: 'rgba(240,160,48,0.2)',
+      label: 'BADGE UNLOCKED',
+    },
+    streak: {
+      icon: Flame,
+      color: '#f97316',
+      bg: 'rgba(249,115,22,0.08)',
+      border: 'rgba(249,115,22,0.25)',
+      glow: 'rgba(249,115,22,0.2)',
+      label: 'STREAK ACTIVE',
+    },
   }
-  const iconColors = { xp: 'text-brand-400', badge: 'text-amber-400', streak: 'text-orange-400' }
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2">
+    <div
+      className="fixed bottom-5 right-5 z-[60] flex flex-col gap-2"
+      aria-live="polite"
+      aria-label="Notifications"
+    >
       <AnimatePresence>
         {toasts.map((toast) => {
-          const Icon = icons[toast.type]
+          const c = config[toast.type]
+          const Icon = c.icon
           return (
             <motion.div
               key={toast.id}
-              initial={{ opacity: 0, x: 60, scale: 0.9 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 60, scale: 0.9 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className={`flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r glass border backdrop-blur-xl shadow-card ${colors[toast.type]}`}
+              initial={{ opacity: 0, y: 24, scale: 0.92 }}
+              animate={{ opacity: 1, y: 0,  scale: 1 }}
+              exit={{  opacity: 0, y: 16, scale: 0.92 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
+              role="status"
+              aria-atomic="true"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg"
+              style={{
+                background: c.bg,
+                border: `1px solid ${c.border}`,
+                boxShadow: `0 0 20px ${c.glow}, 0 8px 30px rgba(0,0,0,0.4)`,
+                backdropFilter: 'blur(12px)',
+                minWidth: '220px',
+              }}
             >
-              <div className={`${iconColors[toast.type]}`}>
-                <Icon size={18} />
+              {/* Icon */}
+              <div
+                className="w-8 h-8 rounded flex items-center justify-center flex-shrink-0"
+                style={{ background: `${c.color}18`, border: `1px solid ${c.border}` }}
+              >
+                <Icon size={15} style={{ color: c.color }} />
               </div>
-              <div>
-                <div className="text-sm font-semibold text-white">{toast.message}</div>
-                {toast.value && (
-                  <div className={`text-xs ${iconColors[toast.type]}`}>
-                    +{toast.value} {toast.type === 'xp' ? 'XP' : ''}
+
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <div
+                  className="text-[9px] font-semibold tracking-widest mb-0.5"
+                  style={{ color: c.color, fontFamily: 'IBM Plex Mono, monospace' }}
+                >
+                  {c.label}
+                </div>
+                <div
+                  className="text-xs font-semibold truncate"
+                  style={{ color: 'var(--color-text)', fontFamily: 'Space Grotesk, sans-serif' }}
+                >
+                  {toast.message}
+                </div>
+                {toast.value !== undefined && (
+                  <div
+                    className="text-xs mt-0.5"
+                    style={{ color: c.color, fontFamily: 'IBM Plex Mono, monospace' }}
+                  >
+                    +{toast.value}{toast.type === 'xp' ? ' XP' : ''}
                   </div>
                 )}
               </div>

@@ -3,48 +3,67 @@ import { useEffect } from 'react'
 import { useUserStore, applyTheme } from '@/store'
 import { motion } from 'framer-motion'
 import Navbar from './Navbar'
+import Sidebar from './Sidebar'
+
+const PUBLIC_PATHS = ['/', '/signin', '/signup']
 
 export default function Layout() {
   const location = useLocation()
-  const isLanding = location.pathname === '/'
+  const isPublic = PUBLIC_PATHS.includes(location.pathname)
   const { user } = useUserStore()
 
-  // Apply theme class on <html> whenever user.theme changes
   useEffect(() => {
     applyTheme(user.theme)
   }, [user.theme])
 
+  if (isPublic) {
+    return (
+      <div className="min-h-screen relative" style={{ background: 'var(--color-bg)' }}>
+        {/* Subtle grid */}
+        <div
+          className="fixed inset-0 pointer-events-none bg-grid-pattern"
+          style={{ opacity: 0.4 }}
+        />
+        {/* Ambient glow */}
+        <div
+          className="fixed top-0 left-1/3 w-[600px] h-[400px] rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(0,245,212,0.05) 0%, transparent 70%)' }}
+        />
 
+        <Navbar />
+        <motion.main
+          key={location.pathname}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+        >
+          <Outlet />
+        </motion.main>
+      </div>
+    )
+  }
+
+  // ── App layout: fixed sidebar + scrollable main ─────────────────────────
   return (
-    <div className="min-h-screen bg-surface-950 relative">
-      {/* Global background grid */}
-      <div
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px',
-        }}
-      />
+    <div className="min-h-screen flex" style={{ background: 'var(--color-bg)' }}>
+      <Sidebar />
 
-      {/* Ambient glow spots */}
-      <div className="fixed top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(26,92,255,0.08) 0%, transparent 70%)' }} />
-      <div className="fixed top-1/3 right-1/4 w-64 h-64 rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.05) 0%, transparent 70%)' }} />
-
-      <Navbar />
-
+      {/* Main content area: offset by sidebar width on md+ */}
       <motion.main
         key={location.pathname}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
-        className={isLanding ? '' : 'pt-16'}
+        transition={{ duration: 0.22, ease: 'easeOut' }}
+        className="flex-1 min-h-screen md:ml-[220px] pt-14 md:pt-0 overflow-x-hidden"
       >
-        <Outlet />
+        {/* Subtle background grid for app pages */}
+        <div
+          className="fixed inset-0 pointer-events-none bg-grid-pattern"
+          style={{ opacity: 0.3 }}
+        />
+        <div className="relative">
+          <Outlet />
+        </div>
       </motion.main>
     </div>
   )

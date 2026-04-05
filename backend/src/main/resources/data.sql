@@ -1,5 +1,5 @@
 -- ============================================================
--- MQAcademy Seed Data (idempotent: ON CONFLICT DO NOTHING)
+-- Learning++ Seed Data (idempotent: ON CONFLICT DO NOTHING)
 -- ============================================================
 
 -- Courses

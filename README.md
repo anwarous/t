@@ -1,4 +1,4 @@
-# 🎓 MQAcademy — Interactive Algorithm Learning Platform
+# 🎓 Learning++ — Interactive Algorithm Learning Platform
 
 A modern, production-ready frontend for an interactive algorithm learning platform. Built with React, TypeScript, Tailwind CSS, Zustand, and Framer Motion.
 

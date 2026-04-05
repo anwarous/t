@@ -1,6 +1,6 @@
-# MQAcademy API
+# Learning++ API
 
-A production-quality Spring Boot 3 REST API backend for the **MQAcademy** algorithm learning platform.
+A production-quality Spring Boot 3 REST API backend for the **Learning++** algorithm learning platform.
 
 ## Tech Stack
 

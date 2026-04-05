@@ -1,38 +1,38 @@
-# MQAcademy – UML Diagrams
+# MQAcademy – Diagrammes UML
 
-> Diagrams are written in [Mermaid](https://mermaid.js.org/) and render natively on GitHub.
+> Les diagrammes sont rédigés en [Mermaid](https://mermaid.js.org/) et s'affichent nativement sur GitHub.
 
 ---
 
-## 1. Use Case Diagram
+## 1. Diagramme de cas d'utilisation
 
 ```mermaid
 %%{init: {"theme": "default"}}%%
 graph LR
-    Guest(["👤 Guest"])
-    Student(["🎓 Student"])
-    AIMentor(["🤖 AI Mentor\n(System)"])
+    Guest(["👤 Invité"])
+    Student(["🎓 Étudiant"])
+    AIMentor(["🤖 Mentor IA\n(Système)"])
 
-    subgraph MQAcademy Platform
-        UC1([View Landing Page])
-        UC2([Sign Up])
-        UC3([Sign In])
-        UC4([Sign Out])
-        UC5([View Dashboard])
-        UC6([Browse Courses])
-        UC7([View Course Details])
-        UC8([Track Lesson Progress])
-        UC9([Solve Exercises])
-        UC10([Run Python Code])
-        UC11([Run Algorithm Code])
-        UC12([Visualize Sorting Algorithms])
-        UC13([Control Visualization\nplay / pause / step])
-        UC14([Chat with AI Mentor])
-        UC15([Receive AI Hints])
-        UC16([View Profile])
-        UC17([Manage Settings\ntheme / language / notifications])
-        UC18([View Badges & Achievements])
-        UC19([Earn XP & Level Up])
+    subgraph Plateforme MQAcademy
+        UC1([Voir la page d'accueil])
+        UC2([S'inscrire])
+        UC3([Se connecter])
+        UC4([Se déconnecter])
+        UC5([Voir le tableau de bord])
+        UC6([Parcourir les cours])
+        UC7([Voir les détails du cours])
+        UC8([Suivre la progression des leçons])
+        UC9([Résoudre des exercices])
+        UC10([Exécuter du code Python])
+        UC11([Exécuter du code d'algorithme])
+        UC12([Visualiser les algorithmes de tri])
+        UC13([Contrôler la visualisation\nlecture / pause / étape])
+        UC14([Discuter avec le Mentor IA])
+        UC15([Recevoir des indices IA])
+        UC16([Voir le profil])
+        UC17([Gérer les paramètres\nthème / langue / notifications])
+        UC18([Voir les badges et réalisations])
+        UC19([Gagner des XP et monter de niveau])
     end
 
     Guest --> UC1
@@ -55,25 +55,25 @@ graph LR
     Student --> UC17
     Student --> UC18
 
-    UC9 -.->|includes| UC10
-    UC9 -.->|includes| UC11
-    UC9 -.->|extends| UC19
-    UC8 -.->|extends| UC19
+    UC9 -.->|inclut| UC10
+    UC9 -.->|inclut| UC11
+    UC9 -.->|étend| UC19
+    UC8 -.->|étend| UC19
 
     UC14 --> AIMentor
     AIMentor --> UC15
-    UC15 -.->|extends| UC14
+    UC15 -.->|étend| UC14
 ```
 
 ---
 
-## 2. Class Diagram
+## 2. Diagramme de classes
 
 ```mermaid
 classDiagram
     direction TB
 
-    %% ── Data Model ──────────────────────────────────────────────────
+    %% ── Modèle de données ───────────────────────────────────────────
 
     class Course {
         +string id
@@ -153,7 +153,7 @@ classDiagram
         +string description
     }
 
-    %% ── Zustand Stores ──────────────────────────────────────────────
+    %% ── Stores Zustand ──────────────────────────────────────────────
 
     class useAuthStore {
         +string|null token
@@ -233,7 +233,7 @@ classDiagram
         +clearMessages() void
     }
 
-    %% ── Library / Utility ───────────────────────────────────────────
+    %% ── Bibliothèque / Utilitaires ──────────────────────────────────
 
     class PythonCompiler {
         +runPython(code, inputs) Promise~string~
@@ -267,38 +267,38 @@ classDiagram
     class SignInPage { }
     class SignUpPage { }
 
-    %% ── Relationships ───────────────────────────────────────────────
+    %% ── Relations ───────────────────────────────────────────────────
 
-    Course "1" *-- "many" Chapter : contains
-    Chapter "1" *-- "many" Lesson : contains
-    useVisualizationStore "1" *-- "many" SortStep : generates
+    Course "1" *-- "many" Chapter : contient
+    Chapter "1" *-- "many" Lesson : contient
+    useVisualizationStore "1" *-- "many" SortStep : génère
 
-    useEditorStore --> PythonCompiler : uses
-    useEditorStore --> AlgoCompiler : uses
-    useEditorStore --> useUserStore : calls markExerciseSolved
+    useEditorStore --> PythonCompiler : utilise
+    useEditorStore --> AlgoCompiler : utilise
+    useEditorStore --> useUserStore : appelle markExerciseSolved
 
-    useAuthStore --> useUserStore : triggers initUser / resetUser
+    useAuthStore --> useUserStore : déclenche initUser / resetUser
 
-    DashboardPage --> useUserStore : reads
-    DashboardPage --> useEditorStore : reads
-    CodeEditorPage --> useEditorStore : reads / writes
-    CodeEditorPage --> useUserStore : reads
-    VisualizationPage --> useVisualizationStore : reads / writes
-    MentorPage --> useMentorStore : reads / writes
-    LearnPage --> useUserStore : reads
-    ProfilePage --> useUserStore : reads / writes
-    SandboxPage --> useEditorStore : reads / writes
-    SignInPage --> useAuthStore : writes
-    SignUpPage --> useAuthStore : writes
+    DashboardPage --> useUserStore : lit
+    DashboardPage --> useEditorStore : lit
+    CodeEditorPage --> useEditorStore : lit / écrit
+    CodeEditorPage --> useUserStore : lit
+    VisualizationPage --> useVisualizationStore : lit / écrit
+    MentorPage --> useMentorStore : lit / écrit
+    LearnPage --> useUserStore : lit
+    ProfilePage --> useUserStore : lit / écrit
+    SandboxPage --> useEditorStore : lit / écrit
+    SignInPage --> useAuthStore : écrit
+    SignUpPage --> useAuthStore : écrit
 ```
 
 ---
 
-## 3. Package Diagram
+## 3. Diagramme de paquets
 
 ```mermaid
 graph TD
-    subgraph src["📦 src (Application Root)"]
+    subgraph src["📦 src (Racine de l'application)"]
 
         subgraph pages["📄 pages"]
             P1[Landing]
@@ -314,7 +314,7 @@ graph TD
             P11[NotFound]
         end
 
-        subgraph components["🧩 components"]
+        subgraph components["🧩 composants"]
             subgraph layout["layout"]
                 C1[Layout]
                 C2[Navbar]
@@ -347,7 +347,7 @@ graph TD
             L4[algorithmLanguage]
         end
 
-        subgraph data["📊 data"]
+        subgraph data["📊 données"]
             D1[mockData]
         end
 
@@ -360,7 +360,7 @@ graph TD
         B1[Flask API /run]
     end
 
-    subgraph external["📦 External Libraries"]
+    subgraph external["📦 Bibliothèques externes"]
         E1[Pyodide – Python WASM]
         E2[Monaco Editor]
         E3[i18next]

@@ -196,6 +196,7 @@ export default function Dashboard() {
     return entries
       .sort((a, b) => b.xp - a.xp)
       .map((e, i) => ({ ...e, rank: i + 1, delta: e.isCurrentUser ? 2 : i === 1 ? -1 : i === 3 ? 1 : 0 }))
+    // Note: delta values are illustrative — in production these would come from stored previous-rank data.
   }, [user.name, user.xp, user.streak, user.avatar])
 
   const myRank   = leaderboard.find((e) => e.isCurrentUser)?.rank ?? '-'

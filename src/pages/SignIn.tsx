@@ -1,7 +1,7 @@
 import { useState, FormEvent } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Eye, EyeOff, LogIn, Zap, Terminal } from 'lucide-react'
+import { Eye, EyeOff, LogIn, Terminal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { authApi } from '@/lib/api'
 import { useAuthStore } from '@/store'

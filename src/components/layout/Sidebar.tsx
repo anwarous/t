@@ -206,7 +206,7 @@ export default function Sidebar() {
   const isActive = (to: string) =>
     to === '/dashboard'
       ? location.pathname === '/dashboard'
-      : location.pathname.startsWith(to)
+      : location.pathname === to || location.pathname.startsWith(to + '/')
 
   return (
     <>

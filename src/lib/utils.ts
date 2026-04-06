@@ -11,11 +11,11 @@ export function formatXP(xp: number): string {
 }
 
 export function getLevel(xp: number): number {
-  return Math.floor(xp / 300) + 1
+  return Math.floor(xp / 250) + 1
 }
 
 export function getLevelProgress(xp: number): number {
-  return (xp % 300) / 300
+  return (xp % 250) / 250
 }
 
 export function getDifficultyColor(difficulty: string): string {

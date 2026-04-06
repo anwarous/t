@@ -10,6 +10,13 @@ export function registerAlgorithmLanguage(monaco: any) {
 
   monaco.languages.register({ id: LANG_ID })
 
+  monaco.languages.setLanguageConfiguration(LANG_ID, {
+    comments: {
+      lineComment: '//',
+    },
+    brackets: [['(', ')'], ['[', ']']],
+  })
+
   monaco.languages.setMonarchTokensProvider(LANG_ID, {
     ignoreCase: true,
 

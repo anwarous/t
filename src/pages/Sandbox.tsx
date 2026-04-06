@@ -38,8 +38,8 @@ const MONACO_THEME = {
 // ── Starter templates ─────────────────────────────────────────────────────────
 const TEMPLATES: Record<string, Record<string, string>> = {
   python: {
-    blank: `// Free Coding Sandbox — Python
-// Write anything you want here. No limits!
+    blank: `# Free Coding Sandbox — Python
+# Write anything you want here. No limits!
 
 `,
     fibonacci: `# Fibonacci sequence — multiple approaches

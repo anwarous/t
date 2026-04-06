@@ -200,7 +200,7 @@ export default function Dashboard() {
   }, [user.name, user.xp, user.streak, user.avatar])
 
   const myRank   = leaderboard.find((e) => e.isCurrentUser)?.rank ?? '-'
-  const xpToNext = 4000
+  const xpToNext = 60
   const xpPct    = Math.min(100, (user.xp / xpToNext) * 100)
 
   return (

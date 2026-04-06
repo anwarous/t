@@ -85,7 +85,7 @@ export const MOCK_USER = {
   joinedAt: '2024-01-15',
 }
 
-export const XP_TO_NEXT_LEVEL = 4000
+export const XP_TO_NEXT_LEVEL = 60
 export const LEVEL_TITLES: Record<number, string> = {
   1: 'Novice', 5: 'Apprentice', 10: 'Practitioner',
   15: 'Expert', 20: 'Master', 25: 'Grandmaster', 30: 'Legend',

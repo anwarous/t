@@ -47,7 +47,7 @@ function XPRing({ progress }: { progress: number }) {
 // ── User footer card ────────────────────────────────────────────────────────
 function SidebarFooter({ onAvatarClick }: { onAvatarClick: () => void }) {
   const { user } = useUserStore()
-  const xpToNext = 4000
+  const xpToNext = 60
   const xpProgress = Math.min(100, (user.xp / xpToNext) * 100)
 
   return (

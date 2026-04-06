@@ -234,7 +234,7 @@ function ChallengeCard({
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
       className={cn(
-        'relative text-left w-full rounded-2xl border bg-gradient-to-br p-5 transition-all duration-200',
+        'group relative text-left w-full rounded-2xl border bg-gradient-to-br p-5 transition-all duration-200',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20',
         diffColors[exercise.difficulty] ?? 'border-white/10 hover:border-white/20',
       )}

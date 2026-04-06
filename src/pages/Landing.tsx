@@ -1,23 +1,19 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  ArrowRight, Zap, Brain, Trophy, GitBranch, Code2, Play,
-  CheckCircle, Star, BarChart2, Lock, Sparkles
+  ArrowRight, Zap, Brain, Trophy, GitBranch, Code2,
+  CheckCircle, Star, BarChart2, Terminal, Sparkles
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+// ── Stagger variants ──────────────────────────────────────────────────────
+const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
+  hidden:  { opacity: 0, y: 16 },
   visible: (i = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, delay: i * 0.1, ease: 'easeOut' },
+    opacity: 1, y: 0,
+    transition: { duration: 0.35, delay: i * 0.06, ease: 'easeOut' },
   }),
-}
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
 }
 
 const ALGORITHMS = [
@@ -26,10 +22,45 @@ const ALGORITHMS = [
   'Heap Sort', 'A* Search', 'Kruskal', 'Floyd-Warshall',
 ]
 
-const FEATURE_KEYS = ['viz', 'ai', 'gamified', 'editor'] as const
-const FEATURE_ICONS = [GitBranch, Brain, Trophy, Code2]
-const FEATURE_COLORS = ['#1a5cff', '#00d4ff', '#f59e0b', '#10b981']
-const FEATURE_GLOWS = ['rgba(26,92,255,0.3)', 'rgba(0,212,255,0.3)', 'rgba(245,158,11,0.3)', 'rgba(16,185,129,0.3)']
+const FEATURE_DATA = [
+  { icon: GitBranch, colorVar: 'var(--color-accent)',   key: 'viz'      },
+  { icon: Brain,     colorVar: '#818cf8',               key: 'ai'       },
+  { icon: Trophy,    colorVar: 'var(--color-xp)',       key: 'gamified' },
+  { icon: Code2,     colorVar: '#4ade80',               key: 'editor'   },
+]
+
+// ── Inline stat counter ────────────────────────────────────────────────────
+function StatBadge({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="text-center">
+      <div
+        className="text-3xl font-bold leading-none mb-1"
+        style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.03em', color: 'var(--color-accent)' }}
+      >
+        {value}
+      </div>
+      <div
+        className="text-xs uppercase tracking-widest"
+        style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
+      >
+        {label}
+      </div>
+    </div>
+  )
+}
+
+// ── Terminal prompt decoration ─────────────────────────────────────────────
+function TerminalLine({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className="flex items-start gap-2 text-xs"
+      style={{ fontFamily: 'IBM Plex Mono, monospace', color: 'var(--color-text-mid)' }}
+    >
+      <span style={{ color: 'var(--color-accent)', flexShrink: 0 }}>❯</span>
+      <span>{children}</span>
+    </div>
+  )
+}
 
 export default function Landing() {
   const { t } = useTranslation()
@@ -42,283 +73,576 @@ export default function Landing() {
   ]
 
   return (
-    <div className="relative overflow-hidden">
-      {/* ── Hero ─────────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center pt-24 pb-20 px-4">
+    <div className="relative overflow-hidden" style={{ paddingTop: '56px' }}>
 
-        {/* Hero glow */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] rounded-full"
-            style={{ background: 'radial-gradient(ellipse, rgba(26,92,255,0.12) 0%, transparent 70%)' }} />
+      {/* ── Hero ────────────────────────────────────────────────── */}
+      <section className="relative min-h-[calc(100vh-56px)] flex flex-col justify-center px-6 py-20">
+        {/* Accent glow — asymmetric, top-left anchored */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            top: '-10%', left: '-5%',
+            width: '50vw', height: '50vw',
+            background: 'radial-gradient(ellipse, rgba(0,245,212,0.06) 0%, transparent 65%)',
+          }}
+        />
+        {/* Secondary glow — right side */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            bottom: '5%', right: '-10%',
+            width: '35vw', height: '35vw',
+            background: 'radial-gradient(ellipse, rgba(240,160,48,0.04) 0%, transparent 65%)',
+          }}
+        />
+
+        <div className="max-w-5xl mx-auto w-full">
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            animate="visible"
+          >
+            {/* Status badge */}
+            <motion.div
+              variants={fadeUp}
+              custom={0}
+              className="inline-flex items-center gap-2 mb-8"
+              style={{
+                padding: '6px 14px',
+                borderRadius: '4px',
+                background: 'rgba(0,245,212,0.06)',
+                border: '1px solid rgba(0,245,212,0.2)',
+                fontFamily: 'IBM Plex Mono, monospace',
+                fontSize: '11px',
+                color: 'var(--color-accent)',
+                letterSpacing: '0.04em',
+              }}
+            >
+              <Sparkles size={11} />
+              <span>v2.4.0 — NOW LIVE</span>
+              <span style={{ color: 'rgba(0,245,212,0.4)' }}>•</span>
+              <span style={{ color: 'var(--color-text-mid)' }}>AI Mentor beta</span>
+            </motion.div>
+
+            {/* Main headline */}
+            <motion.h1
+              variants={fadeUp}
+              custom={1}
+              className="leading-none tracking-tight mb-6 text-balance"
+              style={{
+                fontFamily: 'Space Grotesk, sans-serif',
+                letterSpacing: '-0.03em',
+                fontSize: 'clamp(2.5rem, 7vw, 5.5rem)',
+                fontWeight: 700,
+              }}
+            >
+              {t('landing.heroTitle')}{' '}
+              <br className="hidden sm:block" />
+              <span className="gradient-text">{t('landing.heroTitleHighlight')}</span>
+            </motion.h1>
+
+            {/* Subheadline */}
+            <motion.p
+              variants={fadeUp}
+              custom={2}
+              className="max-w-xl mb-10 leading-relaxed"
+              style={{
+                fontSize: '0.95rem',
+                color: 'var(--color-text-mid)',
+                fontFamily: 'IBM Plex Mono, monospace',
+              }}
+            >
+              {t('landing.heroDesc')}
+            </motion.p>
+
+            {/* CTAs */}
+            <motion.div variants={fadeUp} custom={3} className="flex flex-wrap items-center gap-3 mb-16">
+              <Link
+                to="/signup"
+                className="btn-primary px-7 py-3.5 text-sm"
+                aria-label={t('landing.getStarted')}
+              >
+                {t('landing.getStarted')}
+                <ArrowRight size={16} />
+              </Link>
+              <Link
+                to="/visualize"
+                className="btn-ghost px-7 py-3.5 text-sm"
+                aria-label={t('landing.watchDemo')}
+              >
+                <Terminal size={14} />
+                {t('landing.watchDemo')}
+              </Link>
+            </motion.div>
+
+            {/* Trust line */}
+            <motion.div
+              variants={fadeUp}
+              custom={4}
+              className="flex flex-wrap items-center gap-5"
+            >
+              {[t('landing.trust.noCard'), t('landing.trust.languages'), t('landing.trust.free')].map((item) => (
+                <span
+                  key={item}
+                  className="flex items-center gap-1.5 text-xs"
+                  style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
+                >
+                  <CheckCircle size={12} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
+                  {item}
+                </span>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Terminal card — decorative, asymmetric bleed */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="mt-16 max-w-lg"
+            style={{
+              background: 'rgba(255,255,255,0.025)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '6px',
+              overflow: 'hidden',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+            }}
+          >
+            {/* Title bar */}
+            <div
+              className="flex items-center gap-2 px-4 py-2.5"
+              style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}
+            >
+              <div className="flex gap-1.5">
+                {['#f43f5e', '#f0a030', 'var(--color-accent)'].map((c) => (
+                  <div key={c} className="w-2.5 h-2.5 rounded-full" style={{ background: c, opacity: 0.7 }} />
+                ))}
+              </div>
+              <span
+                className="text-[10px] ml-1"
+                style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}
+              >
+                learning++ — dashboard
+              </span>
+            </div>
+            {/* Content */}
+            <div className="px-4 py-4 space-y-2">
+              <TerminalLine>npm install learning-plus-plus</TerminalLine>
+              <TerminalLine>
+                <span style={{ color: 'var(--color-text)' }}>
+                  ✓ <span style={{ color: 'var(--color-accent)' }}>50</span> algorithms loaded
+                </span>
+              </TerminalLine>
+              <TerminalLine>
+                <span style={{ color: 'var(--color-text)' }}>
+                  ✓ AI mentor <span style={{ color: 'var(--color-accent)' }}>online</span>
+                </span>
+              </TerminalLine>
+              <TerminalLine>
+                <span style={{ color: 'var(--color-text)' }}>
+                  ✓ streak <span style={{ color: 'var(--color-xp)' }}>7 days 🔥</span>
+                </span>
+              </TerminalLine>
+              <TerminalLine>
+                <span style={{ color: 'var(--color-text-faint)' }}>
+                  Waiting for input<span className="animate-pulse">_</span>
+                </span>
+              </TerminalLine>
+            </div>
+          </motion.div>
         </div>
 
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          animate="visible"
-          className="relative text-center max-w-4xl mx-auto"
-        >
-          {/* Badge */}
-          <motion.div variants={fadeUp} custom={0} className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-500/30 bg-brand-500/10 text-brand-300 text-sm font-medium mb-8">
-            <Sparkles size={14} className="text-accent-cyan" />
-            {t('landing.badge')}
-          </motion.div>
-
-          {/* Headline */}
-          <motion.h1
-            variants={fadeUp}
-            custom={1}
-            className="text-5xl sm:text-6xl md:text-7xl font-display font-bold leading-[1.08] tracking-tight mb-6 text-balance"
-          >
-            {t('landing.heroTitle')}{' '}
-            <span className="gradient-text">{t('landing.heroTitleHighlight')}</span>
-          </motion.h1>
-
-          {/* Subheadline */}
-          <motion.p
-            variants={fadeUp}
-            custom={2}
-            className="text-lg sm:text-xl text-surface-400 max-w-2xl mx-auto mb-10 leading-relaxed"
-          >
-            {t('landing.heroDesc')}
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/signup" className="btn-primary text-base px-7 py-3.5 rounded-2xl">
-              {t('landing.getStarted')}
-              <ArrowRight size={18} />
-            </Link>
-            <Link to="/visualize" className="btn-ghost text-base px-7 py-3.5 rounded-2xl">
-              <Play size={16} />
-              {t('landing.watchDemo')}
-            </Link>
-          </motion.div>
-
-          {/* Trust line */}
-          <motion.div variants={fadeUp} custom={4} className="mt-10 flex items-center justify-center gap-6 text-sm text-surface-500">
-            {[t('landing.trust.noCard'), t('landing.trust.languages'), t('landing.trust.free')].map((item) => (
-              <span key={item} className="flex items-center gap-1.5">
-                <CheckCircle size={13} className="text-accent-green" />
-                {item}
-              </span>
-            ))}
-          </motion.div>
-        </motion.div>
-
-        {/* Floating algorithm tags */}
+        {/* Algorithm tags — bottom of hero, full-width overflow */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-          className="relative mt-20 w-full max-w-4xl mx-auto"
+          transition={{ delay: 0.9, duration: 0.6 }}
+          className="absolute bottom-6 left-0 right-0 overflow-hidden"
         >
-          <div className="flex flex-wrap justify-center gap-2.5">
+          <div className="flex gap-2 px-6 flex-wrap max-w-5xl mx-auto">
             {ALGORITHMS.map((algo, i) => (
-              <motion.div
+              <motion.span
                 key={algo}
-                initial={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0, scale: 0.85 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.9 + i * 0.05, duration: 0.3 }}
-                className="px-4 py-2 rounded-full glass border border-white/8 text-sm text-surface-300 font-medium hover:border-brand-500/40 hover:text-white transition-all cursor-default"
+                transition={{ delay: 1 + i * 0.04, duration: 0.25 }}
+                className="cursor-default"
+                style={{
+                  padding: '4px 10px',
+                  borderRadius: '3px',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.07)',
+                  fontSize: '11px',
+                  fontFamily: 'IBM Plex Mono, monospace',
+                  color: 'var(--color-text-mid)',
+                  transition: 'all 150ms ease-out',
+                }}
+                onMouseEnter={e => {
+                  ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,245,212,0.3)'
+                  ;(e.currentTarget as HTMLElement).style.color = 'var(--color-text)'
+                }}
+                onMouseLeave={e => {
+                  ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.07)'
+                  ;(e.currentTarget as HTMLElement).style.color = 'var(--color-text-mid)'
+                }}
               >
                 {algo}
-              </motion.div>
+              </motion.span>
             ))}
           </div>
         </motion.div>
       </section>
 
-      {/* ── Stats ──────────────────────────────────── */}
-      <section className="py-16 border-y border-white/5">
-        <div className="max-w-4xl mx-auto px-4">
+      {/* ── Stats strip ──────────────────────────────────────────── */}
+      <section
+        className="py-12 px-6"
+        style={{ borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+      >
+        <div className="max-w-3xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {STATS.map((stat, i) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center"
+                transition={{ delay: i * 0.08 }}
               >
-                <div className="text-4xl font-display font-bold gradient-text mb-1">{stat.value}</div>
-                <div className="text-sm text-surface-400">{stat.label}</div>
+                <StatBadge value={stat.value} label={stat.label} />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Features ───────────────────────────────── */}
-      <section className="py-24 px-4">
-        <div className="max-w-6xl mx-auto">
+      {/* ── Features ─────────────────────────────────────────────── */}
+      <section className="py-24 px-6">
+        <div className="max-w-5xl mx-auto">
+          {/* Section label */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="mb-14"
           >
-            <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">
-              {t('landing.features.title')} <span className="gradient-text">{t('landing.features.titleHighlight')}</span>
+            <div
+              className="text-[10px] uppercase tracking-widest mb-3"
+              style={{ color: 'var(--color-accent)', fontFamily: 'IBM Plex Mono, monospace' }}
+            >
+              // FEATURES
+            </div>
+            <h2
+              className="leading-tight"
+              style={{
+                fontFamily: 'Space Grotesk, sans-serif',
+                letterSpacing: '-0.03em',
+                fontSize: 'clamp(1.8rem, 4vw, 3rem)',
+                fontWeight: 700,
+              }}
+            >
+              {t('landing.features.title')}{' '}
+              <span className="gradient-text">{t('landing.features.titleHighlight')}</span>
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-5">
-            {FEATURE_KEYS.map((key, i) => (
+          <div className="grid md:grid-cols-2 gap-3">
+            {FEATURE_DATA.map(({ icon: Icon, colorVar, key }, i) => (
               <motion.div
                 key={key}
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -4 }}
-                className="relative p-7 rounded-2xl glass border border-white/8 overflow-hidden group"
+                transition={{ delay: i * 0.08 }}
+                whileHover={{ y: -2 }}
+                className="relative group overflow-hidden"
+                style={{
+                  padding: '28px',
+                  background: 'rgba(255,255,255,0.025)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  borderRadius: '6px',
+                  transition: 'all 150ms ease-out',
+                }}
+                onMouseEnter={e => {
+                  ;(e.currentTarget as HTMLElement).style.borderColor = `${colorVar}40`
+                  ;(e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'
+                }}
+                onMouseLeave={e => {
+                  ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.06)'
+                  ;(e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.025)'
+                }}
               >
+                {/* Icon */}
                 <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: `radial-gradient(circle at 30% 40%, ${FEATURE_GLOWS[i]} 0%, transparent 60%)` }}
-                />
-                <div className="relative">
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
-                    style={{ background: `${FEATURE_COLORS[i]}20`, border: `1px solid ${FEATURE_COLORS[i]}30` }}
-                  >
-                    {(() => { const Icon = FEATURE_ICONS[i]; return <Icon size={22} style={{ color: FEATURE_COLORS[i] }} /> })()}
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">{t(`landing.features.${key}.title`)}</h3>
-                  <p className="text-surface-400 leading-relaxed">{t(`landing.features.${key}.desc`)}</p>
+                  className="w-10 h-10 flex items-center justify-center mb-5"
+                  style={{
+                    background: `${colorVar}15`,
+                    border: `1px solid ${colorVar}30`,
+                    borderRadius: '6px',
+                  }}
+                >
+                  <Icon size={18} style={{ color: colorVar }} />
                 </div>
+                <h3
+                  className="mb-2 font-bold"
+                  style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.05rem', letterSpacing: '-0.01em' }}
+                >
+                  {t(`landing.features.${key}.title`)}
+                </h3>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
+                >
+                  {t(`landing.features.${key}.desc`)}
+                </p>
+                {/* Left accent bar on hover */}
+                <div
+                  className="absolute left-0 top-0 bottom-0 w-[2px] opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ background: colorVar, boxShadow: `0 0 8px ${colorVar}` }}
+                />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── How It Works ──────────────────────────────── */}
-      <section className="py-24 px-4">
-        <div className="max-w-6xl mx-auto">
+      {/* ── How It Works ──────────────────────────────────────────── */}
+      <section
+        className="py-20 px-6"
+        style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}
+      >
+        <div className="max-w-5xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="mb-14"
           >
-            <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">
+            <div
+              className="text-[10px] uppercase tracking-widest mb-3"
+              style={{ color: 'var(--color-xp)', fontFamily: 'IBM Plex Mono, monospace' }}
+            >
+              // HOW IT WORKS
+            </div>
+            <h2
+              className="leading-tight"
+              style={{
+                fontFamily: 'Space Grotesk, sans-serif',
+                letterSpacing: '-0.03em',
+                fontSize: 'clamp(1.8rem, 4vw, 3rem)',
+                fontWeight: 700,
+              }}
+            >
               {t('landing.howItWorks.title')}
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid md:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.06)' }}>
             {(['step1', 'step2', 'step3'] as const).map((step, i) => (
               <motion.div
                 key={step}
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
-                className="relative p-7 rounded-2xl glass border border-white/8"
+                transition={{ delay: i * 0.1 }}
+                className="relative p-8"
+                style={{ background: 'var(--color-bg)' }}
               >
-                <div className="text-6xl font-display font-bold mb-4 opacity-10 text-brand-400">
+                <div
+                  className="text-5xl font-bold mb-5 leading-none"
+                  style={{
+                    fontFamily: 'Space Grotesk, sans-serif',
+                    letterSpacing: '-0.04em',
+                    color: 'rgba(0,245,212,0.08)',
+                  }}
+                >
                   {String(i + 1).padStart(2, '0')}
                 </div>
-                <h3 className="text-xl font-bold mb-2 text-brand-300">{t(`landing.howItWorks.${step}.title`)}</h3>
-                <p className="text-surface-400 text-sm leading-relaxed">{t(`landing.howItWorks.${step}.desc`)}</p>
+                <h3
+                  className="font-bold mb-2"
+                  style={{
+                    fontFamily: 'Space Grotesk, sans-serif',
+                    color: 'var(--color-accent)',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {t(`landing.howItWorks.${step}.title`)}
+                </h3>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
+                >
+                  {t(`landing.howItWorks.${step}.desc`)}
+                </p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Social Proof ───────────────────────────── */}
-      <section className="py-20 px-4">
+      {/* ── Reviews ───────────────────────────────────────────────── */}
+      <section className="py-20 px-6">
         <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid md:grid-cols-3 gap-3">
             {(['r1', 'r2', 'r3'] as const).map((key, i) => {
               const review = {
                 quote: t(`landing.reviews.${key}.quote`),
-                name: t(`landing.reviews.${key}.name`),
-                role: t(`landing.reviews.${key}.role`),
+                name:  t(`landing.reviews.${key}.name`),
+                role:  t(`landing.reviews.${key}.role`),
                 stars: 5,
               }
               return (
-              <motion.div
-                key={key}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-6 rounded-2xl glass border border-white/8"
-              >
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: review.stars }).map((_, j) => (
-                    <Star key={j} size={14} className="text-amber-400 fill-amber-400" />
-                  ))}
-                </div>
-                <p className="text-surface-300 text-sm leading-relaxed mb-5">"{review.quote}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-xs font-bold text-brand-300">
-                    {review.name.split(' ').map(n => n[0]).join('')}
+                <motion.div
+                  key={key}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="p-6"
+                  style={{
+                    background: 'rgba(255,255,255,0.025)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    borderRadius: '6px',
+                  }}
+                >
+                  <div className="flex gap-0.5 mb-4">
+                    {Array.from({ length: review.stars }).map((_, j) => (
+                      <Star key={j} size={12} style={{ color: 'var(--color-xp)', fill: 'var(--color-xp)' }} />
+                    ))}
                   </div>
-                  <div>
-                    <div className="text-sm font-semibold text-white">{review.name}</div>
-                    <div className="text-xs text-surface-500">{review.role}</div>
+                  <p
+                    className="text-sm leading-relaxed mb-5"
+                    style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
+                  >
+                    "{review.quote}"
+                  </p>
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className="w-8 h-8 rounded flex items-center justify-center text-xs font-bold flex-shrink-0"
+                      style={{
+                        background: 'var(--color-accent-dim)',
+                        border: '1px solid rgba(0,245,212,0.2)',
+                        color: 'var(--color-accent)',
+                        fontFamily: 'Space Grotesk, sans-serif',
+                      }}
+                    >
+                      {review.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+                        {review.name}
+                      </div>
+                      <div className="text-xs" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
+                        {review.role}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
               )
             })}
           </div>
         </div>
       </section>
 
-      {/* ── CTA ────────────────────────────────────── */}
-      <section className="py-28 px-4">
-        <div className="max-w-2xl mx-auto text-center">
+      {/* ── CTA strip ─────────────────────────────────────────────── */}
+      <section
+        className="py-20 px-6"
+        style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+      >
+        <div className="max-w-2xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative p-12 rounded-3xl overflow-hidden"
+            className="relative overflow-hidden p-12"
             style={{
-              background: 'linear-gradient(135deg, rgba(26,92,255,0.15) 0%, rgba(0,212,255,0.08) 100%)',
-              border: '1px solid rgba(26,92,255,0.3)',
+              background: 'rgba(0,245,212,0.04)',
+              border: '1px solid rgba(0,245,212,0.15)',
+              borderRadius: '6px',
+              boxShadow: '0 0 60px rgba(0,245,212,0.06)',
             }}
           >
-            <div className="absolute inset-0 pointer-events-none"
-              style={{ background: 'radial-gradient(circle at 50% 0%, rgba(26,92,255,0.2) 0%, transparent 60%)' }} />
-            <div className="relative">
-              <div className="flex justify-center mb-5">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-accent-cyan flex items-center justify-center shadow-glow-blue">
-                  <BarChart2 size={32} className="text-white" />
-                </div>
+            {/* Corner accent */}
+            <div
+              className="absolute top-0 right-0 w-32 h-32 pointer-events-none"
+              style={{ background: 'radial-gradient(circle at top right, rgba(0,245,212,0.12) 0%, transparent 70%)' }}
+            />
+
+            <div className="relative text-center">
+              <div
+                className="w-12 h-12 rounded flex items-center justify-center mx-auto mb-6"
+                style={{ background: 'var(--color-accent)', boxShadow: '0 0 20px var(--color-accent-glow)' }}
+              >
+                <BarChart2 size={22} style={{ color: '#0a120e' }} />
               </div>
-              <h2 className="text-4xl font-display font-bold mb-4">
-                {t('landing.cta.title')} <span className="gradient-text">{t('landing.cta.titleHighlight')}</span>
+              <h2
+                className="mb-4 leading-tight"
+                style={{
+                  fontFamily: 'Space Grotesk, sans-serif',
+                  fontSize: 'clamp(1.6rem, 3vw, 2.2rem)',
+                  fontWeight: 700,
+                  letterSpacing: '-0.025em',
+                }}
+              >
+                {t('landing.cta.title')}{' '}
+                <span className="gradient-text">{t('landing.cta.titleHighlight')}</span>
               </h2>
-              <p className="text-surface-400 text-lg mb-8">{t('landing.cta.desc')}</p>
-              <Link to="/signup" className="btn-primary text-base px-8 py-4 rounded-2xl">
+              <p
+                className="mb-8 text-sm"
+                style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
+              >
+                {t('landing.cta.desc')}
+              </p>
+              <Link to="/signup" className="btn-primary px-8 py-3.5 text-sm">
                 {t('landing.cta.button')}
-                <ArrowRight size={18} />
+                <ArrowRight size={16} />
               </Link>
-              <p className="text-surface-500 text-sm mt-4">{t('landing.cta.sub')}</p>
+              <p
+                className="mt-4 text-xs"
+                style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}
+              >
+                {t('landing.cta.sub')}
+              </p>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-10 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      {/* ── Footer ────────────────────────────────────────────────── */}
+      <footer
+        className="py-8 px-6"
+        style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+      >
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-accent-cyan flex items-center justify-center text-xs font-bold">MQ</div>
-            <span className="font-display font-bold text-sm">Learning++</span>
+            <div
+              className="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold select-none"
+              style={{ background: 'var(--color-accent)', color: '#0a120e', fontFamily: 'Space Grotesk, sans-serif' }}
+            >
+              L+
+            </div>
+            <span
+              className="text-sm font-bold"
+              style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.01em' }}
+            >
+              Learning++
+            </span>
           </div>
-          <p className="text-surface-500 text-sm">© 2025 Learning++. {t('landing.footer.tagline')}</p>
-          <div className="flex gap-6 text-sm text-surface-500">
-            <a href="#" className="hover:text-white transition-colors">{t('landing.footer.privacy')}</a>
-            <a href="#" className="hover:text-white transition-colors">{t('landing.footer.terms')}</a>
-            <a href="#" className="hover:text-white transition-colors">{t('landing.footer.contact')}</a>
+          <p className="text-xs" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
+            © 2025 Learning++. {t('landing.footer.tagline')}
+          </p>
+          <div className="flex gap-5 text-xs" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+            {[t('landing.footer.privacy'), t('landing.footer.terms'), t('landing.footer.contact')].map((item) => (
+              <a
+                key={item}
+                href="#"
+                className="transition-colors"
+                style={{ color: 'var(--color-text-faint)' }}
+                onMouseEnter={e => ((e.target as HTMLElement).style.color = 'var(--color-text)')}
+                onMouseLeave={e => ((e.target as HTMLElement).style.color = 'var(--color-text-faint)')}
+              >
+                {item}
+              </a>
+            ))}
           </div>
         </div>
       </footer>

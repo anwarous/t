@@ -39,41 +39,82 @@ export default function SignUp() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-20">
+    <div
+      className="min-h-screen flex items-center justify-center px-4 relative"
+      style={{ paddingTop: 'calc(56px + 2rem)', paddingBottom: '2rem' }}
+    >
       {/* Background glow */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full"
-          style={{ background: 'radial-gradient(ellipse, rgba(0,212,255,0.08) 0%, transparent 70%)' }}
-        />
-      </div>
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          top: '15%', right: '10%',
+          width: '35vw', height: '35vw',
+          background: 'radial-gradient(ellipse, rgba(0,245,212,0.04) 0%, transparent 65%)',
+        }}
+      />
 
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="relative w-full max-w-md"
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="relative w-full max-w-sm"
       >
         {/* Card */}
-        <div className="glass-strong rounded-2xl border border-white/10 p-8 shadow-card-hover">
+        <div
+          className="p-8"
+          style={{
+            background: 'rgba(255,255,255,0.025)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '6px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+          }}
+        >
           {/* Logo */}
           <div className="flex items-center justify-center gap-2.5 mb-8">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-accent-cyan flex items-center justify-center shadow-glow-blue">
-              <span className="font-display font-bold text-white text-sm select-none">MQ</span>
+            <div
+              className="w-8 h-8 rounded flex items-center justify-center text-sm font-bold select-none"
+              style={{
+                background: 'var(--color-accent)',
+                color: '#0a120e',
+                fontFamily: 'Space Grotesk, sans-serif',
+                boxShadow: '0 0 14px var(--color-accent-glow)',
+              }}
+            >
+              L+
             </div>
-            <span className="font-display font-bold text-xl tracking-tight">
-              MQ<span className="gradient-text">Academy</span>
+            <span
+              className="font-bold text-lg"
+              style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.025em' }}
+            >
+              Learning<span className="gradient-text">++</span>
             </span>
           </div>
 
-          <h1 className="text-2xl font-display font-bold text-center mb-1">{t('signup.title')}</h1>
-          <p className="text-surface-400 text-sm text-center mb-8">{t('signup.subtitle')}</p>
+          <div className="mb-8">
+            <h1
+              className="text-xl font-bold text-center mb-1"
+              style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.02em' }}
+            >
+              {t('signup.title')}
+            </h1>
+            <p
+              className="text-xs text-center"
+              style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
+            >
+              {t('signup.subtitle')}
+            </p>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             {/* Display name */}
             <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-surface-300 mb-1.5">
-                {t('signup.displayName')} <span className="text-surface-500 font-normal">{t('signup.optional')}</span>
+              <label
+                htmlFor="displayName"
+                className="block text-xs font-medium mb-1.5"
+                style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
+              >
+                {t('signup.displayName')}{' '}
+                <span style={{ color: 'var(--color-text-faint)' }}>{t('signup.optional')}</span>
               </label>
               <input
                 id="displayName"
@@ -82,13 +123,18 @@ export default function SignUp() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Alex Chen"
-                className="w-full px-4 py-3 rounded-xl bg-surface-900/60 border border-white/10 text-sm text-white placeholder-surface-500 focus:outline-none focus:border-brand-500/60 focus:ring-1 focus:ring-brand-500/40 transition-all"
+                className="input-field"
+                style={{ fontSize: '13px' }}
               />
             </div>
 
             {/* Username */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-surface-300 mb-1.5">
+              <label
+                htmlFor="username"
+                className="block text-xs font-medium mb-1.5"
+                style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
+              >
                 {t('signup.username')}
               </label>
               <input
@@ -101,13 +147,18 @@ export default function SignUp() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="alexchen"
-                className="w-full px-4 py-3 rounded-xl bg-surface-900/60 border border-white/10 text-sm text-white placeholder-surface-500 focus:outline-none focus:border-brand-500/60 focus:ring-1 focus:ring-brand-500/40 transition-all"
+                className="input-field"
+                style={{ fontSize: '13px' }}
               />
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-surface-300 mb-1.5">
+              <label
+                htmlFor="email"
+                className="block text-xs font-medium mb-1.5"
+                style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
+              >
                 {t('signup.email')}
               </label>
               <input
@@ -118,14 +169,20 @@ export default function SignUp() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="alex@example.com"
-                className="w-full px-4 py-3 rounded-xl bg-surface-900/60 border border-white/10 text-sm text-white placeholder-surface-500 focus:outline-none focus:border-brand-500/60 focus:ring-1 focus:ring-brand-500/40 transition-all"
+                className="input-field"
+                style={{ fontSize: '13px' }}
               />
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-surface-300 mb-1.5">
-                {t('signup.password')} <span className="text-surface-500 font-normal">{t('signup.minChars')}</span>
+              <label
+                htmlFor="password"
+                className="block text-xs font-medium mb-1.5"
+                style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
+              >
+                {t('signup.password')}{' '}
+                <span style={{ color: 'var(--color-text-faint)' }}>{t('signup.minChars')}</span>
               </label>
               <div className="relative">
                 <input
@@ -137,15 +194,19 @@ export default function SignUp() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 pr-11 rounded-xl bg-surface-900/60 border border-white/10 text-sm text-white placeholder-surface-500 focus:outline-none focus:border-brand-500/60 focus:ring-1 focus:ring-brand-500/40 transition-all"
+                  className="input-field pr-11"
+                  style={{ fontSize: '13px' }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-500 hover:text-surface-300 transition-colors"
                   aria-label={showPassword ? t('signin.hidePassword') : t('signin.showPassword')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                  style={{ color: 'var(--color-text-faint)' }}
+                  onMouseEnter={e => ((e.target as HTMLElement).style.color = 'var(--color-text)')}
+                  onMouseLeave={e => ((e.target as HTMLElement).style.color = 'var(--color-text-faint)')}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
             </div>
@@ -155,52 +216,69 @@ export default function SignUp() {
               <motion.p
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-sm text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-4 py-3"
+                className="text-xs px-3 py-2.5 rounded"
+                style={{
+                  color: '#fca5a5',
+                  background: 'rgba(244,63,94,0.08)',
+                  border: '1px solid rgba(244,63,94,0.2)',
+                  fontFamily: 'IBM Plex Mono, monospace',
+                }}
               >
                 {error}
               </motion.p>
             )}
 
+            {/* Perks */}
+            <div
+              className="space-y-1.5 py-3 px-3 rounded"
+              style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
+            >
+              {[t('signup.perks.free'), t('signup.perks.access'), t('signup.perks.mentor')].map((perk) => (
+                <div
+                  key={perk}
+                  className="flex items-center gap-2 text-[11px]"
+                  style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
+                >
+                  <CheckCircle size={11} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
+                  {perk}
+                </div>
+              ))}
+            </div>
+
             {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full justify-center py-3 rounded-xl disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+              aria-label={t('signup.submit')}
+              className="btn-primary w-full justify-center py-3 text-sm"
+              style={{ opacity: loading ? 0.65 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span className="w-4 h-4 rounded-full animate-spin" style={{ border: '2px solid rgba(10,18,14,0.3)', borderTopColor: '#0a120e' }} />
                   {t('signup.loading')}
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
-                  <UserPlus size={16} />
+                  <UserPlus size={15} />
                   {t('signup.submit')}
                 </span>
               )}
             </button>
           </form>
 
-          {/* Perks */}
-          <div className="mt-5 space-y-2">
-            {[t('signup.perks.free'), t('signup.perks.access'), t('signup.perks.mentor')].map((perk) => (
-              <div key={perk} className="flex items-center gap-2 text-xs text-surface-400">
-                <CheckCircle size={12} className="text-accent-green flex-shrink-0" />
-                {perk}
-              </div>
-            ))}
-          </div>
-
           {/* Divider */}
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-white/8" />
-            <span className="text-xs text-surface-500">{t('signup.hasAccount')}</span>
-            <div className="flex-1 h-px bg-white/8" />
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+            <span className="text-[10px]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
+              {t('signup.hasAccount')}
+            </span>
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
           </div>
 
           <Link
             to="/signin"
-            className="btn-ghost w-full justify-center py-3 rounded-xl text-sm"
+            className="btn-ghost w-full justify-center py-2.5 text-xs"
           >
             {t('signup.signIn')}
           </Link>

@@ -1,9 +1,10 @@
-import { useEffect, Suspense, lazy } from 'react'
+import { useEffect, useState, Suspense, lazy } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
-  Play, RotateCcw, ChevronDown, CheckCircle2, XCircle,
-  Lightbulb, Terminal, Code2, Loader2, BookOpen, ExternalLink
+  Play, RotateCcw, ChevronLeft, CheckCircle2, XCircle,
+  Lightbulb, Terminal, Code2, Loader2, BookOpen, ExternalLink,
+  Zap, Star, Filter
 } from 'lucide-react'
 import { useEditorStore } from '@/store'
 import { useUserStore } from '@/store'
@@ -201,23 +202,193 @@ function ExercisePanel({ exercise }: { exercise: typeof MOCK_EXERCISES[0] }) {
   )
 }
 
-// ── Main page ─────────────────────────────────────────────────────────────────
-export default function CodeEditorPage() {
-  const [searchParams] = useSearchParams()
-  const navigate       = useNavigate()
-  const exerciseId     = searchParams.get('exercise') || 'ex-001'
-  const { t }          = useTranslation()
+// ── Challenge card ────────────────────────────────────────────────────────────
+function ChallengeCard({
+  exercise,
+  isCompleted,
+  onClick,
+  index,
+}: {
+  exercise: typeof MOCK_EXERCISES[0]
+  isCompleted: boolean
+  onClick: () => void
+  index: number
+}) {
+  const diffColors: Record<string, string> = {
+    Easy:   'from-emerald-500/10 to-emerald-500/5  border-emerald-500/20  hover:border-emerald-400/40',
+    Medium: 'from-amber-500/10  to-amber-500/5   border-amber-500/20   hover:border-amber-400/40',
+    Hard:   'from-rose-500/10   to-rose-500/5    border-rose-500/20    hover:border-rose-400/40',
+  }
+  const glowColors: Record<string, string> = {
+    Easy:   'rgba(16,185,129,0.15)',
+    Medium: 'rgba(245,158,11,0.15)',
+    Hard:   'rgba(244,63,94,0.15)',
+  }
+
+  return (
+    <motion.button
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.04, duration: 0.35, ease: 'easeOut' }}
+      whileHover={{ scale: 1.025, y: -3 }}
+      whileTap={{ scale: 0.97 }}
+      onClick={onClick}
+      className={cn(
+        'relative text-left w-full rounded-2xl border bg-gradient-to-br p-5 transition-all duration-200',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20',
+        diffColors[exercise.difficulty] ?? 'border-white/10 hover:border-white/20',
+      )}
+      style={{
+        background: `linear-gradient(135deg, rgba(13,15,20,0.95) 0%, rgba(20,24,40,0.90) 100%)`,
+      }}
+    >
+      {/* Hover glow overlay */}
+      <div
+        className="absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-100"
+        style={{ background: `radial-gradient(circle at 50% 0%, ${glowColors[exercise.difficulty] ?? 'transparent'}, transparent 70%)` }}
+      />
+
+      {/* Completion badge */}
+      {isCompleted && (
+        <div className="absolute top-3 right-3 flex items-center gap-1 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+          <CheckCircle2 size={10} /> Done
+        </div>
+      )}
+
+      {/* Difficulty + category row */}
+      <div className="flex items-center gap-2 mb-3">
+        <span className={cn('tag border text-xs', getDifficultyBg(exercise.difficulty))}>
+          {exercise.difficulty}
+        </span>
+        <span className="text-xs text-surface-500 flex items-center gap-1">
+          <Code2 size={11} />{exercise.category}
+        </span>
+      </div>
+
+      {/* Title */}
+      <h3 className="font-bold text-base mb-2 leading-snug" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+        {exercise.title}
+      </h3>
+
+      {/* Description */}
+      <p className="text-surface-400 text-xs leading-relaxed line-clamp-2 mb-4">
+        {exercise.description}
+      </p>
+
+      {/* Footer row */}
+      <div className="flex items-center justify-between">
+        <span className="flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--color-accent)' }}>
+          <Zap size={12} /> +{exercise.xp} XP
+        </span>
+        {exercise.attempts > 0 && !isCompleted && (
+          <span className="text-xs text-surface-500">{exercise.attempts} attempt{exercise.attempts !== 1 ? 's' : ''}</span>
+        )}
+      </div>
+    </motion.button>
+  )
+}
+
+// ── Challenge select view ─────────────────────────────────────────────────────
+const DIFFICULTIES = ['All', 'Easy', 'Medium', 'Hard'] as const
+
+function ChallengesGrid({
+  completedExercises,
+  onSelect,
+}: {
+  completedExercises: string[]
+  onSelect: (id: string) => void
+}) {
+  const [filter, setFilter] = useState<'All' | 'Easy' | 'Medium' | 'Hard'>('All')
+
+  const visible = filter === 'All'
+    ? MOCK_EXERCISES
+    : MOCK_EXERCISES.filter(e => e.difficulty === filter)
+
+  const counts = {
+    All:    MOCK_EXERCISES.length,
+    Easy:   MOCK_EXERCISES.filter(e => e.difficulty === 'Easy').length,
+    Medium: MOCK_EXERCISES.filter(e => e.difficulty === 'Medium').length,
+    Hard:   MOCK_EXERCISES.filter(e => e.difficulty === 'Hard').length,
+  }
+
+  return (
+    <motion.div
+      key="grid"
+      initial={{ opacity: 0, scale: 0.97 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.28, ease: 'easeInOut' }}
+      className="px-6 py-8 max-w-6xl mx-auto"
+    >
+      {/* Header */}
+      <div className="mb-8">
+        <h1
+          className="text-3xl font-bold mb-2"
+          style={{ fontFamily: 'Space Grotesk, sans-serif', color: 'var(--color-accent)' }}
+        >
+          Choose Your Challenge
+        </h1>
+        <p className="text-surface-400 text-sm">
+          {MOCK_EXERCISES.filter(e => completedExercises.includes(e.id) || e.completed).length} / {MOCK_EXERCISES.length} completed
+        </p>
+      </div>
+
+      {/* Difficulty filter */}
+      <div className="flex items-center gap-2 mb-6">
+        <Filter size={14} className="text-surface-500" />
+        {DIFFICULTIES.map(d => (
+          <button
+            key={d}
+            onClick={() => setFilter(d)}
+            className={cn(
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border',
+              filter === d
+                ? d === 'Easy'   ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30'
+                : d === 'Medium' ? 'text-amber-400 bg-amber-500/10 border-amber-500/30'
+                : d === 'Hard'   ? 'text-rose-400 bg-rose-500/10 border-rose-500/30'
+                :                  'text-white bg-white/8 border-white/15'
+                : 'text-surface-400 border-white/8 hover:text-white hover:bg-white/5'
+            )}
+          >
+            {d}
+            <span className="opacity-60">{counts[d]}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Cards grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {visible.map((exercise, i) => (
+          <ChallengeCard
+            key={exercise.id}
+            exercise={exercise}
+            isCompleted={exercise.completed || completedExercises.includes(exercise.id)}
+            onClick={() => onSelect(exercise.id)}
+            index={i}
+          />
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
+// ── Challenge editor view ─────────────────────────────────────────────────────
+function ChallengeEditor({
+  exerciseId,
+  onBack,
+}: {
+  exerciseId: string
+  onBack: () => void
+}) {
+  const { t }      = useTranslation()
+  const navigate   = useNavigate()
+  const exercise   = MOCK_EXERCISES.find(e => e.id === exerciseId) ?? MOCK_EXERCISES[0]
 
   const { code, output, isRunning, language, setCode, setLanguage, runCode, setActiveExercise } = useEditorStore()
-  const { user } = useUserStore()
-  const completedExercises = user.completedExercises ?? []
-  const exercise = MOCK_EXERCISES.find(e => e.id === exerciseId) ?? MOCK_EXERCISES[0]
 
-  // Language → Monaco language id & file extension
   const monacoLang = language === 'algorithm' ? 'algorithm' : 'python'
   const fileExt    = language === 'algorithm' ? 'solution.algo' : 'solution.py'
 
-  // Load starter code when exercise changes
   useEffect(() => {
     setActiveExercise(exerciseId)
     const starter = language === 'algorithm' && exercise.algorithmStarterCode
@@ -234,11 +405,27 @@ export default function CodeEditorPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-64px)] flex flex-col">
-
+    <motion.div
+      key="editor"
+      initial={{ opacity: 0, x: 40 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -40 }}
+      transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+      className="h-[calc(100vh-56px)] flex flex-col"
+    >
       {/* ── Top bar ──────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-surface-900/50 flex-shrink-0">
         <div className="flex items-center gap-3 min-w-0">
+          {/* Back button */}
+          <button
+            onClick={onBack}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm text-surface-400 hover:text-white hover:bg-white/5 transition-all"
+          >
+            <ChevronLeft size={15} /> Challenges
+          </button>
+
+          <div className="w-px h-4 bg-white/10" />
+
           {/* Active exercise pill */}
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-800 border border-white/8 text-sm">
             <BookOpen size={14} className="text-surface-400 flex-shrink-0" />
@@ -246,26 +433,6 @@ export default function CodeEditorPage() {
             <span className={cn('tag border text-xs flex-shrink-0', getDifficultyBg(exercise.difficulty))}>
               {exercise.difficulty}
             </span>
-            <ChevronDown size={13} className="text-surface-500 flex-shrink-0" />
-          </div>
-
-          {/* Quick switcher — desktop only */}
-          <div className="hidden md:flex items-center gap-1.5">
-            {MOCK_EXERCISES.slice(0, 4).map(ex => (
-              <a
-                key={ex.id}
-                href={`?exercise=${ex.id}`}
-                className={cn(
-                  'flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs transition-colors',
-                  ex.id === exerciseId
-                    ? 'bg-brand-500/15 text-brand-300 border border-brand-500/25'
-                    : 'text-surface-500 hover:text-white hover:bg-white/5'
-                )}
-              >
-                {ex.completed || completedExercises.includes(ex.id) ? <CheckCircle2 size={11} className="text-emerald-400" /> : null}
-                {ex.title}
-              </a>
-            ))}
           </div>
         </div>
 
@@ -383,6 +550,45 @@ export default function CodeEditorPage() {
           <OutputPanel output={output} isRunning={isRunning} />
         </motion.div>
       </div>
+    </motion.div>
+  )
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
+export default function CodeEditorPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const exerciseId = searchParams.get('exercise')
+
+  const { user } = useUserStore()
+  const completedExercises = user.completedExercises ?? []
+
+  function handleSelect(id: string) {
+    setSearchParams({ exercise: id })
+  }
+
+  function handleBack() {
+    setSearchParams({})
+  }
+
+  return (
+    <div className="overflow-hidden">
+      <AnimatePresence mode="wait">
+        {exerciseId ? (
+          <ChallengeEditor
+            key={`editor-${exerciseId}`}
+            exerciseId={exerciseId}
+            onBack={handleBack}
+          />
+        ) : (
+          <ChallengesGrid
+            key="grid"
+            completedExercises={completedExercises}
+            onSelect={handleSelect}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
+
+

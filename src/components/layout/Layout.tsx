@@ -4,12 +4,15 @@ import { useUserStore, applyTheme } from '@/store'
 import { motion } from 'framer-motion'
 import Navbar from './Navbar'
 import Sidebar from './Sidebar'
+import CodeModeNav from './CodeModeNav'
 
 const PUBLIC_PATHS = ['/', '/signin', '/signup']
+const CODE_PATHS   = ['/editor']
 
 export default function Layout() {
   const location = useLocation()
   const isPublic = PUBLIC_PATHS.includes(location.pathname)
+  const isCode   = CODE_PATHS.some(p => location.pathname.startsWith(p))
   const { user } = useUserStore()
 
   useEffect(() => {
@@ -38,6 +41,30 @@ export default function Layout() {
           transition={{ duration: 0.25, ease: 'easeOut' }}
         >
           <Outlet />
+        </motion.main>
+      </div>
+    )
+  }
+
+  // ── Code mode: no sidebar, compact 3-item top nav ───────────────────────
+  if (isCode) {
+    return (
+      <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+        <div
+          className="fixed inset-0 pointer-events-none bg-grid-pattern"
+          style={{ opacity: 0.3 }}
+        />
+        <CodeModeNav />
+        <motion.main
+          key={location.pathname}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.22, ease: 'easeOut' }}
+          className="pt-14 min-h-screen overflow-x-hidden"
+        >
+          <div className="relative">
+            <Outlet />
+          </div>
         </motion.main>
       </div>
     )

@@ -4,20 +4,20 @@
 
 -- Courses
 INSERT INTO courses (id, slug, title, description, category, difficulty, total_lessons, duration_minutes, xp_reward, color_hex, icon, tags, created_at)
-VALUES (RANDOM_UUID(), 'arrays-and-hashing', 'Arrays & Hashing', 'Master the fundamentals of arrays and hash maps. Learn to solve problems using frequency maps, two-pointer techniques, and sliding windows.', 'Data Structures', 'BEGINNER', 12, 180, 500, '#3B82F6', 'array', 'arrays,hashing,frequency-map,two-pointers', CURRENT_TIMESTAMP)
+VALUES (gen_random_uuid(), 'arrays-and-hashing', 'Arrays & Hashing', 'Master the fundamentals of arrays and hash maps. Learn to solve problems using frequency maps, two-pointer techniques, and sliding windows.', 'Data Structures', 'BEGINNER', 12, 180, 500, '#3B82F6', 'array', 'arrays,hashing,frequency-map,two-pointers', CURRENT_TIMESTAMP)
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO courses (id, slug, title, description, category, difficulty, total_lessons, duration_minutes, xp_reward, color_hex, icon, tags, created_at)
-VALUES (RANDOM_UUID(), 'binary-search', 'Binary Search', 'Deep dive into binary search and its variants. From basic sorted array search to complex search-space reduction problems.', 'Algorithms', 'INTERMEDIATE', 10, 150, 750, '#8B5CF6', 'search', 'binary-search,divide-and-conquer,sorted-arrays', CURRENT_TIMESTAMP)
+VALUES (gen_random_uuid(), 'binary-search', 'Binary Search', 'Deep dive into binary search and its variants. From basic sorted array search to complex search-space reduction problems.', 'Algorithms', 'INTERMEDIATE', 10, 150, 750, '#8B5CF6', 'search', 'binary-search,divide-and-conquer,sorted-arrays', CURRENT_TIMESTAMP)
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO courses (id, slug, title, description, category, difficulty, total_lessons, duration_minutes, xp_reward, color_hex, icon, tags, created_at)
-VALUES (RANDOM_UUID(), 'dynamic-programming', 'Dynamic Programming', 'Unlock the power of memoization and tabulation. Solve classic DP problems including knapsack, LCS, and interval DP.', 'Algorithms', 'ADVANCED', 18, 360, 1500, '#EC4899', 'dp', 'dynamic-programming,memoization,tabulation,optimization', CURRENT_TIMESTAMP)
+VALUES (gen_random_uuid(), 'dynamic-programming', 'Dynamic Programming', 'Unlock the power of memoization and tabulation. Solve classic DP problems including knapsack, LCS, and interval DP.', 'Algorithms', 'ADVANCED', 18, 360, 1500, '#EC4899', 'dp', 'dynamic-programming,memoization,tabulation,optimization', CURRENT_TIMESTAMP)
 ON CONFLICT (slug) DO NOTHING;
 
 -- Exercises
 INSERT INTO exercises (id, slug, title, description, difficulty, category, xp_reward, starter_code, solution_code, hints, created_at)
-VALUES (RANDOM_UUID(), 'two-sum', 'Two Sum',
+VALUES (gen_random_uuid(), 'two-sum', 'Two Sum',
  'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice.',
  'EASY', 'Arrays', 50,
  'function twoSum(nums, target) {\n  // Your solution here\n}',
@@ -27,7 +27,7 @@ VALUES (RANDOM_UUID(), 'two-sum', 'Two Sum',
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO exercises (id, slug, title, description, difficulty, category, xp_reward, starter_code, solution_code, hints, created_at)
-VALUES (RANDOM_UUID(), 'valid-anagram', 'Valid Anagram',
+VALUES (gen_random_uuid(), 'valid-anagram', 'Valid Anagram',
  'Given two strings s and t, return true if t is an anagram of s, and false otherwise. An anagram is a word or phrase formed by rearranging the letters of a different word or phrase, using all the original letters exactly once.',
  'EASY', 'Strings', 50,
  'function isAnagram(s, t) {\n  // Your solution here\n}',
@@ -37,7 +37,7 @@ VALUES (RANDOM_UUID(), 'valid-anagram', 'Valid Anagram',
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO exercises (id, slug, title, description, difficulty, category, xp_reward, starter_code, solution_code, hints, created_at)
-VALUES (RANDOM_UUID(), 'binary-search-basic', 'Binary Search',
+VALUES (gen_random_uuid(), 'binary-search-basic', 'Binary Search',
  'Given an array of integers nums which is sorted in ascending order, and an integer target, write a function to search target in nums. If target exists, return its index. Otherwise, return -1.',
  'EASY', 'Binary Search', 75,
  'function search(nums, target) {\n  // Your solution here\n}',
@@ -47,7 +47,7 @@ VALUES (RANDOM_UUID(), 'binary-search-basic', 'Binary Search',
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO exercises (id, slug, title, description, difficulty, category, xp_reward, starter_code, solution_code, hints, created_at)
-VALUES (RANDOM_UUID(), 'longest-common-subsequence', 'Longest Common Subsequence',
+VALUES (gen_random_uuid(), 'longest-common-subsequence', 'Longest Common Subsequence',
  'Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0.',
  'MEDIUM', 'Dynamic Programming', 150,
  'function longestCommonSubsequence(text1, text2) {\n  // Your solution here\n}',
@@ -57,7 +57,7 @@ VALUES (RANDOM_UUID(), 'longest-common-subsequence', 'Longest Common Subsequence
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO exercises (id, slug, title, description, difficulty, category, xp_reward, starter_code, solution_code, hints, created_at)
-VALUES (RANDOM_UUID(), 'coin-change', 'Coin Change',
+VALUES (gen_random_uuid(), 'coin-change', 'Coin Change',
  'You are given an integer array coins representing coins of different denominations and an integer amount. Return the fewest number of coins needed to make up that amount. If that amount cannot be made up, return -1.',
  'MEDIUM', 'Dynamic Programming', 150,
  'function coinChange(coins, amount) {\n  // Your solution here\n}',
@@ -67,7 +67,7 @@ VALUES (RANDOM_UUID(), 'coin-change', 'Coin Change',
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO exercises (id, slug, title, description, difficulty, category, xp_reward, starter_code, solution_code, hints, created_at)
-VALUES (RANDOM_UUID(), 'word-break', 'Word Break',
+VALUES (gen_random_uuid(), 'word-break', 'Word Break',
  'Given a string s and a dictionary of strings wordDict, return true if s can be segmented into a space-separated sequence of one or more dictionary words.',
  'HARD', 'Dynamic Programming', 250,
  'function wordBreak(s, wordDict) {\n  // Your solution here\n}',
@@ -78,21 +78,21 @@ ON CONFLICT (slug) DO NOTHING;
 
 -- Badges
 INSERT INTO badges (id, slug, name, description, icon, rarity)
-VALUES (RANDOM_UUID(), 'first-solve', 'First Blood', 'Solved your very first exercise', '🩸', 'COMMON')
+VALUES (gen_random_uuid(), 'first-solve', 'First Blood', 'Solved your very first exercise', '🩸', 'COMMON')
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO badges (id, slug, name, description, icon, rarity)
-VALUES (RANDOM_UUID(), 'streak-7', 'Week Warrior', 'Maintained a 7-day streak', '🔥', 'RARE')
+VALUES (gen_random_uuid(), 'streak-7', 'Week Warrior', 'Maintained a 7-day streak', '🔥', 'RARE')
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO badges (id, slug, name, description, icon, rarity)
-VALUES (RANDOM_UUID(), 'xp-1000', 'Rising Star', 'Earned 1,000 XP', '⭐', 'RARE')
+VALUES (gen_random_uuid(), 'xp-1000', 'Rising Star', 'Earned 1,000 XP', '⭐', 'RARE')
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO badges (id, slug, name, description, icon, rarity)
-VALUES (RANDOM_UUID(), 'solved-10', 'Problem Solver', 'Solved 10 exercises', '🧩', 'EPIC')
+VALUES (gen_random_uuid(), 'solved-10', 'Problem Solver', 'Solved 10 exercises', '🧩', 'EPIC')
 ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO badges (id, slug, name, description, icon, rarity)
-VALUES (RANDOM_UUID(), 'xp-10000', 'Algorithm Grandmaster', 'Earned 10,000 XP', '🏆', 'LEGENDARY')
+VALUES (gen_random_uuid(), 'xp-10000', 'Algorithm Grandmaster', 'Earned 10,000 XP', '🏆', 'LEGENDARY')
 ON CONFLICT (slug) DO NOTHING;

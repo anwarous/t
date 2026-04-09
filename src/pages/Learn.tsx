@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -6,7 +6,8 @@ import {
   Lock, Video, FileText, Code2, HelpCircle, Zap,
   ArrowLeft, Star, Users, BarChart2
 } from 'lucide-react'
-import { MOCK_COURSES, type Course, type Lesson } from '@/data/mockData'
+import { courseApi, type CourseDetailDto, type CourseSummaryDto } from '@/lib/api'
+import type { Course, Lesson } from '@/data/mockData'
 import { cn, getDifficultyBg } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 
@@ -22,6 +23,83 @@ const LESSON_TYPE_COLORS = {
   reading: 'text-emerald-400',
   practice: 'text-amber-400',
   quiz: 'text-purple-400',
+}
+
+function formatDuration(minutes: number): string {
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  if (h === 0) return `${m}m`
+  if (m === 0) return `${h}h`
+  return `${h}h ${m}m`
+}
+
+function mapDifficulty(input: string): Course['difficulty'] {
+  const normalized = input.toUpperCase()
+  if (normalized === 'BEGINNER') return 'Beginner'
+  if (normalized === 'INTERMEDIATE') return 'Intermediate'
+  return 'Advanced'
+}
+
+function mapIcon(input: string): string {
+  const key = input.toLowerCase()
+  const iconMap: Record<string, string> = {
+    array: '↕',
+    search: '◈',
+    dp: '⟳',
+  }
+  return iconMap[key] ?? '◳'
+}
+
+function splitTags(tags: string): string[] {
+  return tags
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean)
+}
+
+function chapterLinesToLessons(lines: string[]): Course['chapters'] {
+  return lines.map((title, i) => ({
+    id: `ch-${i + 1}`,
+    title,
+    lessons: [
+      {
+        id: `lesson-${i + 1}`,
+        title,
+        type: 'reading',
+        duration: '10m',
+        completed: false,
+        locked: i > 0,
+        xp: 20,
+      },
+    ],
+  }))
+}
+
+function mapCourseSummary(dto: CourseSummaryDto): Course {
+  return {
+    id: dto.slug,
+    title: dto.title,
+    description: dto.description,
+    category: dto.category,
+    difficulty: mapDifficulty(dto.difficulty),
+    progress: 0,
+    totalLessons: dto.totalLessons,
+    completedLessons: 0,
+    duration: formatDuration(dto.durationMinutes),
+    xpReward: dto.xpReward,
+    color: dto.colorHex,
+    icon: mapIcon(dto.icon),
+    tags: splitTags(dto.tags),
+    chapters: [],
+  }
+}
+
+function mapCourseDetail(dto: CourseDetailDto): Course {
+  const base = mapCourseSummary(dto)
+  return {
+    ...base,
+    chapters: chapterLinesToLessons(dto.chapters),
+  }
 }
 
 function LessonRow({ lesson, courseId }: { lesson: Lesson; courseId: string }) {
@@ -387,6 +465,9 @@ function CourseDetail({ course }: { course: Course }) {
 
 function CoursesListing() {
   const [filter, setFilter] = useState<string>('All')
+  const [courses, setCourses] = useState<Course[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string>('')
   const { t } = useTranslation()
   const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced']
   const difficultyLabels: Record<string, string> = {
@@ -396,9 +477,56 @@ function CoursesListing() {
     Advanced: t('learn.advanced'),
   }
 
-  const filtered = filter === 'All'
-    ? MOCK_COURSES
-    : MOCK_COURSES.filter(c => c.difficulty === filter)
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    setError('')
+
+    courseApi
+      .list()
+      .then((res) => {
+        if (!active) return
+        setCourses(res.map(mapCourseSummary))
+      })
+      .catch((err: unknown) => {
+        if (!active) return
+        setError(err instanceof Error ? err.message : 'Failed to load courses')
+      })
+      .finally(() => {
+        if (!active) return
+        setLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const filtered = useMemo(() => {
+    return filter === 'All'
+      ? courses
+      : courses.filter((c) => c.difficulty === filter)
+  }, [filter, courses])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-surface-400">{t('common.loading')}</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-red-300">{error}</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen px-4 py-8">
@@ -449,12 +577,51 @@ function CoursesListing() {
 export default function LearnPage() {
   const { courseId } = useParams<{ courseId?: string }>()
   const { t } = useTranslation()
+  const [course, setCourse] = useState<Course | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string>('')
+
+  useEffect(() => {
+    if (!courseId) return
+
+    let active = true
+    setLoading(true)
+    setError('')
+
+    courseApi
+      .getBySlug(courseId)
+      .then((res) => {
+        if (!active) return
+        setCourse(mapCourseDetail(res))
+      })
+      .catch((err: unknown) => {
+        if (!active) return
+        setCourse(null)
+        setError(err instanceof Error ? err.message : 'Failed to load course')
+      })
+      .finally(() => {
+        if (!active) return
+        setLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [courseId])
 
   if (courseId) {
-    const course = MOCK_COURSES.find(c => c.id === courseId)
+    if (loading) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+          <p className="text-surface-300">{t('common.loading')}</p>
+        </div>
+      )
+    }
+
     if (!course) return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <h2 className="text-2xl font-bold">{t('common.error')}</h2>
+        {error && <p className="text-surface-400 text-sm">{error}</p>}
         <Link to="/learn" className="btn-primary">{t('learn.allCourses')}</Link>
       </div>
     )

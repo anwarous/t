@@ -191,7 +191,9 @@ export default function Sidebar() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileOpen,   setMobileOpen]   = useState(false)
   const { user } = useUserStore()
+  const authUser = useAuthStore((s) => s.authUser)
   const { t } = useTranslation()
+  const isAdmin = authUser?.email === 'admin@admin.admin'
 
   const NAV_ITEMS = [
     { to: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
@@ -201,6 +203,7 @@ export default function Sidebar() {
     { to: '/visualize', label: t('nav.visualize'), icon: GitBranch },
     { to: '/mentor',    label: t('nav.aiMentor'),  icon: Brain },
     { to: '/profile',   label: t('nav.profile'),   icon: User },
+    ...(isAdmin ? [{ to: '/admin', label: t('nav.admin'), icon: Settings }] : []),
   ]
 
   const isActive = (to: string) =>

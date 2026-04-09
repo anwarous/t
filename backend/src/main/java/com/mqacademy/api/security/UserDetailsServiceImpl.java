@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+    private static final String ADMIN_EMAIL = "admin@admin.admin";
+    private static final String ADMIN_USERNAME = "admin";
+
     private final UserRepository userRepository;
 
     public UserDetailsServiceImpl(UserRepository userRepository) {
@@ -28,6 +31,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         var authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toSet());
+
+        if (ADMIN_EMAIL.equalsIgnoreCase(user.getEmail()) || ADMIN_USERNAME.equalsIgnoreCase(user.getUsername())) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),

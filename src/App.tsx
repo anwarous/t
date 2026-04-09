@@ -14,6 +14,7 @@ import ProfilePage from '@/pages/Profile'
 import SandboxPage from '@/pages/Sandbox'
 import SignIn from '@/pages/SignIn'
 import SignUp from '@/pages/SignUp'
+import AdminPage from '@/pages/Admin'
 
 // Apply theme class to <html> whenever the store's theme changes
 function ThemeWatcher() {
@@ -50,6 +51,18 @@ function RedirectIfAuth({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+function RequireAdmin({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated)
+  const authUser = useAuthStore(s => s.authUser)
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" replace />
+  }
+  if (authUser?.email !== 'admin@admin.admin') {
+    return <Navigate to="/dashboard" replace />
+  }
+  return <>{children}</>
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -68,6 +81,7 @@ export default function App() {
           <Route path="/learn/:courseId" element={<RequireAuth><LearnPage /></RequireAuth>} />
           <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
           <Route path="/sandbox" element={<RequireAuth><SandboxPage /></RequireAuth>} />
+          <Route path="/admin" element={<RequireAdmin><AdminPage /></RequireAdmin>} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

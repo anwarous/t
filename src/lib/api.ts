@@ -235,6 +235,7 @@ export interface AdminExercise {
   starterCode: string
   solutionCode: string
   hints: string
+  testCases: string
 }
 
 export interface AdminBadge {

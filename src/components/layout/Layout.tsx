@@ -1,6 +1,6 @@
-import { Outlet, useLocation } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
-import { useUserStore, applyTheme } from '@/store'
+import { useUserStore, useAuthStore, applyTheme } from '@/store'
 import { motion } from 'framer-motion'
 import Navbar from './Navbar'
 import Sidebar from './Sidebar'
@@ -8,16 +8,39 @@ import CodeModeNav from './CodeModeNav'
 
 const PUBLIC_PATHS = ['/', '/signin', '/signup']
 const CODE_PATHS   = ['/editor']
+const ADMIN_EMAIL = 'admin@admin.admin'
 
 export default function Layout() {
   const location = useLocation()
   const isPublic = PUBLIC_PATHS.includes(location.pathname)
   const isCode   = CODE_PATHS.some(p => location.pathname.startsWith(p))
+  const authUser = useAuthStore(s => s.authUser)
+  const isAdmin = authUser?.email === ADMIN_EMAIL
   const { user } = useUserStore()
 
   useEffect(() => {
     applyTheme(user.theme)
   }, [user.theme])
+
+  if (isAdmin) {
+    if (location.pathname !== '/admin') {
+      return <Navigate to="/admin" replace />
+    }
+
+    return (
+      <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+        <motion.main
+          key={location.pathname}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: 'easeOut' }}
+          className="min-h-screen overflow-x-hidden"
+        >
+          <Outlet />
+        </motion.main>
+      </div>
+    )
+  }
 
   if (isPublic) {
     return (

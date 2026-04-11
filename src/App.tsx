@@ -45,8 +45,10 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 // Redirect already-authenticated users away from signin/signup
 function RedirectIfAuth({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated)
+  const authUser = useAuthStore(s => s.authUser)
+  const isAdmin = authUser?.email === 'admin@admin.admin'
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={isAdmin ? '/admin' : '/dashboard'} replace />
   }
   return <>{children}</>
 }

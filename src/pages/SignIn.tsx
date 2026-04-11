@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next'
 import { authApi } from '@/lib/api'
 import { useAuthStore } from '@/store'
 
+const ADMIN_EMAIL = 'admin@admin.admin'
+
 export default function SignIn() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -31,7 +33,7 @@ export default function SignIn() {
         email: res.email,
         displayName: res.displayName,
       })
-      navigate(from, { replace: true })
+      navigate(res.email === ADMIN_EMAIL ? '/admin' : from, { replace: true })
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t('signin.failed'))
     } finally {

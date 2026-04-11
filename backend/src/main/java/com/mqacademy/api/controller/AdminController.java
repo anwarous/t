@@ -162,6 +162,7 @@ public class AdminController {
         e.setStarterCode(optionalString(body, "starterCode"));
         e.setSolutionCode(optionalString(body, "solutionCode"));
         e.setHints(optionalString(body, "hints"));
+        e.setTestCases(optionalString(body, "testCases"));
         return ResponseEntity.ok(toExerciseMap(exerciseRepository.save(e)));
     }
 
@@ -177,6 +178,7 @@ public class AdminController {
         if (body.containsKey("starterCode")) e.setStarterCode(optionalString(body, "starterCode"));
         if (body.containsKey("solutionCode")) e.setSolutionCode(optionalString(body, "solutionCode"));
         if (body.containsKey("hints")) e.setHints(optionalString(body, "hints"));
+        if (body.containsKey("testCases")) e.setTestCases(optionalString(body, "testCases"));
         return ResponseEntity.ok(toExerciseMap(exerciseRepository.save(e)));
     }
 
@@ -265,6 +267,7 @@ public class AdminController {
         m.put("starterCode", e.getStarterCode());
         m.put("solutionCode", e.getSolutionCode());
         m.put("hints", e.getHints());
+        m.put("testCases", e.getTestCases());
         return m;
     }
 

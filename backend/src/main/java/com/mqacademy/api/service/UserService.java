@@ -14,6 +14,8 @@ import java.util.List;
 @Service
 public class UserService {
 
+    private static final int XP_TO_LEVEL_UP = 60;
+
     private final UserRepository userRepository;
     private final UserBadgeRepository userBadgeRepository;
 
@@ -43,9 +45,16 @@ public class UserService {
     public User addXp(String username, int xpAmount) {
         User user = findByUsername(username);
         int newXp = user.getXp() + xpAmount;
+        int newLevel = user.getLevel();
+
+        while (newXp >= XP_TO_LEVEL_UP) {
+            newXp -= XP_TO_LEVEL_UP;
+            newLevel += 1;
+        }
+
         user.setXp(newXp);
-        user.setLevel(calculateLevel(newXp));
-        user.setRank(calculateRank(newXp));
+        user.setLevel(newLevel);
+        user.setRank(calculateRank(newLevel));
         return userRepository.save(user);
     }
 
@@ -88,16 +97,16 @@ public class UserService {
     }
 
     public static int calculateLevel(int xp) {
-        return Math.min(30, Math.max(1, xp / 250));
+        return Math.max(1, (xp / XP_TO_LEVEL_UP) + 1);
     }
 
-    public static String calculateRank(int xp) {
-        if (xp < 500)   return "Novice";
-        if (xp < 1500)  return "Apprentice";
-        if (xp < 3000)  return "Practitioner";
-        if (xp < 6000)  return "Expert";
-        if (xp < 12000) return "Master";
-        if (xp < 25000) return "Grandmaster";
+    public static String calculateRank(int level) {
+        if (level < 5)   return "Novice";
+        if (level < 10)  return "Apprentice";
+        if (level < 15)  return "Practitioner";
+        if (level < 20)  return "Expert";
+        if (level < 25)  return "Master";
+        if (level < 30) return "Grandmaster";
         return "Legend";
     }
 }

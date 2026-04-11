@@ -135,14 +135,14 @@ export default function MentorPage() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-8">
-      <div className="max-w-6xl mx-auto h-[calc(100vh-120px)] flex flex-col">
+    <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+      <div className="max-w-[1120px] mx-auto h-[calc(100vh-120px)] flex flex-col">
 
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-5 flex-shrink-0"
+          className="flex items-center justify-between mb-8 flex-shrink-0"
         >
           <div>
             <h1 className="text-3xl font-display font-bold flex items-center gap-3">
@@ -151,7 +151,7 @@ export default function MentorPage() {
               </div>
               {t('mentor.titlePart1')}<span className="gradient-text">{t('mentor.titlePart2')}</span>
             </h1>
-            <p className="text-surface-400 mt-1 ml-14">{t('mentor.subtitle')}</p>
+            <p className="text-surface-400 mt-2 ml-14">{t('mentor.subtitle')}</p>
           </div>
           <button
             onClick={clearMessages}
@@ -162,7 +162,7 @@ export default function MentorPage() {
           </button>
         </motion.div>
 
-        <div className="flex flex-1 gap-5 min-h-0">
+        <div className="flex flex-1 gap-6 min-h-0">
 
           {/* Sidebar */}
           <motion.div

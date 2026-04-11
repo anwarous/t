@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Zap, Trophy, Flame } from 'lucide-react'
 
 interface Toast {
   id: string
@@ -11,15 +10,22 @@ interface Toast {
 
 let toastQueue: Toast[] = []
 let listeners: ((toasts: Toast[]) => void)[] = []
+const toastTimers = new Map<string, ReturnType<typeof setTimeout>>()
 
 export function showToast(toast: Omit<Toast, 'id'>) {
   const newToast = { ...toast, id: Date.now().toString() }
   toastQueue = [...toastQueue, newToast]
   listeners.forEach(l => l([...toastQueue]))
-  setTimeout(() => {
+
+  const existing = toastTimers.get(newToast.id)
+  if (existing) clearTimeout(existing)
+
+  const timeoutId = setTimeout(() => {
     toastQueue = toastQueue.filter(t => t.id !== newToast.id)
+    toastTimers.delete(newToast.id)
     listeners.forEach(l => l([...toastQueue]))
   }, 3000)
+  toastTimers.set(newToast.id, timeoutId)
 }
 
 export function ToastProvider() {
@@ -33,7 +39,7 @@ export function ToastProvider() {
 
   const config = {
     xp: {
-      icon: Zap,
+      icon: '✦',
       color: 'var(--color-accent)',
       bg: 'rgba(0,245,212,0.08)',
       border: 'rgba(0,245,212,0.25)',
@@ -41,7 +47,7 @@ export function ToastProvider() {
       label: 'XP EARNED',
     },
     badge: {
-      icon: Trophy,
+      icon: '◆',
       color: 'var(--color-xp)',
       bg: 'rgba(240,160,48,0.08)',
       border: 'rgba(240,160,48,0.25)',
@@ -49,7 +55,7 @@ export function ToastProvider() {
       label: 'BADGE UNLOCKED',
     },
     streak: {
-      icon: Flame,
+      icon: '⟡',
       color: '#f97316',
       bg: 'rgba(249,115,22,0.08)',
       border: 'rgba(249,115,22,0.25)',
@@ -67,7 +73,6 @@ export function ToastProvider() {
       <AnimatePresence>
         {toasts.map((toast) => {
           const c = config[toast.type]
-          const Icon = c.icon
           return (
             <motion.div
               key={toast.id}
@@ -77,7 +82,7 @@ export function ToastProvider() {
               transition={{ duration: 0.22, ease: 'easeOut' }}
               role="status"
               aria-atomic="true"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg reward-pop"
               style={{
                 background: c.bg,
                 border: `1px solid ${c.border}`,
@@ -91,7 +96,7 @@ export function ToastProvider() {
                 className="w-8 h-8 rounded flex items-center justify-center flex-shrink-0"
                 style={{ background: `${c.color}18`, border: `1px solid ${c.border}` }}
               >
-                <Icon size={15} style={{ color: c.color }} />
+                <span style={{ color: c.color, fontFamily: 'IBM Plex Mono, monospace', fontSize: '14px', lineHeight: 1 }}>{c.icon}</span>
               </div>
 
               {/* Text */}

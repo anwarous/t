@@ -1,14 +1,51 @@
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  LayoutDashboard, Code2, GitBranch, BookOpen, Brain, Terminal,
-  User, LogOut, Settings, Trophy, Bell, Flame, Zap, Menu, X, ChevronDown
-} from 'lucide-react'
 import { useUserStore, useAuthStore } from '@/store'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
+
+type GlyphName =
+  | 'dashboard' | 'learn' | 'code' | 'sandbox' | 'visualize' | 'mentor' | 'profile' | 'admin'
+  | 'achievements' | 'settings' | 'notifications' | 'logout' | 'xp' | 'streak' | 'menu' | 'close' | 'chevron'
+
+function Glyph({ name, active = false, className = '' }: { name: GlyphName; active?: boolean; className?: string }) {
+  const map: Record<GlyphName, string> = {
+    dashboard: '▦',
+    learn: '⌗',
+    code: '</>',
+    sandbox: '>_',
+    visualize: '◫',
+    mentor: '◎',
+    profile: '◉',
+    admin: '◈',
+    achievements: '◆',
+    settings: '◍',
+    notifications: '◌',
+    logout: '↗',
+    xp: '✦',
+    streak: '⟡',
+    menu: '☰',
+    close: '✕',
+    chevron: '▾',
+  }
+
+  return (
+    <span
+      aria-hidden="true"
+      className={className}
+      style={{
+        fontFamily: 'IBM Plex Mono, monospace',
+        fontSize: name === 'code' ? '11px' : '13px',
+        color: active ? 'var(--color-accent)' : 'currentColor',
+        lineHeight: 1,
+      }}
+    >
+      {map[name]}
+    </span>
+  )
+}
 
 // ── XP Progress ring (SVG) ─────────────────────────────────────────────────
 function XPRing({ progress }: { progress: number }) {
@@ -93,7 +130,7 @@ function SidebarFooter({ onAvatarClick }: { onAvatarClick: () => void }) {
             {user.rank}
           </div>
         </div>
-        <ChevronDown size={13} className="flex-shrink-0 text-surface-500 group-hover:text-surface-300 transition-colors" />
+        <Glyph name="chevron" className="flex-shrink-0 text-surface-500 group-hover:text-surface-300 transition-colors" />
       </button>
     </div>
   )
@@ -106,8 +143,18 @@ function AvatarDropdown({ onClose }: { onClose: () => void }) {
   const navigate = useNavigate()
   const { t } = useTranslation()
 
-  const go = (path: string) => { navigate(path); onClose() }
-  const handleSignOut = () => { clearAuth(); navigate('/'); onClose() }
+  const go = useCallback((path: string) => { navigate(path); onClose() }, [navigate, onClose])
+  const handleSignOut = useCallback(() => {
+    clearAuth()
+    onClose()
+    window.location.replace('/')
+  }, [clearAuth, onClose])
+  const menuItems = useMemo(() => ([
+    { icon: 'profile' as const,      label: t('nav.myProfile'),     path: '/profile' },
+    { icon: 'achievements' as const, label: t('nav.achievements'),  path: '/profile?tab=badges' },
+    { icon: 'settings' as const,     label: t('nav.settings'),      path: '/profile?tab=settings' },
+    { icon: 'notifications' as const,label: t('nav.notifications'), path: '/profile?tab=notifications' },
+  ]), [t])
 
   return (
     <motion.div
@@ -153,18 +200,13 @@ function AvatarDropdown({ onClose }: { onClose: () => void }) {
 
       {/* Menu items */}
       <div className="p-1.5">
-        {[
-          { icon: User,     label: t('nav.myProfile'),     path: '/profile' },
-          { icon: Trophy,   label: t('nav.achievements'),  path: '/profile?tab=badges' },
-          { icon: Settings, label: t('nav.settings'),      path: '/profile?tab=settings' },
-          { icon: Bell,     label: t('nav.notifications'), path: '/profile?tab=notifications' },
-        ].map(({ icon: Icon, label, path }) => (
+        {menuItems.map(({ icon, label, path }) => (
           <button
             key={label}
             onClick={() => go(path)}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left"
           >
-            <Icon size={14} style={{ color: 'var(--color-text-mid)' }} />
+            <Glyph name={icon} />
             <span className="text-xs" style={{ color: 'var(--color-text)', fontFamily: 'IBM Plex Mono, monospace' }}>{label}</span>
           </button>
         ))}
@@ -175,7 +217,7 @@ function AvatarDropdown({ onClose }: { onClose: () => void }) {
           onClick={handleSignOut}
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-rose-500/10 transition-colors text-left group"
         >
-          <LogOut size={14} className="group-hover:text-rose-400 transition-colors" style={{ color: 'var(--color-text-mid)' }} />
+          <Glyph name="logout" className="group-hover:text-rose-400 transition-colors" />
           <span className="text-xs group-hover:text-rose-400 transition-colors" style={{ color: 'var(--color-text)', fontFamily: 'IBM Plex Mono, monospace' }}>
             {t('nav.signOut')}
           </span>
@@ -195,16 +237,16 @@ export default function Sidebar() {
   const { t } = useTranslation()
   const isAdmin = authUser?.email === 'admin@admin.admin'
 
-  const NAV_ITEMS = [
-    { to: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
-    { to: '/learn',     label: t('nav.learn'),     icon: BookOpen },
-    { to: '/editor',    label: t('nav.code'),      icon: Code2 },
-    { to: '/sandbox',   label: t('nav.sandbox'),   icon: Terminal },
-    { to: '/visualize', label: t('nav.visualize'), icon: GitBranch },
-    { to: '/mentor',    label: t('nav.aiMentor'),  icon: Brain },
-    { to: '/profile',   label: t('nav.profile'),   icon: User },
-    ...(isAdmin ? [{ to: '/admin', label: t('nav.admin'), icon: Settings }] : []),
-  ]
+  const NAV_ITEMS = useMemo(() => [
+    { to: '/dashboard', label: t('nav.dashboard'), icon: 'dashboard' as const },
+    { to: '/learn',     label: t('nav.learn'),     icon: 'learn' as const },
+    { to: '/editor',    label: t('nav.code'),      icon: 'code' as const },
+    { to: '/sandbox',   label: t('nav.sandbox'),   icon: 'sandbox' as const },
+    { to: '/visualize', label: t('nav.visualize'), icon: 'visualize' as const },
+    { to: '/mentor',    label: t('nav.aiMentor'),  icon: 'mentor' as const },
+    { to: '/profile',   label: t('nav.profile'),   icon: 'profile' as const },
+    ...(isAdmin ? [{ to: '/admin', label: t('nav.admin'), icon: 'admin' as const }] : []),
+  ], [isAdmin, t])
 
   const isActive = (to: string) =>
     to === '/dashboard'
@@ -227,15 +269,21 @@ export default function Sidebar() {
         <div className="px-5 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <Link to="/" className="flex items-center gap-2.5 group">
             <div
-              className="w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold flex-shrink-0 select-none"
+              className="w-8 h-8 rounded-md overflow-hidden flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'var(--color-accent)',
-                color: '#0a120e',
-                fontFamily: 'Space Grotesk, sans-serif',
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(109,255,26,0.22)',
                 boxShadow: '0 0 12px var(--color-accent-glow)',
               }}
             >
-              L+
+              <img
+                src="/logo.png"
+                alt="Learning++ logo"
+                width={32}
+                height={32}
+                className="w-full h-full object-contain"
+                style={{ transform: 'scale(1.85)' }}
+              />
             </div>
             <span
               className="font-bold text-base leading-none"
@@ -252,14 +300,14 @@ export default function Sidebar() {
             className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium flex-1 justify-center"
             style={{ background: 'var(--color-accent-dim)', border: '1px solid rgba(0,245,212,0.15)', color: 'var(--color-accent)', fontFamily: 'IBM Plex Mono, monospace' }}
           >
-            <Zap size={10} />
+            <Glyph name="xp" />
             {user.xp.toLocaleString()}
           </div>
           <div
             className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium flex-1 justify-center"
             style={{ background: 'var(--color-xp-dim)', border: '1px solid rgba(240,160,48,0.15)', color: 'var(--color-xp)', fontFamily: 'IBM Plex Mono, monospace' }}
           >
-            <Flame size={10} />
+            <Glyph name="streak" />
             {user.streak}d
           </div>
           <div className="flex-shrink-0">
@@ -269,7 +317,7 @@ export default function Sidebar() {
 
         {/* Nav items */}
         <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
-          {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
+          {NAV_ITEMS.map(({ to, label, icon }) => {
             const active = isActive(to)
             return (
               <Link
@@ -290,10 +338,7 @@ export default function Sidebar() {
                   boxShadow: active ? 'inset 0 0 12px rgba(0,245,212,0.05)' : 'none',
                 }}
               >
-                <Icon
-                  size={15}
-                  style={{ color: active ? 'var(--color-accent)' : 'currentColor', flexShrink: 0 }}
-                />
+                <Glyph name={icon} active={active} />
                 {label}
                 {active && (
                   <span
@@ -322,10 +367,21 @@ export default function Sidebar() {
       >
         <Link to="/" className="flex items-center gap-2 group">
           <div
-            className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold select-none"
-            style={{ background: 'var(--color-accent)', color: '#0a120e', fontFamily: 'Space Grotesk, sans-serif', boxShadow: '0 0 8px var(--color-accent-glow)' }}
+            className="w-7 h-7 rounded overflow-hidden flex items-center justify-center"
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(109,255,26,0.22)',
+              boxShadow: '0 0 8px var(--color-accent-glow)',
+            }}
           >
-            L+
+            <img
+              src="/logo.png"
+              alt="Learning++ logo"
+              width={28}
+              height={28}
+              className="w-full h-full object-contain"
+              style={{ transform: 'scale(1.85)' }}
+            />
           </div>
           <span className="text-sm font-bold" style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.02em' }}>
             Learning<span className="gradient-text">++</span>
@@ -337,7 +393,7 @@ export default function Sidebar() {
             className="flex items-center gap-1 px-2 py-1 rounded text-[10px]"
             style={{ background: 'var(--color-accent-dim)', color: 'var(--color-accent)', fontFamily: 'IBM Plex Mono, monospace' }}
           >
-            <Flame size={9} /> {user.streak}d
+            <Glyph name="streak" /> {user.streak}d
           </div>
           <button
             onClick={() => setMobileOpen(v => !v)}
@@ -347,8 +403,8 @@ export default function Sidebar() {
           >
             <AnimatePresence mode="wait">
               {mobileOpen
-                ? <motion.span key="x"    initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.12 }}><X size={18} /></motion.span>
-                : <motion.span key="menu" initial={{ rotate:  90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.12 }}><Menu size={18} /></motion.span>
+                ? <motion.span key="x"    initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.12 }}><Glyph name="close" /></motion.span>
+                : <motion.span key="menu" initial={{ rotate:  90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.12 }}><Glyph name="menu" /></motion.span>
               }
             </AnimatePresence>
           </button>
@@ -367,7 +423,7 @@ export default function Sidebar() {
             style={{ width: '220px', background: 'var(--color-surface)', borderRight: '1px solid rgba(255,255,255,0.06)' }}
           >
             <div className="px-2 py-3 space-y-0.5 flex-1">
-              {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
+              {NAV_ITEMS.map(({ to, label, icon }) => {
                 const active = isActive(to)
                 return (
                   <Link
@@ -383,7 +439,7 @@ export default function Sidebar() {
                       borderLeft: active ? '2px solid var(--color-accent)' : '2px solid transparent',
                     }}
                   >
-                    <Icon size={15} style={{ color: active ? 'var(--color-accent)' : 'currentColor', flexShrink: 0 }} />
+                    <Glyph name={icon} active={active} />
                     {label}
                   </Link>
                 )

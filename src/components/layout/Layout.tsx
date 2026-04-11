@@ -1,19 +1,15 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useUserStore, useAuthStore, applyTheme } from '@/store'
-import { motion } from 'framer-motion'
 import Navbar from './Navbar'
-import Sidebar from './Sidebar'
-import CodeModeNav from './CodeModeNav'
+import DashboardTopNav from './DashboardTopNav'
 
 const PUBLIC_PATHS = ['/', '/signin', '/signup']
-const CODE_PATHS   = ['/editor']
 const ADMIN_EMAIL = 'admin@admin.admin'
 
 export default function Layout() {
   const location = useLocation()
   const isPublic = PUBLIC_PATHS.includes(location.pathname)
-  const isCode   = CODE_PATHS.some(p => location.pathname.startsWith(p))
   const authUser = useAuthStore(s => s.authUser)
   const isAdmin = authUser?.email === ADMIN_EMAIL
   const { user } = useUserStore()
@@ -29,15 +25,9 @@ export default function Layout() {
 
     return (
       <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
-        <motion.main
-          key={location.pathname}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.22, ease: 'easeOut' }}
-          className="min-h-screen overflow-x-hidden"
-        >
+        <main className="min-h-screen overflow-x-hidden">
           <Outlet />
-        </motion.main>
+        </main>
       </div>
     )
   }
@@ -57,64 +47,23 @@ export default function Layout() {
         />
 
         <Navbar />
-        <motion.main
-          key={location.pathname}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: 'easeOut' }}
-        >
+        <main>
           <Outlet />
-        </motion.main>
+        </main>
       </div>
     )
   }
 
-  // ── Code mode: no sidebar, compact 3-item top nav ───────────────────────
-  if (isCode) {
-    return (
-      <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
-        <div
-          className="fixed inset-0 pointer-events-none bg-grid-pattern"
-          style={{ opacity: 0.3 }}
-        />
-        <CodeModeNav />
-        <motion.main
-          key={location.pathname}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.22, ease: 'easeOut' }}
-          className="pt-14 min-h-screen overflow-x-hidden"
-        >
-          <div className="relative">
-            <Outlet />
-          </div>
-        </motion.main>
-      </div>
-    )
-  }
-
-  // ── App layout: fixed sidebar + scrollable main ─────────────────────────
+  // ── App layout: dashboard-style top nav for all authenticated pages ──────
   return (
-    <div className="min-h-screen flex" style={{ background: 'var(--color-bg)' }}>
-      <Sidebar />
-
-      {/* Main content area: offset by sidebar width on md+ */}
-      <motion.main
-        key={location.pathname}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.22, ease: 'easeOut' }}
-        className="flex-1 min-h-screen md:ml-[220px] pt-14 md:pt-0 overflow-x-hidden"
-      >
-        {/* Subtle background grid for app pages */}
-        <div
-          className="fixed inset-0 pointer-events-none bg-grid-pattern"
-          style={{ opacity: 0.3 }}
-        />
+    <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+      <div className="fixed inset-0 pointer-events-none bg-grid-pattern" style={{ opacity: 0.18 }} />
+      <DashboardTopNav />
+      <main className="min-h-screen pt-[60px] overflow-x-hidden">
         <div className="relative">
           <Outlet />
         </div>
-      </motion.main>
+      </main>
     </div>
   )
 }

@@ -1,10 +1,12 @@
 package com.mqacademy.api.service;
 
 import com.mqacademy.api.dto.leaderboard.LeaderboardEntryDto;
+import com.mqacademy.api.model.User;
 import com.mqacademy.api.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -17,7 +19,14 @@ public class LeaderboardService {
     }
 
     public List<LeaderboardEntryDto> getTopUsers() {
-        var users = userRepository.findTop10ByOrderByXpDesc();
+        var users = userRepository.findAll().stream()
+            .sorted(Comparator
+                .comparingInt(User::getLevel).reversed()
+                .thenComparing(Comparator.comparingInt(User::getXp).reversed())
+                .thenComparing(Comparator.comparingInt(User::getTotalSolved).reversed())
+                .thenComparing(Comparator.comparingInt(User::getStreak).reversed()))
+            .limit(10)
+            .toList();
         List<LeaderboardEntryDto> result = new ArrayList<>();
         for (int i = 0; i < users.size(); i++) {
             var u = users.get(i);
@@ -30,6 +39,7 @@ public class LeaderboardService {
                     u.getXp(),
                     u.getLevel(),
                     u.getRank(),
+                    u.getStreak(),
                     u.getTotalSolved()
             ));
         }

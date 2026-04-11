@@ -51,7 +51,8 @@ public class SecurityConfig {
                 .requestMatchers("GET", "/api/courses/**").permitAll()
                 .requestMatchers("GET", "/api/exercises/**").permitAll()
                 .requestMatchers("GET", "/api/leaderboard/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/api/**").authenticated()
+                .anyRequest().permitAll()
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

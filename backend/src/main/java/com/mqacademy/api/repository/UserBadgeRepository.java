@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface UserBadgeRepository extends JpaRepository<UserBadge, UUID> {
     List<UserBadge> findByUser(User user);
+    boolean existsByUserAndBadge(User user, com.mqacademy.api.model.Badge badge);
 }

@@ -39,7 +39,7 @@ public class User {
     private int level = 1;
 
     @Builder.Default
-    private int streak = 0;
+    private int streak = 1;
 
     @Builder.Default
     private int totalSolved = 0;

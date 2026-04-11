@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, memo, useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   adminApi,
@@ -11,6 +11,12 @@ import {
 import { useAuthStore, useUserStore } from '@/store'
 
 const ADMIN_EMAIL = 'admin@admin.admin'
+const SECTION_OPTIONS = [
+  { key: 'users', label: 'Users' },
+  { key: 'courses', label: 'Courses' },
+  { key: 'exercises', label: 'Exercises' },
+  { key: 'badges', label: 'Badges' },
+] as const
 
 export default function AdminPage() {
   const navigate = useNavigate()
@@ -66,7 +72,7 @@ export default function AdminPage() {
   const [newBadge, setNewBadge] = useState({ slug: '', name: '', rarity: 'COMMON', description: '', icon: '🏅' })
   const [showBadgeAdvanced, setShowBadgeAdvanced] = useState(false)
 
-  async function loadAll() {
+  const loadAll = useCallback(async () => {
     try {
       setError('')
       setLoading(true)
@@ -87,7 +93,7 @@ export default function AdminPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     void loadAll()
@@ -100,18 +106,18 @@ export default function AdminPage() {
     })
   }, [user.name, user.theme])
 
-  function saveSettings(e: FormEvent) {
+  const saveSettings = useCallback((e: FormEvent) => {
     e.preventDefault()
     const displayName = settingsForm.displayName.trim()
     updateProfile({ name: displayName || user.name })
     updateTheme(settingsForm.theme)
     setSettingsMessage('Settings saved')
-  }
+  }, [settingsForm.displayName, settingsForm.theme, updateProfile, updateTheme, user.name])
 
-  function signOut() {
+  const signOut = useCallback(() => {
     clearAuth()
-    navigate('/signin', { replace: true })
-  }
+    window.location.replace('/')
+  }, [clearAuth])
 
   async function createUser(e: FormEvent) {
     e.preventDefault()
@@ -224,7 +230,7 @@ export default function AdminPage() {
             <p className="text-sm text-surface-400">Manage your admin session and preferences from one place.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-3">
+          <div className="grid md:grid-cols-3 gap-3 items-stretch">
             <StatCard title="Session User" value={authUser?.username ?? 'admin'} />
             <StatCard title="Session Email" value={authUser?.email ?? ADMIN_EMAIL} />
             <StatCard title="Token" value={token ? 'Active' : 'Missing'} />
@@ -271,12 +277,7 @@ export default function AdminPage() {
       <section className="rounded border border-white/10 p-3 space-y-2">
         <div className="text-sm text-surface-400">Choose what to show</div>
         <div className="flex flex-wrap gap-2">
-          {[
-            { key: 'users', label: 'Users' },
-            { key: 'courses', label: 'Courses' },
-            { key: 'exercises', label: 'Exercises' },
-            { key: 'badges', label: 'Badges' },
-          ].map(({ key, label }) => (
+          {SECTION_OPTIONS.map(({ key, label }) => (
             <button
               key={key}
               type="button"
@@ -299,10 +300,15 @@ export default function AdminPage() {
           <input className="input-field" placeholder="roles (comma separated)" value={newUser.roles} onChange={(e) => setNewUser({ ...newUser, roles: e.target.value })} />
           <button className="btn-primary" type="submit">Add User</button>
         </form>
-        <div className="space-y-2">
+        <div className="space-y-2" style={{ contentVisibility: 'auto', containIntrinsicSize: '360px' }}>
           {users.map((u) => (
             <UserRow key={u.id} user={u} onSaved={loadAll} onDeleted={loadAll} />
           ))}
+          {users.length === 0 && (
+            <div className="arcade-panel p-4">
+              <div className="ascii-empty">{`[ USERS: EMPTY ]\n   .----.\n  / __  \\__\n / /  \\___/\n \\_\\  /_/\n    '--'`}</div>
+            </div>
+          )}
         </div>
       </section>}
 
@@ -331,10 +337,15 @@ export default function AdminPage() {
           </>}
           <button className="btn-primary" type="submit">Add Course</button>
         </form>
-        <div className="space-y-2">
+        <div className="space-y-2" style={{ contentVisibility: 'auto', containIntrinsicSize: '360px' }}>
           {courses.map((c) => (
             <CourseRow key={c.id} course={c} onSaved={loadAll} onDeleted={loadAll} />
           ))}
+          {courses.length === 0 && (
+            <div className="arcade-panel p-4">
+              <div className="ascii-empty">{`[ COURSES: EMPTY ]\n   __[]__\n  / ____ \\n /_/____\\_\\\n   ||  ||`}</div>
+            </div>
+          )}
         </div>
       </section>}
 
@@ -357,10 +368,15 @@ export default function AdminPage() {
           <textarea className="input-field md:col-span-2 min-h-20" placeholder="hints" value={newExercise.hints} onChange={(e) => setNewExercise({ ...newExercise, hints: e.target.value })} />
           <textarea className="input-field md:col-span-2 min-h-24" placeholder="test cases (JSON or text)" value={newExercise.testCases} onChange={(e) => setNewExercise({ ...newExercise, testCases: e.target.value })} />
         </form>
-        <div className="space-y-2">
+        <div className="space-y-2" style={{ contentVisibility: 'auto', containIntrinsicSize: '360px' }}>
           {exercises.map((x) => (
             <ExerciseRow key={x.id} exercise={x} onSaved={loadAll} onDeleted={loadAll} />
           ))}
+          {exercises.length === 0 && (
+            <div className="arcade-panel p-4">
+              <div className="ascii-empty">{`[ EXERCISES: EMPTY ]\n  <>  <>\n [__][__]\n   /\\/\\\n  /_/  \\_\\`}</div>
+            </div>
+          )}
         </div>
       </section>}
 
@@ -385,10 +401,15 @@ export default function AdminPage() {
           </>}
           <button className="btn-primary" type="submit">Add Badge</button>
         </form>
-        <div className="space-y-2">
+        <div className="space-y-2" style={{ contentVisibility: 'auto', containIntrinsicSize: '360px' }}>
           {badges.map((b) => (
             <BadgeRow key={b.id} badge={b} onSaved={loadAll} onDeleted={loadAll} />
           ))}
+          {badges.length === 0 && (
+            <div className="arcade-panel p-4">
+              <div className="ascii-empty">{`[ BADGES: EMPTY ]\n   .:::.\n  :::::::\n  ':::::'\n    ':'`}</div>
+            </div>
+          )}
         </div>
       </section>}
     </div>
@@ -397,14 +418,14 @@ export default function AdminPage() {
 
 function StatCard({ title, value }: { title: string; value: string | number }) {
   return (
-    <div className="rounded border border-white/10 p-4">
+    <div className="h-full rounded border border-white/10 p-4">
       <p className="text-surface-400 text-sm">{title}</p>
       <p className="text-2xl font-bold">{value}</p>
     </div>
   )
 }
 
-function UserRow({ user, onSaved, onDeleted }: { user: AdminUser; onSaved: () => void; onDeleted: () => void }) {
+const UserRow = memo(function UserRow({ user, onSaved, onDeleted }: { user: AdminUser; onSaved: () => void; onDeleted: () => void }) {
   const [showDetails, setShowDetails] = useState(false)
   const [username, setUsername] = useState(user.username)
   const [email, setEmail] = useState(user.email)
@@ -417,7 +438,7 @@ function UserRow({ user, onSaved, onDeleted }: { user: AdminUser; onSaved: () =>
   const [roles, setRoles] = useState(user.roles.join(', '))
 
   return (
-    <div className="p-3 rounded border border-white/10 space-y-2">
+    <div className="p-3 rounded border border-white/10 space-y-2" style={{ contentVisibility: 'auto', containIntrinsicSize: '120px' }}>
       <div className="flex items-center justify-between gap-3">
         <div className="text-sm">
           <div className="font-semibold">{user.username} ({user.email})</div>
@@ -428,7 +449,7 @@ function UserRow({ user, onSaved, onDeleted }: { user: AdminUser; onSaved: () =>
         </button>
       </div>
 
-      {showDetails && <div className="grid md:grid-cols-3 gap-2 items-start">
+      {showDetails && <div className="grid md:grid-cols-3 gap-2 items-stretch">
         <input className="input-field" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="username" />
         <input className="input-field" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email" />
         <input className="input-field" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="display name" />
@@ -453,9 +474,9 @@ function UserRow({ user, onSaved, onDeleted }: { user: AdminUser; onSaved: () =>
       </div>}
     </div>
   )
-}
+})
 
-function CourseRow({ course, onSaved, onDeleted }: { course: AdminCourse; onSaved: () => void; onDeleted: () => void }) {
+const CourseRow = memo(function CourseRow({ course, onSaved, onDeleted }: { course: AdminCourse; onSaved: () => void; onDeleted: () => void }) {
   const [showDetails, setShowDetails] = useState(false)
   const [slug, setSlug] = useState(course.slug)
   const [title, setTitle] = useState(course.title)
@@ -470,14 +491,14 @@ function CourseRow({ course, onSaved, onDeleted }: { course: AdminCourse; onSave
   const [tags, setTags] = useState(course.tags)
 
   return (
-    <div className="p-3 rounded border border-white/10 space-y-2">
+    <div className="p-3 rounded border border-white/10 space-y-2" style={{ contentVisibility: 'auto', containIntrinsicSize: '120px' }}>
       <div className="flex items-center justify-between gap-3">
         <div className="text-xs text-surface-400">{course.slug} • {course.title}</div>
         <button className="btn-ghost" type="button" onClick={() => setShowDetails((v) => !v)}>
           {showDetails ? 'Hide Details' : 'Show Details'}
         </button>
       </div>
-      {showDetails && <div className="grid md:grid-cols-2 gap-2 items-start">
+      {showDetails && <div className="grid md:grid-cols-2 gap-2 items-stretch">
         <input className="input-field" value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="slug" />
         <input className="input-field" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="title" />
         <input className="input-field" value={category} onChange={(e) => setCategory(e.target.value)} placeholder="category" />
@@ -510,9 +531,9 @@ function CourseRow({ course, onSaved, onDeleted }: { course: AdminCourse; onSave
       </div>}
     </div>
   )
-}
+})
 
-function ExerciseRow({ exercise, onSaved, onDeleted }: { exercise: AdminExercise; onSaved: () => void; onDeleted: () => void }) {
+const ExerciseRow = memo(function ExerciseRow({ exercise, onSaved, onDeleted }: { exercise: AdminExercise; onSaved: () => void; onDeleted: () => void }) {
   const [showDetails, setShowDetails] = useState(false)
   const [slug, setSlug] = useState(exercise.slug)
   const [title, setTitle] = useState(exercise.title)
@@ -526,14 +547,14 @@ function ExerciseRow({ exercise, onSaved, onDeleted }: { exercise: AdminExercise
   const [testCases, setTestCases] = useState(exercise.testCases ?? '')
 
   return (
-    <div className="p-3 rounded border border-white/10 space-y-2">
+    <div className="p-3 rounded border border-white/10 space-y-2" style={{ contentVisibility: 'auto', containIntrinsicSize: '140px' }}>
       <div className="flex items-center justify-between gap-3">
         <div className="text-xs text-surface-400">{exercise.slug} • {exercise.title}</div>
         <button className="btn-ghost" type="button" onClick={() => setShowDetails((v) => !v)}>
           {showDetails ? 'Hide Details' : 'Show Details'}
         </button>
       </div>
-      {showDetails && <div className="grid md:grid-cols-2 gap-2 items-start">
+      {showDetails && <div className="grid md:grid-cols-2 gap-2 items-stretch">
         <input className="input-field" value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="slug" />
         <input className="input-field" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="title" />
         <select className="input-field" value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
@@ -554,9 +575,9 @@ function ExerciseRow({ exercise, onSaved, onDeleted }: { exercise: AdminExercise
       </div>}
     </div>
   )
-}
+})
 
-function BadgeRow({ badge, onSaved, onDeleted }: { badge: AdminBadge; onSaved: () => void; onDeleted: () => void }) {
+const BadgeRow = memo(function BadgeRow({ badge, onSaved, onDeleted }: { badge: AdminBadge; onSaved: () => void; onDeleted: () => void }) {
   const [showDetails, setShowDetails] = useState(false)
   const [slug, setSlug] = useState(badge.slug)
   const [name, setName] = useState(badge.name)
@@ -565,14 +586,14 @@ function BadgeRow({ badge, onSaved, onDeleted }: { badge: AdminBadge; onSaved: (
   const [rarity, setRarity] = useState(badge.rarity)
 
   return (
-    <div className="p-3 rounded border border-white/10 space-y-2">
+    <div className="p-3 rounded border border-white/10 space-y-2" style={{ contentVisibility: 'auto', containIntrinsicSize: '120px' }}>
       <div className="flex items-center justify-between gap-3">
         <div className="text-xs text-surface-400">{badge.slug} • {badge.name}</div>
         <button className="btn-ghost" type="button" onClick={() => setShowDetails((v) => !v)}>
           {showDetails ? 'Hide Details' : 'Show Details'}
         </button>
       </div>
-      {showDetails && <div className="grid md:grid-cols-2 gap-2 items-start">
+      {showDetails && <div className="grid md:grid-cols-2 gap-2 items-stretch">
         <input className="input-field" value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="slug" />
         <input className="input-field" value={name} onChange={(e) => setName(e.target.value)} placeholder="name" />
         <input className="input-field" value={icon} onChange={(e) => setIcon(e.target.value)} placeholder="icon" />
@@ -588,4 +609,4 @@ function BadgeRow({ badge, onSaved, onDeleted }: { badge: AdminBadge; onSaved: (
       </div>}
     </div>
   )
-}
+})

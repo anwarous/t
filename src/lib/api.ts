@@ -1,5 +1,6 @@
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? ''
 const TOKEN_KEY = 'mqa_token'
+const USER_KEY = 'mqa_user'
 
 // When no API base URL is configured, use demo mode (mock auth backed by localStorage).
 const DEMO_MODE = BASE_URL === ''
@@ -41,6 +42,65 @@ export interface CourseSummaryDto {
 
 export interface CourseDetailDto extends CourseSummaryDto {
   chapters: string[]
+}
+
+export interface LeaderboardEntryDto {
+  position: number
+  userId: string
+  username: string
+  displayName: string | null
+  avatarInitials: string | null
+  xp: number
+  level: number
+  rank: string
+  streak: number
+  totalSolved: number
+}
+
+export interface UserProfileDto {
+  id: string
+  username: string
+  email: string
+  displayName: string
+  avatarInitials: string
+  xp: number
+  level: number
+  streak: number
+  totalSolved: number
+  rank: string
+  createdAt: string
+}
+
+export interface UserBadgeDto {
+  id: string
+  slug: string
+  name: string
+  description: string
+  icon: string
+  rarity: string
+  earnedAt: string
+}
+
+export interface SubmissionDto {
+  id: string
+  exerciseId: string
+  exerciseSlug: string
+  exerciseTitle: string
+  code: string
+  passed: boolean
+  xpEarned: number
+  submittedAt: string
+}
+
+export interface ProgressDto {
+  id: string
+  courseId: string
+  courseSlug: string
+  courseTitle: string
+  completedLessons: number
+  totalLessons: number
+  progressPercent: number
+  lastActivityAt: string
 }
 
 // ---------------------------------------------------------------------------
@@ -130,7 +190,8 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
   const token = localStorage.getItem(TOKEN_KEY)
   const headers = new Headers(options.headers ?? {})
   headers.set('Content-Type', 'application/json')
-  if (token && !headers.has('Authorization')) {
+  const isAuthEndpoint = path.startsWith('/auth/')
+  if (token && !headers.has('Authorization') && !isAuthEndpoint) {
     headers.set('Authorization', `Bearer ${token}`)
   }
   let res: Response
@@ -145,6 +206,16 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
   }
 
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem(USER_KEY)
+
+      const isAuthPage = window.location.pathname === '/signin' || window.location.pathname === '/signup'
+      if (!isAuthPage) {
+        window.location.replace('/')
+      }
+    }
+
     let message = `Request failed: ${res.status}`
     try {
       const body = await res.json()
@@ -185,6 +256,37 @@ export const courseApi = {
   getBySlug: (slug: string): Promise<CourseDetailDto> => {
     return request<CourseDetailDto>(`/courses/${encodeURIComponent(slug)}`, { method: 'GET' })
   },
+}
+
+export interface ExerciseSummaryDto {
+  id: string
+  slug: string
+  title: string
+  description: string
+  difficulty: string
+  category: string
+  xpReward: number
+}
+
+export const exerciseApi = {
+  list: (category?: string): Promise<ExerciseSummaryDto[]> => {
+    const params = category ? `?category=${encodeURIComponent(category)}` : ''
+    return request<ExerciseSummaryDto[]>(`/exercises${params}`, { method: 'GET' })
+  },
+}
+
+export const leaderboardApi = {
+  list: (): Promise<LeaderboardEntryDto[]> => request<LeaderboardEntryDto[]>('/leaderboard', { method: 'GET' }),
+}
+
+export const userApi = {
+  me: (): Promise<UserProfileDto> => request<UserProfileDto>('/users/me', { method: 'GET' }),
+  myBadges: (): Promise<UserBadgeDto[]> => request<UserBadgeDto[]>('/users/me/badges', { method: 'GET' }),
+  mySubmissions: (): Promise<SubmissionDto[]> => request<SubmissionDto[]>('/users/me/submissions', { method: 'GET' }),
+}
+
+export const progressApi = {
+  list: (): Promise<ProgressDto[]> => request<ProgressDto[]>('/progress', { method: 'GET' }),
 }
 
 export interface AdminOverview {

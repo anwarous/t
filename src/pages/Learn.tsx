@@ -266,8 +266,8 @@ function CourseDetail({ course }: { course: Course }) {
   const totalLessons = course.chapters.flatMap(c => c.lessons).length
 
   return (
-    <div className="min-h-screen px-4 py-8">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+      <div className="max-w-[1120px] mx-auto">
 
         {/* Back */}
         <Link to="/learn" className="inline-flex items-center gap-2 text-sm text-surface-400 hover:text-white transition-colors mb-6">
@@ -510,8 +510,8 @@ function CoursesListing() {
 
   if (loading) {
     return (
-      <div className="min-h-screen px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+        <div className="max-w-[1120px] mx-auto">
           <p className="text-surface-400">{t('common.loading')}</p>
         </div>
       </div>
@@ -520,8 +520,8 @@ function CoursesListing() {
 
   if (error) {
     return (
-      <div className="min-h-screen px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+        <div className="max-w-[1120px] mx-auto">
           <p className="text-red-300">{error}</p>
         </div>
       </div>
@@ -529,8 +529,8 @@ function CoursesListing() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+      <div className="max-w-[1120px] mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -544,7 +544,7 @@ function CoursesListing() {
         </motion.div>
 
         {/* Filters */}
-        <div className="flex items-center gap-2 mb-6 flex-wrap">
+        <div className="flex items-center gap-2 mb-8 flex-wrap">
           {difficulties.map((d) => (
             <button
               key={d}
@@ -562,7 +562,7 @@ function CoursesListing() {
           <span className="ml-auto text-sm text-surface-500">{filtered.length} {t('learn.courses')}</span>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-5">
+        <div className="grid md:grid-cols-2 gap-6">
           {filtered.map((course, i) => (
             <CourseCard key={course.id} course={course} index={i} />
           ))}

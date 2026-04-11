@@ -61,6 +61,16 @@ type UserProfile = typeof MOCK_USER & {
   }
 }
 
+function calculateRank(level: number): string {
+  if (level < 5) return 'Novice'
+  if (level < 10) return 'Apprentice'
+  if (level < 15) return 'Practitioner'
+  if (level < 20) return 'Expert'
+  if (level < 25) return 'Master'
+  if (level < 30) return 'Grandmaster'
+  return 'Legend'
+}
+
 function makeAvatar(name: string): string {
   return name.split(' ').filter((n) => n).map((n) => n[0]).join('').toUpperCase().slice(0, 2)
 }
@@ -83,7 +93,7 @@ function freshProfile(username: string, displayName: string, email: string): Use
     avatar: makeAvatar(name),
     xp: 0,
     level: 1,
-    streak: 0,
+    streak: 1,
     totalSolved: 0,
     rank: 'Novice',
     joinedAt: new Date().toISOString().slice(0, 10),
@@ -113,6 +123,31 @@ function saveProfile(username: string, profile: UserProfile): void {
   localStorage.setItem(profileKey(username), JSON.stringify(profile))
 }
 
+function normalizeProgress(user: UserProfile): UserProfile {
+  const xp = Math.max(0, user.xp)
+  const level = Math.max(1, Math.floor(xp / 60) + 1)
+  return {
+    ...user,
+    xp: xp % 60,
+    level,
+    streak: Math.max(1, user.streak),
+    rank: calculateRank(level),
+  }
+}
+
+function applyXpGain(user: UserProfile, amount: number): UserProfile {
+  const gained = normalizeProgress(user)
+  let xp = gained.xp + amount
+  let level = gained.level
+
+  while (xp >= 60) {
+    xp -= 60
+    level += 1
+  }
+
+  return { ...gained, xp, level, rank: calculateRank(level) }
+}
+
 // Resolve the initial profile on app boot (when user is already logged in)
 function resolveInitialProfile(): { user: UserProfile; currentUsername: string | null } {
   try {
@@ -120,7 +155,13 @@ function resolveInitialProfile(): { user: UserProfile; currentUsername: string |
     if (raw) {
       const authUser = JSON.parse(raw) as { username: string; displayName: string; email: string }
       const saved = loadProfile(authUser.username)
-      if (saved) return { user: saved, currentUsername: authUser.username }
+      if (saved) {
+        const normalized = normalizeProgress(saved)
+        if (JSON.stringify(normalized) !== JSON.stringify(saved)) {
+          saveProfile(authUser.username, normalized)
+        }
+        return { user: normalized, currentUsername: authUser.username }
+      }
       const fresh = freshProfile(authUser.username, authUser.displayName, authUser.email)
       saveProfile(authUser.username, fresh)
       return { user: fresh, currentUsername: authUser.username }
@@ -151,13 +192,13 @@ export const useUserStore = create<UserState>((set) => ({
   badges: MOCK_BADGES,
   addXP: (amount) =>
     set((s) => {
-      const user = { ...s.user, xp: s.user.xp + amount }
+      const user = applyXpGain(s.user, amount)
       if (s.currentUsername) saveProfile(s.currentUsername, user)
       return { user }
     }),
   incrementStreak: () =>
     set((s) => {
-      const user = { ...s.user, streak: s.user.streak + 1 }
+      const user = { ...s.user, streak: Math.max(1, s.user.streak + 1) }
       if (s.currentUsername) saveProfile(s.currentUsername, user)
       return { user }
     }),
@@ -166,7 +207,8 @@ export const useUserStore = create<UserState>((set) => ({
       const alreadyDone = (s.user.completedExercises ?? []).includes(id)
       if (alreadyDone) return {}
       const completedExercises = [...(s.user.completedExercises ?? []), id]
-      const user = { ...s.user, xp: s.user.xp + xp, totalSolved: s.user.totalSolved + 1, completedExercises }
+      const progressedUser = applyXpGain(s.user, xp)
+      const user = { ...progressedUser, totalSolved: s.user.totalSolved + 1, completedExercises }
       if (s.currentUsername) saveProfile(s.currentUsername, user)
       return { user }
     }),
@@ -196,8 +238,9 @@ export const useUserStore = create<UserState>((set) => ({
     }),
   initUser: (username, displayName, email) => {
     const saved = loadProfile(username)
-    const user = saved ?? freshProfile(username, displayName, email)
+    const user = saved ? normalizeProgress(saved) : freshProfile(username, displayName, email)
     if (!saved) saveProfile(username, user)
+    else if (JSON.stringify(user) !== JSON.stringify(saved)) saveProfile(username, user)
     set({ user, currentUsername: username })
   },
   resetUser: () => {

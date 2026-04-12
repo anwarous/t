@@ -195,3 +195,93 @@ These can be added by wiring up real APIs to the existing store actions.
 4. **Database**: Store progress in Supabase/PostgreSQL
 5. **Testing**: Add Vitest + React Testing Library
 6. **Analytics**: Track learning events with PostHog
+
+---
+
+## Docker
+
+### Prerequisites
+- Docker 24+
+- Docker Compose v2+
+
+### 1) Prepare environment file
+
+Copy `.env.example` to `.env` and set real values (especially `APP_JWT_SECRET` and `DB_PASSWORD`).
+
+### 2) Build backend image directly (optional)
+
+```bash
+docker build -t mqacademy-backend:latest .
+```
+
+### 3) Run full stack with Compose
+
+```bash
+docker compose up --build
+```
+
+This default mode is production-oriented:
+- Backend runs from a built JAR image.
+- Frontend runs as a static Vite build served by Nginx.
+
+Services:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8081/api
+- PostgreSQL: localhost:5432
+
+### 3b) Run in development mode (hot-reload frontend)
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+This overrides the frontend service to use the Vite dev server with bind mounts.
+Open the dev frontend at: http://localhost:5174
+
+### 4) Stop services
+
+```bash
+docker compose down
+```
+
+To also remove volumes:
+
+```bash
+docker compose down -v
+```
+
+### 5) Detached mode
+
+```bash
+docker compose up --build -d
+```
+
+### 6) View logs
+
+All services:
+
+```bash
+docker compose logs -f
+```
+
+Specific service:
+
+```bash
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f postgres
+```
+
+### 7) Exec into running containers
+
+```bash
+docker compose exec backend sh
+docker compose exec frontend sh
+docker compose exec postgres psql -U "$DB_USERNAME" -d "$DB_NAME"
+```
+
+Backend health is exposed at:
+
+```bash
+http://localhost:8081/actuator/health
+```

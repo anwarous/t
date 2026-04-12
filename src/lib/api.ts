@@ -226,6 +226,16 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
     throw new Error(message)
   }
 
+  // Some successful endpoints (e.g. DELETE) return 204 with no body.
+  if (res.status === 204) {
+    return undefined as T
+  }
+
+  const contentType = res.headers.get('content-type') ?? ''
+  if (!contentType.includes('application/json')) {
+    return undefined as T
+  }
+
   return res.json() as Promise<T>
 }
 
@@ -268,10 +278,27 @@ export interface ExerciseSummaryDto {
   xpReward: number
 }
 
+export interface ExerciseSubmissionDto {
+  id: string
+  exerciseId: string
+  exerciseSlug: string
+  exerciseTitle: string
+  code: string
+  passed: boolean
+  xpEarned: number
+  submittedAt: string
+}
+
 export const exerciseApi = {
   list: (category?: string): Promise<ExerciseSummaryDto[]> => {
     const params = category ? `?category=${encodeURIComponent(category)}` : ''
     return request<ExerciseSummaryDto[]>(`/exercises${params}`, { method: 'GET' })
+  },
+  submit: (slug: string, code: string): Promise<ExerciseSubmissionDto> => {
+    return request<ExerciseSubmissionDto>(`/exercises/${encodeURIComponent(slug)}/submit`, {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    })
   },
 }
 

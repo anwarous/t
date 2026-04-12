@@ -383,6 +383,7 @@ function ChallengeEditor({
   const { t }      = useTranslation()
   const navigate   = useNavigate()
   const exercise   = MOCK_EXERCISES.find(e => e.id === exerciseId) ?? MOCK_EXERCISES[0]
+  const resolvedExerciseId = exercise.id
 
   const { code, output, isRunning, language, setCode, setLanguage, runCode, setActiveExercise } = useEditorStore()
 
@@ -390,13 +391,13 @@ function ChallengeEditor({
   const fileExt    = language === 'algorithm' ? 'solution.algo' : 'solution.py'
 
   useEffect(() => {
-    setActiveExercise(exerciseId)
+    setActiveExercise(resolvedExerciseId)
     const starter = language === 'algorithm' && exercise.algorithmStarterCode
       ? exercise.algorithmStarterCode
       : exercise.starterCode
     setCode(starter)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exerciseId])
+  }, [resolvedExerciseId])
 
   function handleEditorMount(_: unknown, monaco: any) {
     registerAlgorithmLanguage(monaco)

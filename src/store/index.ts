@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { MOCK_USER, MOCK_BADGES, MOCK_CHAT_MESSAGES, MOCK_EXERCISES, type ChatMessage, type Badge } from '@/data/mockData'
 import { runPython } from '@/lib/pythonCompiler'
 import { runAlgo } from '@/lib/algoCompiler'
+import { exerciseApi } from '@/lib/api'
 
 // ─── Auth Store ───────────────────────────────────────────────────────────────
 
@@ -802,11 +803,26 @@ function isAllTestsPassed(output: string): boolean {
   return output.includes('✅') && !output.includes('❌') && !output.includes('✗')
 }
 
-function awardExerciseXP(exerciseId: string | null, output: string): void {
+async function awardExerciseXP(exerciseId: string | null, code: string, output: string): Promise<void> {
   if (!exerciseId || !isAllTestsPassed(output)) return
-  const exercise = MOCK_EXERCISES.find(e => e.id === exerciseId)
+
+  // Prefer backend authority for XP progression when API mode is enabled.
+  try {
+    const submission = await exerciseApi.submit(exerciseId, code)
+    if (submission.passed) {
+      useUserStore.getState().markExerciseSolved(exerciseId, submission.xpEarned)
+    }
+    return
+  } catch {
+    // Fall back to local XP rules for mock/offline mode.
+  }
+
+  const exercise = MOCK_EXERCISES.find((e) => e.id === exerciseId)
   if (exercise) {
     useUserStore.getState().markExerciseSolved(exerciseId, exercise.xp)
+  } else {
+    // Unknown IDs (e.g. backend slugs) still get local progression fallback.
+    useUserStore.getState().markExerciseSolved(exerciseId, 100)
   }
 }
 
@@ -867,7 +883,7 @@ print(two_sum([3, 3], 6))            # Expected: [0, 1]
         }
 
         set({ output: finalOutput, isRunning: false })
-        awardExerciseXP(activeExerciseId, finalOutput)
+        await awardExerciseXP(activeExerciseId, code, finalOutput)
       } catch (err) {
         set({ output: `\u274c  Error: ${err instanceof Error ? err.message : String(err)}`, isRunning: false })
       }
@@ -895,7 +911,7 @@ print(two_sum([3, 3], 6))            # Expected: [0, 1]
     set({ output: finalOutput, isRunning: false })
 
     // Award XP and mark exercise as solved when all test cases pass
-    awardExerciseXP(activeExerciseId, finalOutput)
+    await awardExerciseXP(activeExerciseId, code, finalOutput)
   },
 }))
 

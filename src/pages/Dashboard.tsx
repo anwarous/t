@@ -12,6 +12,7 @@ import { useUserStore } from '@/store'
 import { MOCK_COURSES, MOCK_EXERCISES, RECENT_ACTIVITY } from '@/data/mockData'
 import { courseApi, exerciseApi, leaderboardApi, progressApi, userApi } from '@/lib/api'
 import { cn, getDifficultyBg } from '@/lib/utils'
+import type { Course, Exercise } from '@/data/mockData'
 
 const WEEK_ACTIVITY = [
   { day: 'Mon', value: 34 },
@@ -76,6 +77,7 @@ function formatRelativeTime(input?: string) {
 }
 
 function normalizeCourseDifficulty(value: string) {
+  // Keep return type aligned with Course['difficulty'] union.
   const upper = value.toUpperCase()
   if (upper === 'EASY') return 'Beginner'
   if (upper === 'MEDIUM') return 'Intermediate'
@@ -84,6 +86,7 @@ function normalizeCourseDifficulty(value: string) {
 }
 
 function normalizeExerciseDifficulty(value: string) {
+  // Keep return type aligned with Exercise['difficulty'] union.
   const upper = value.toUpperCase()
   if (upper === 'EASY') return 'Easy'
   if (upper === 'MEDIUM') return 'Medium'
@@ -142,7 +145,7 @@ function ActivityBars({ weeklyActivity, recentActivity }: { weeklyActivity: Arra
   )
 }
 
-function CourseLeadCard({ course }: { course: typeof MOCK_COURSES[0] }) {
+function CourseLeadCard({ course }: { course: Course }) {
   const { t } = useTranslation()
 
   return (
@@ -187,7 +190,7 @@ function CourseLeadCard({ course }: { course: typeof MOCK_COURSES[0] }) {
   )
 }
 
-function MiniChallengeCard({ exercise }: { exercise: typeof MOCK_EXERCISES[0] }) {
+function MiniChallengeCard({ exercise }: { exercise: Exercise }) {
   const { t } = useTranslation()
 
   return (
@@ -251,9 +254,13 @@ export default function Dashboard() {
   const [profileUser, setProfileUser] = useState(user)
   const [earnedBadgeCount, setEarnedBadgeCount] = useState(badges.filter((badge) => badge.earned).length)
   const [weeklyActivity, setWeeklyActivity] = useState(WEEK_ACTIVITY)
-  const [recentActivity, setRecentActivity] = useState<RecentActivityItem[]>(RECENT_ACTIVITY.slice(0, 5))
-  const [courses, setCourses] = useState(MOCK_COURSES)
-  const [recommendedExercises, setRecommendedExercises] = useState(MOCK_EXERCISES.filter((exercise) => !exercise.completed).slice(0, 2))
+  const [recentActivity, setRecentActivity] = useState<RecentActivityItem[]>(
+    RECENT_ACTIVITY.slice(0, 5).map((item) => ({ ...item, id: String(item.id) }))
+  )
+  const [courses, setCourses] = useState<Course[]>(MOCK_COURSES)
+  const [recommendedExercises, setRecommendedExercises] = useState<Exercise[]>(
+    MOCK_EXERCISES.filter((exercise) => !exercise.completed).slice(0, 2)
+  )
   const [leaderboard, setLeaderboard] = useState<Array<{ rank: number; name: string; xp: number; level: number; streak: number; avatar: string; isCurrentUser: boolean; delta?: number }>>([])
   const inProgress = courses.filter((course) => course.progress > 0 && course.progress < 100)
   const recommended = recommendedExercises
@@ -297,12 +304,12 @@ export default function Dashboard() {
           level: userResult.value.level,
           streak: userResult.value.streak,
           rank: userResult.value.rank,
-          joinedAt: userResult.value.memberSince,
+          joinedAt: userResult.value.createdAt,
         }))
       }
 
       if (badgesResult.status === 'fulfilled') {
-        setEarnedBadgeCount(badgesResult.value.filter((badge) => badge.unlocked).length)
+        setEarnedBadgeCount(badgesResult.value.filter((badge) => Boolean(badge.earnedAt)).length)
       }
 
       const submissions = submissionsResult.status === 'fulfilled' ? submissionsResult.value : []
@@ -323,7 +330,7 @@ export default function Dashboard() {
           .filter((p) => Boolean(p.lastActivityAt))
           .map((entry) => ({
             id: `prog-${entry.courseSlug}`,
-            action: entry.completed ? 'Completed' : 'Progressed',
+            action: entry.completedLessons >= entry.totalLessons ? 'Completed' : 'Progressed',
             target: entry.courseTitle,
             xp: 0,
             time: formatRelativeTime(entry.lastActivityAt),
@@ -360,29 +367,25 @@ export default function Dashboard() {
 
       if (coursesResult.status === 'fulfilled') {
         const progressBySlug = new Map(progress.map((entry) => [entry.courseSlug, entry]))
-        const mappedCourses = coursesResult.value.map((course) => {
+        const mappedCourses: Course[] = coursesResult.value.map((course) => {
           const itemProgress = progressBySlug.get(course.slug)
-          const progressValue = itemProgress?.progressPercentage ?? 0
+          const progressValue = itemProgress?.progressPercent ?? 0
 
           return {
             id: course.slug,
-            slug: course.slug,
             title: course.title,
             description: course.description,
             difficulty: normalizeCourseDifficulty(course.difficulty),
             duration: `${course.durationMinutes} min`,
-            estimatedHours: Math.max(1, Math.round(course.durationMinutes / 60)),
-            category: 'General',
-            topics: [],
-            prerequisites: [],
-            learningObjectives: [],
-            chapters: [],
+            category: course.category || 'General',
             progress: progressValue,
             totalLessons: course.totalLessons,
             completedLessons: itemProgress?.completedLessons ?? 0,
-            isEnrolled: progressValue > 0,
-            createdAt: '',
-            updatedAt: '',
+            xpReward: course.xpReward,
+            color: course.colorHex || 'var(--color-accent)',
+            icon: course.icon || '•',
+            tags: (course.tags || '').split(',').map((tag) => tag.trim()).filter(Boolean),
+            chapters: [],
           }
         })
 
@@ -392,28 +395,17 @@ export default function Dashboard() {
       }
 
       if (exercisesResult.status === 'fulfilled') {
-        const mappedExercises = exercisesResult.value.map((exercise) => ({
+        const mappedExercises: Exercise[] = exercisesResult.value.map((exercise) => ({
           id: exercise.slug,
-          slug: exercise.slug,
           title: exercise.title,
           description: exercise.description,
           difficulty: normalizeExerciseDifficulty(exercise.difficulty),
           category: exercise.category,
-          topic: exercise.category,
           xp: exercise.xpReward,
-          estimatedTime: 15,
           completed: false,
           attempts: 0,
-          successRate: 0,
-          tags: [exercise.category],
-          examples: [],
-          constraints: [],
-          hints: [],
-          testCases: [],
-          starterCode: { cpp: '', python: '', javascript: '', java: '', c: '', csharp: '' },
-          solution: { cpp: '', python: '', javascript: '', java: '', c: '', csharp: '' },
-          relatedConcepts: [],
-          createdAt: '',
+          starterCode: '',
+          solution: '',
         }))
 
         if (mappedExercises.length > 0) {

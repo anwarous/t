@@ -1,703 +1,500 @@
-import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
 import {
-  Flame, Zap, Trophy, BookOpen, Code2, ArrowRight,
-  CheckCircle, Clock, TrendingUp, Star, ChevronRight, Target
+  ArrowRight,
+  Clock,
+  Sparkles,
+  Star,
+  Trophy,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useUserStore } from '@/store'
-import { MOCK_COURSES, MOCK_EXERCISES, RECENT_ACTIVITY, LEADERBOARD_OTHERS, type LeaderboardEntry } from '@/data/mockData'
+import { MOCK_COURSES, MOCK_EXERCISES, RECENT_ACTIVITY } from '@/data/mockData'
+import { courseApi, exerciseApi, leaderboardApi, progressApi, userApi } from '@/lib/api'
 import { cn, getDifficultyBg } from '@/lib/utils'
+import type { Course, Exercise } from '@/data/mockData'
 
-// ── Animation variants ─────────────────────────────────────────────────────
-const fadeUp = {
-  hidden: { opacity: 0, y: 12 },
-  visible: (i = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.3, delay: i * 0.06, ease: 'easeOut' },
-  }),
-}
+const WEEK_ACTIVITY = [
+  { day: 'Mon', value: 34 },
+  { day: 'Tue', value: 52 },
+  { day: 'Wed', value: 46 },
+  { day: 'Thu', value: 68 },
+  { day: 'Fri', value: 84 },
+  { day: 'Sat', value: 58 },
+  { day: 'Sun', value: 72 },
+]
 
-// ── SVG progress ring ──────────────────────────────────────────────────────
-function ProgressRing({ pct, size = 64, color = 'var(--color-accent)' }: { pct: number; size?: number; color?: string }) {
-  const r = (size - 8) / 2
-  const circ = 2 * Math.PI * r
-  const offset = circ - (pct / 100) * circ
-
+function MetricLine({ label, value, muted = false }: { label: string; value: string; muted?: boolean }) {
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" />
-      <circle
-        cx={size/2} cy={size/2} r={r}
-        fill="none"
-        stroke={color}
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeDasharray={circ}
-        strokeDashoffset={offset}
-        transform={`rotate(-90 ${size/2} ${size/2})`}
-        style={{ filter: `drop-shadow(0 0 4px ${color})`, transition: 'stroke-dashoffset 0.8s ease-out' }}
-      />
-    </svg>
+    <div className="rounded-2xl border border-white/6 px-3 py-3 space-y-1" style={{ background: 'rgba(255,255,255,0.02)' }}>
+      <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>{label}</div>
+      <div
+        className={cn('text-sm sm:text-base font-medium')}
+        style={{
+          color: muted ? 'var(--color-text-mid)' : 'var(--color-text)',
+          fontFamily: 'Space Grotesk, sans-serif',
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        {value}
+      </div>
+    </div>
   )
 }
 
-// ── Stat card ──────────────────────────────────────────────────────────────
-function StatCard({ icon: Icon, value, label, color, dimColor }: {
-  icon: React.ElementType; value: string; label: string; color: string; dimColor: string
-}) {
+function EmptyState({ title, body }: { title: string; body: string }) {
   return (
-    <motion.div
-      variants={fadeUp}
-      className="relative p-5 rounded-lg overflow-hidden group"
-      style={{
-        background: 'rgba(255,255,255,0.025)',
-        border: '1px solid rgba(255,255,255,0.06)',
-        transition: 'all 150ms ease-out',
-      }}
-      onMouseEnter={e => {
-        ;(e.currentTarget as HTMLElement).style.borderColor = `${color}30`
-        ;(e.currentTarget as HTMLElement).style.background = `${dimColor}`
-      }}
-      onMouseLeave={e => {
-        ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.06)'
-        ;(e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.025)'
-      }}
-    >
-      <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded flex items-center justify-center flex-shrink-0" style={{ background: `${color}15`, border: `1px solid ${color}25` }}>
-          <Icon size={17} style={{ color }} />
+    <div className="rounded-2xl border border-dashed border-white/10 px-5 py-6" style={{ background: 'rgba(255,255,255,0.02)' }}>
+      <div className="ascii-empty">{`[ ${title.toUpperCase()} ]\n   .--.\n  / _.-'\n  \  '-.\n   '--'`}</div>
+      <p className="mt-3 text-sm" style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}>{body}</p>
+    </div>
+  )
+}
+
+type RecentActivityItem = {
+  id: string
+  action: string
+  target: string
+  xp: number
+  time: string
+  icon: string
+}
+
+function formatRelativeTime(input?: string) {
+  if (!input) return 'just now'
+  const date = new Date(input)
+  const diffMs = Date.now() - date.getTime()
+  if (Number.isNaN(diffMs) || diffMs < 0) return 'just now'
+
+  const minute = 60 * 1000
+  const hour = 60 * minute
+  const day = 24 * hour
+
+  if (diffMs < minute) return 'just now'
+  if (diffMs < hour) return `${Math.floor(diffMs / minute)} min ago`
+  if (diffMs < day) return `${Math.floor(diffMs / hour)} h ago`
+  return `${Math.floor(diffMs / day)} d ago`
+}
+
+function normalizeCourseDifficulty(value: string) {
+  // Keep return type aligned with Course['difficulty'] union.
+  const upper = value.toUpperCase()
+  if (upper === 'EASY') return 'Beginner'
+  if (upper === 'MEDIUM') return 'Intermediate'
+  if (upper === 'HARD') return 'Advanced'
+  return 'Intermediate'
+}
+
+function normalizeExerciseDifficulty(value: string) {
+  // Keep return type aligned with Exercise['difficulty'] union.
+  const upper = value.toUpperCase()
+  if (upper === 'EASY') return 'Easy'
+  if (upper === 'MEDIUM') return 'Medium'
+  if (upper === 'HARD') return 'Hard'
+  return 'Medium'
+}
+
+function ActivityBars({ weeklyActivity, recentActivity }: { weeklyActivity: Array<{ day: string; value: number }>; recentActivity: RecentActivityItem[] }) {
+  return (
+    <div className="grid gap-3 sm:grid-cols-[1.2fr_0.8fr]">
+      <div className="rounded-3xl px-5 py-5 sm:px-6 sm:py-6" style={{ background: 'rgba(255,255,255,0.025)', boxShadow: '8px 8px 0 rgba(0,0,0,0.22)' }}>
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>Progress / Activity</div>
+            <h2 className="mt-2 text-xl sm:text-2xl" style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.03em' }}>Your best week was March.</h2>
+          </div>
+          <div className="rounded-2xl border border-white/6 px-3 py-2 text-[11px]" style={{ color: 'var(--color-text-mid)', background: 'rgba(255,255,255,0.02)', fontFamily: 'IBM Plex Mono, monospace' }}>
+            Last updated {recentActivity[0]?.time ?? 'just now'}
+          </div>
         </div>
-        <div>
-          <div
-            className="text-xl font-bold leading-none mb-1"
-            style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.02em' }}
-          >
-            {value}
-          </div>
-          <div className="text-xs" style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}>
-            {label}
-          </div>
+        <div className="flex h-40 items-end gap-2 sm:gap-3">
+          {weeklyActivity.map((item) => (
+            <div key={item.day} className="flex flex-1 flex-col items-center gap-2">
+              <div className="flex h-full w-full items-end">
+                <div className="w-full rounded-t-md border border-white/8 bg-white/[0.03]" style={{ height: `${item.value}%`, boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.04)' }}>
+                  <div className="h-full w-full rounded-t-md" style={{ background: 'var(--color-accent)' }} />
+                </div>
+              </div>
+              <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>{item.day}</div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-4 max-w-lg text-sm" style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}>
+          You study hardest in short evening bursts. Friday spikes usually turn into a strong weekend streak.
+        </p>
+      </div>
+
+      <div className="rounded-3xl px-5 py-5 sm:px-6 sm:py-6" style={{ background: 'rgba(255,255,255,0.02)' }}>
+        <div className="space-y-3">
+          {recentActivity.slice(0, 5).map((item) => (
+            <div key={item.id} className="flex items-center gap-3 rounded-2xl border border-white/6 px-3 py-3" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/8" style={{ background: 'rgba(255,255,255,0.03)' }}>{item.icon}</div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm" style={{ color: 'var(--color-text)', fontFamily: 'Space Grotesk, sans-serif' }}>
+                  <span style={{ color: 'var(--color-text-mid)' }}>{item.action} </span>
+                  {item.target}
+                </div>
+                <div className="text-[11px]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>{item.time}</div>
+              </div>
+              {item.xp > 0 && <div className="text-[11px]" style={{ color: 'var(--color-accent)', fontFamily: 'IBM Plex Mono, monospace' }}>+{item.xp}</div>}
+            </div>
+          ))}
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
-// ── Course card ────────────────────────────────────────────────────────────
-function CourseCard({ course, index }: { course: typeof MOCK_COURSES[0]; index: number }) {
+function CourseLeadCard({ course }: { course: Course }) {
   const { t } = useTranslation()
+
   return (
-    <motion.div
-      variants={fadeUp}
-      custom={index}
-      className="p-5 rounded-lg group"
-      style={{
-        background: 'rgba(255,255,255,0.025)',
-        border: '1px solid rgba(255,255,255,0.06)',
-        transition: 'all 150ms ease-out',
-      }}
-      onMouseEnter={e => {
-        ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.12)'
-        ;(e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'
-      }}
-      onMouseLeave={e => {
-        ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.06)'
-        ;(e.currentTarget as HTMLElement).style.transform = 'translateY(0)'
-      }}
-    >
-      <div className="flex items-start gap-3 mb-4">
-        <div
-          className="w-10 h-10 rounded flex items-center justify-center text-xl flex-shrink-0"
-          style={{ background: `${course.color}15`, border: `1px solid ${course.color}25` }}
-        >
-          {course.icon}
+    <div className="group rounded-3xl border border-white/8 px-5 py-5 sm:px-6 sm:py-6" style={{ background: 'rgba(255,255,255,0.025)', boxShadow: '8px 8px 0 rgba(0,0,0,0.22)' }}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>Continue learning</div>
+          <h3 className="mt-2 text-2xl sm:text-3xl" style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.04em' }}>{course.title}</h3>
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h3
-              className="font-bold text-sm truncate"
-              style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.01em' }}
-            >
-              {course.title}
-            </h3>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className={cn('tag border', getDifficultyBg(course.difficulty))}>
-              {course.difficulty}
-            </span>
-            <span className="text-[11px] flex items-center gap-1" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
-              <Clock size={10} />
-              {course.duration}
-            </span>
-          </div>
-        </div>
-        <div className="text-[11px] flex-shrink-0" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
-          {course.completedLessons}/{course.totalLessons}
+        <div className="rounded-xl border border-white/8 px-3 py-2 text-right" style={{ transform: 'rotate(-3deg)', background: 'rgba(255,255,255,0.03)' }}>
+          <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>Progress</div>
+          <div className="text-2xl" style={{ color: 'var(--color-accent)', fontFamily: 'Space Grotesk, sans-serif' }}>{course.progress}%</div>
         </div>
       </div>
 
-      <div className="progress-bar mb-3">
-        <motion.div
-          className="progress-fill"
-          initial={{ width: 0 }}
-          animate={{ width: `${course.progress}%` }}
-          transition={{ duration: 0.8, delay: 0.3 + index * 0.1 }}
-        />
-      </div>
-
-      <div className="flex items-center justify-between">
-        <span className="text-[11px]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
-          {t('dashboard.progress', { pct: course.progress })}
+      <div className="mt-5 flex flex-wrap items-center gap-2">
+        <span className={cn('rounded-full border px-2.5 py-1 text-[11px]', getDifficultyBg(course.difficulty))}>{course.difficulty}</span>
+        <span className="rounded-full border border-white/8 px-2.5 py-1 text-[11px]" style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}>
+          <Clock size={10} className="inline-block" /> {course.duration}
         </span>
+        <span className="rounded-full border border-white/8 px-2.5 py-1 text-[11px]" style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}>
+          {course.completedLessons}/{course.totalLessons} lessons
+        </span>
+      </div>
+
+      <div className="mt-5 h-2 rounded-full bg-white/[0.04] overflow-hidden">
+        <div className="h-full rounded-full" style={{ width: `${course.progress}%`, background: 'var(--color-accent)' }} />
+      </div>
+
+      <p className="mt-4 max-w-xl text-sm leading-6" style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}>
+        {t('dashboard.progress', { pct: course.progress })}. {t('dashboard.continueBtn')} when you are ready to push the next concept.
+      </p>
+
+      <Link
+        to={`/learn/${course.id}`}
+        className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/8 px-4 py-2 text-sm opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0"
+        style={{ color: 'var(--color-text)', fontFamily: 'IBM Plex Mono, monospace', background: 'rgba(255,255,255,0.03)' }}
+      >
+        {t('dashboard.continueBtn')} <ArrowRight size={14} />
+      </Link>
+    </div>
+  )
+}
+
+function MiniChallengeCard({ exercise }: { exercise: Exercise }) {
+  const { t } = useTranslation()
+
+  return (
+    <div className="group rounded-3xl border border-white/8 px-5 py-5" style={{ background: 'rgba(255,255,255,0.02)' }}>
+      <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>Next challenge</div>
+      <h3 className="mt-2 text-lg" style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.03em' }}>{exercise.title}</h3>
+      <div className="mt-3 flex items-center gap-2">
+        <span className={cn('rounded-full border px-2.5 py-1 text-[11px]', getDifficultyBg(exercise.difficulty))}>{exercise.difficulty}</span>
+        <span className="text-[11px]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>{exercise.category}</span>
+      </div>
+      <p className="mt-4 text-sm leading-6" style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}>
+        {exercise.description}
+      </p>
+      <div className="mt-4 flex items-center justify-between">
+        <div className="text-sm" style={{ color: 'var(--color-accent)', fontFamily: 'IBM Plex Mono, monospace' }}>+{exercise.xp} XP</div>
         <Link
-          to={`/learn/${course.id}`}
-          className="flex items-center gap-1 text-[11px] font-medium opacity-0 group-hover:opacity-100 transition-opacity"
-          style={{ color: 'var(--color-accent)', fontFamily: 'IBM Plex Mono, monospace' }}
+          to={`/editor?exercise=${exercise.id}`}
+          className="inline-flex items-center gap-2 rounded-full border border-white/8 px-4 py-2 text-sm opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0"
+          style={{ color: 'var(--color-text)', fontFamily: 'IBM Plex Mono, monospace', background: 'rgba(255,255,255,0.03)' }}
         >
-          {t('dashboard.continueBtn')} <ChevronRight size={11} />
+          {t('dashboard.solve')} <ArrowRight size={14} />
         </Link>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
-// ── Rank delta indicator ───────────────────────────────────────────────────
-function RankDelta({ delta }: { delta: number }) {
-  if (delta === 0) return null
-  const up = delta > 0
+function BadgeStripCard({ count }: { count: number }) {
+  const { t } = useTranslation()
+
   return (
-    <span
-      className="text-[10px] font-semibold"
-      style={{
-        color: up ? '#4ade80' : '#f43f5e',
-        fontFamily: 'IBM Plex Mono, monospace',
-      }}
-    >
-      {up ? `↑${delta}` : `↓${Math.abs(delta)}`}
-    </span>
+    <div className="group rounded-3xl border border-white/8 px-5 py-5" style={{ background: 'rgba(255,255,255,0.02)' }}>
+      <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>{t('profile.badges.title')}</div>
+      <div className="mt-2 flex items-center gap-3">
+        <div className="flex -space-x-2">
+          {[Trophy, Star, Sparkles].map((Icon, index) => (
+            <div key={index} className="flex h-8 w-8 items-center justify-center rounded-full border border-white/8 bg-white/[0.03]" style={{ transform: `rotate(${index % 2 === 0 ? -4 : 3}deg)` }}>
+              <Icon size={14} style={{ color: index === 0 ? 'var(--color-accent)' : index === 1 ? 'var(--color-xp)' : 'var(--color-text)' }} />
+            </div>
+          ))}
+        </div>
+        <div>
+          <div className="text-base" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>{count} earned</div>
+          <div className="text-[11px]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>Unlock more by finishing lessons and streaks.</div>
+        </div>
+      </div>
+      <Link
+        to="/profile?tab=badges"
+        className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/8 px-4 py-2 text-sm opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0"
+        style={{ color: 'var(--color-text)', fontFamily: 'IBM Plex Mono, monospace', background: 'rgba(255,255,255,0.03)' }}
+      >
+        {t('dashboard.viewAll')} <ArrowRight size={14} />
+      </Link>
+    </div>
   )
 }
 
-// ── Main Dashboard ─────────────────────────────────────────────────────────
 export default function Dashboard() {
   const { t } = useTranslation()
   const { user, badges } = useUserStore()
-  const earnedBadges = badges.filter(b => b.earned)
-  const inProgress   = MOCK_COURSES.filter(c => c.progress > 0 && c.progress < 100)
-  const recommended  = MOCK_EXERCISES.filter(e => !e.completed).slice(0, 3)
+  const [profileUser, setProfileUser] = useState(user)
+  const [earnedBadgeCount, setEarnedBadgeCount] = useState(badges.filter((badge) => badge.earned).length)
+  const [weeklyActivity, setWeeklyActivity] = useState(WEEK_ACTIVITY)
+  const [recentActivity, setRecentActivity] = useState<RecentActivityItem[]>(
+    RECENT_ACTIVITY.slice(0, 5).map((item) => ({ ...item, id: String(item.id) }))
+  )
+  const [courses, setCourses] = useState<Course[]>(MOCK_COURSES)
+  const [recommendedExercises, setRecommendedExercises] = useState<Exercise[]>(
+    MOCK_EXERCISES.filter((exercise) => !exercise.completed).slice(0, 2)
+  )
+  const [leaderboard, setLeaderboard] = useState<Array<{ rank: number; name: string; xp: number; level: number; streak: number; avatar: string; isCurrentUser: boolean; delta?: number }>>([])
+  const inProgress = courses.filter((course) => course.progress > 0 && course.progress < 100)
+  const recommended = recommendedExercises
 
-  const leaderboard = useMemo((): (LeaderboardEntry & { rank: number; delta?: number })[] => {
-    const entries: LeaderboardEntry[] = [
-      ...LEADERBOARD_OTHERS,
-      { name: user.name, xp: user.xp, streak: user.streak, avatar: user.avatar, isCurrentUser: true },
-    ]
-    return entries
-      .sort((a, b) => b.xp - a.xp)
-      .map((e, i) => ({ ...e, rank: i + 1, delta: e.isCurrentUser ? 2 : i === 1 ? -1 : i === 3 ? 1 : 0 }))
-    // Note: delta values are illustrative — in production these would come from stored previous-rank data.
-  }, [user.name, user.xp, user.streak, user.avatar])
+  useEffect(() => {
+    let active = true
 
-  const myRank   = leaderboard.find((e) => e.isCurrentUser)?.rank ?? '-'
+    Promise.allSettled([
+      leaderboardApi.list(),
+      userApi.me(),
+      userApi.myBadges(),
+      userApi.mySubmissions(),
+      progressApi.list(),
+      courseApi.list(),
+      exerciseApi.list(),
+    ]).then((results) => {
+      if (!active) return
+
+      const [leaderboardResult, userResult, badgesResult, submissionsResult, progressResult, coursesResult, exercisesResult] = results
+
+      if (leaderboardResult.status === 'fulfilled') {
+        setLeaderboard(
+          leaderboardResult.value.map((entry, index) => ({
+            rank: entry.position || index + 1,
+            name: entry.displayName?.trim() || entry.username,
+            xp: entry.xp,
+            level: entry.level,
+            streak: entry.streak,
+            avatar: entry.avatarInitials?.trim() || '??',
+            isCurrentUser: (entry.displayName?.trim() || entry.username).toLowerCase() === user.name.trim().toLowerCase(),
+            delta: (entry.displayName?.trim() || entry.username).toLowerCase() === user.name.trim().toLowerCase() ? 2 : index === 1 ? -1 : index === 3 ? 1 : 0,
+          }))
+        )
+      }
+
+      if (userResult.status === 'fulfilled') {
+        setProfileUser((prev) => ({
+          ...prev,
+          name: userResult.value.displayName || prev.name,
+          xp: userResult.value.xp,
+          level: userResult.value.level,
+          streak: userResult.value.streak,
+          rank: userResult.value.rank,
+          joinedAt: userResult.value.createdAt,
+        }))
+      }
+
+      if (badgesResult.status === 'fulfilled') {
+        setEarnedBadgeCount(badgesResult.value.filter((badge) => Boolean(badge.earnedAt)).length)
+      }
+
+      const submissions = submissionsResult.status === 'fulfilled' ? submissionsResult.value : []
+      const progress = progressResult.status === 'fulfilled' ? progressResult.value : []
+
+      if (submissions.length > 0 || progress.length > 0) {
+        const submissionActivity: Array<RecentActivityItem & { at: number }> = submissions.map((submission) => ({
+          id: `sub-${submission.id}`,
+          action: submission.passed ? 'Solved' : 'Attempted',
+          target: submission.exerciseTitle,
+          xp: submission.xpEarned,
+          time: formatRelativeTime(submission.submittedAt),
+          icon: submission.passed ? '⚡' : '•',
+          at: new Date(submission.submittedAt).getTime() || 0,
+        }))
+
+        const progressActivity: Array<RecentActivityItem & { at: number }> = progress
+          .filter((p) => Boolean(p.lastActivityAt))
+          .map((entry) => ({
+            id: `prog-${entry.courseSlug}`,
+            action: entry.completedLessons >= entry.totalLessons ? 'Completed' : 'Progressed',
+            target: entry.courseTitle,
+            xp: 0,
+            time: formatRelativeTime(entry.lastActivityAt),
+            icon: '↗',
+            at: new Date(entry.lastActivityAt as string).getTime() || 0,
+          }))
+
+        const merged = [...submissionActivity, ...progressActivity]
+          .sort((a, b) => b.at - a.at)
+          .slice(0, 5)
+          .map(({ at, ...item }) => item)
+
+        if (merged.length > 0) {
+          setRecentActivity(merged)
+        }
+      }
+
+      if (submissions.length > 0) {
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        const now = Date.now()
+        const counts = new Map<string, number>(days.map((day) => [day, 0]))
+
+        submissions.forEach((submission) => {
+          const timestamp = new Date(submission.submittedAt).getTime()
+          if (!timestamp || now - timestamp > 7 * 24 * 60 * 60 * 1000) return
+          const dayIndex = new Date(timestamp).getDay()
+          const key = days[(dayIndex + 6) % 7]
+          counts.set(key, (counts.get(key) || 0) + 1)
+        })
+
+        const max = Math.max(...Array.from(counts.values()), 1)
+        setWeeklyActivity(days.map((day) => ({ day, value: Math.round(((counts.get(day) || 0) / max) * 100) })))
+      }
+
+      if (coursesResult.status === 'fulfilled') {
+        const progressBySlug = new Map(progress.map((entry) => [entry.courseSlug, entry]))
+        const mappedCourses: Course[] = coursesResult.value.map((course) => {
+          const itemProgress = progressBySlug.get(course.slug)
+          const progressValue = itemProgress?.progressPercent ?? 0
+
+          return {
+            id: course.slug,
+            title: course.title,
+            description: course.description,
+            difficulty: normalizeCourseDifficulty(course.difficulty),
+            duration: `${course.durationMinutes} min`,
+            category: course.category || 'General',
+            progress: progressValue,
+            totalLessons: course.totalLessons,
+            completedLessons: itemProgress?.completedLessons ?? 0,
+            xpReward: course.xpReward,
+            color: course.colorHex || 'var(--color-accent)',
+            icon: course.icon || '•',
+            tags: (course.tags || '').split(',').map((tag) => tag.trim()).filter(Boolean),
+            chapters: [],
+          }
+        })
+
+        if (mappedCourses.length > 0) {
+          setCourses(mappedCourses)
+        }
+      }
+
+      if (exercisesResult.status === 'fulfilled') {
+        const mappedExercises: Exercise[] = exercisesResult.value.map((exercise) => ({
+          id: exercise.slug,
+          title: exercise.title,
+          description: exercise.description,
+          difficulty: normalizeExerciseDifficulty(exercise.difficulty),
+          category: exercise.category,
+          xp: exercise.xpReward,
+          completed: false,
+          attempts: 0,
+          starterCode: '',
+          solution: '',
+        }))
+
+        if (mappedExercises.length > 0) {
+          setRecommendedExercises(mappedExercises.slice(0, 2))
+        }
+      }
+    })
+
+    return () => {
+      active = false
+    }
+  }, [user.name])
+
+  const primaryCourse = inProgress[0] ?? courses[0] ?? MOCK_COURSES[0]
+  const primaryExercise = recommended[0] ?? MOCK_EXERCISES[0]
+  const myRank = leaderboard.find((entry) => entry.isCurrentUser)?.rank ?? '-'
+
   const xpToNext = 60
-  const xpPct    = Math.min(100, (user.xp / xpToNext) * 100)
+  const xpPct = Math.min(100, (profileUser.xp / xpToNext) * 100)
 
   return (
-    <div className="min-h-screen px-6 py-8">
-      <div className="max-w-6xl mx-auto">
-
-        {/* ── Header ─────────────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
-          className="mb-8 flex items-start justify-between gap-4"
-        >
-          <div>
-            <p
-              className="text-[11px] uppercase tracking-widest mb-1"
-              style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}
-            >
-              {t('dashboard.goodMorning')}
-            </p>
-            <h1
-              className="text-3xl font-bold leading-tight"
-              style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.025em' }}
-            >
-              {t('dashboard.greeting')},{' '}
-              <span className="gradient-text">{user.name.split(' ')[0]}</span>
-            </h1>
-            <p className="text-sm mt-1" style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}>
-              {t('dashboard.subGreeting', { streak: user.streak })}
+    <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+      <div className="mx-auto max-w-[1120px] space-y-10">
+        <section className="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(260px,0.65fr)] items-stretch">
+          <div className="space-y-5 h-full">
+            <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
+              {t('dashboard.goodMorning')} • {profileUser.joinedAt}
+            </div>
+            <div className="flex flex-wrap items-end gap-4">
+              <div>
+                <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>{t('dashboard.levelXp')}</div>
+                <div className="mt-2 text-[clamp(3.2rem,8vw,4.8rem)] leading-none tracking-[-0.06em]" style={{ color: 'var(--color-text)', fontFamily: 'Space Grotesk, sans-serif' }}>
+                  {profileUser.xp.toLocaleString()}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-white/6 px-3 py-3 space-y-1" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>Current Level</div>
+                <div className="text-sm sm:text-base font-medium" style={{ color: 'var(--color-accent)', fontFamily: 'Space Grotesk, sans-serif', fontVariantNumeric: 'tabular-nums' }}>{profileUser.level}</div>
+              </div>
+            </div>
+            <p className="max-w-2xl text-[14.5px] leading-7" style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}>
+              {t('dashboard.subGreeting', { streak: profileUser.streak })} Your focus is built on short sessions, fast feedback, and visible progress.
             </p>
           </div>
 
-          {/* Level + XP ring (desktop) */}
-          <div className="hidden sm:flex flex-col items-end gap-1">
-            <div className="flex items-center gap-3">
+          <div className="grid h-full gap-3 content-start rounded-3xl border border-white/8 px-5 py-5 sm:px-6 sm:py-6" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <MetricLine label={t('dashboard.level', { level: profileUser.level })} value={profileUser.rank} />
+            <MetricLine label="Current streak" value={`${profileUser.streak} days`} />
+            <MetricLine label="XP to next" value={`${Math.max(0, xpToNext - (profileUser.xp % xpToNext))}`} muted />
+          </div>
+        </section>
+
+        <section>
+          <ActivityBars weeklyActivity={weeklyActivity} recentActivity={recentActivity} />
+        </section>
+
+        <section className="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)] items-stretch">
+          {inProgress.length > 0 ? <CourseLeadCard course={primaryCourse} /> : <EmptyState title="courses" body="Your course queue is empty. Start one course to bring this section to life." />}
+          <div className="space-y-5 h-full">
+            {recommended.length > 0 ? <MiniChallengeCard exercise={primaryExercise} /> : <EmptyState title="challenge" body="No exercises are waiting yet. Pick one when you want a quick win." />}
+            <BadgeStripCard count={earnedBadgeCount} />
+          </div>
+        </section>
+
+        <section className="grid gap-4 items-stretch">
+          <div className="h-full rounded-3xl border border-white/8 px-5 py-5 sm:px-6 sm:py-6" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-[10px] uppercase tracking-widest text-right mb-1" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
-                  {t('dashboard.level', { level: user.level })} • {user.rank}
-                </div>
-                <div className="progress-bar w-28">
-                  <motion.div
-                    className="progress-fill"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${xpPct}%` }}
-                    transition={{ duration: 1, delay: 0.3 }}
-                  />
-                </div>
-                <div className="text-[10px] mt-1 text-right" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
-                  {t('dashboard.xpOf', { xp: user.xp, max: xpToNext })}
-                </div>
+                <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>Leaderboard</div>
+                <div className="mt-1 text-lg" style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.03em' }}>You are currently #{myRank}</div>
               </div>
-              <ProgressRing pct={xpPct} size={52} />
+              <Link to="/profile" className="text-sm" style={{ color: 'var(--color-accent)', fontFamily: 'IBM Plex Mono, monospace' }}>View profile</Link>
+            </div>
+            <div className="mt-4 space-y-2">
+              {leaderboard.slice(0, 5).map((entry, index) => (
+                <div key={entry.rank} className="flex items-center gap-3 rounded-2xl border border-white/6 px-3 py-3" style={{ background: entry.isCurrentUser ? 'rgba(109,255,26,0.05)' : 'rgba(255,255,255,0.02)' }}>
+                  <div className="w-6 text-center text-[12px] font-semibold" style={{ color: index === 0 ? 'var(--color-accent)' : 'var(--color-text-mid)', fontFamily: 'Space Grotesk, sans-serif' }}>{entry.rank}</div>
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/8" style={{ background: 'rgba(255,255,255,0.03)' }}>{entry.avatar}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm" style={{ color: entry.isCurrentUser ? 'var(--color-text)' : 'var(--color-text)', fontFamily: 'Space Grotesk, sans-serif' }}>{entry.name}</div>
+                    <div className="text-[11px]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>{entry.xp.toLocaleString()} XP</div>
+                  </div>
+                  <div className="text-[11px]" style={{ color: 'var(--color-xp)', fontFamily: 'IBM Plex Mono, monospace' }}>{entry.streak}d</div>
+                </div>
+              ))}
             </div>
           </div>
-        </motion.div>
+        </section>
 
-        {/* ── Stat cards ─────────────────────────────────────────── */}
-        <motion.div
-          variants={{ visible: { transition: { staggerChildren: 0.06 } } }}
-          initial="hidden"
-          animate="visible"
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8"
-        >
-          <StatCard icon={Zap}         value={user.xp.toLocaleString()}  label={t('dashboard.totalXP')}         color="var(--color-accent)" dimColor="rgba(0,245,212,0.04)" />
-          <StatCard icon={Flame}       value={`${user.streak}d`}         label={t('dashboard.currentStreak')}   color="var(--color-xp)"     dimColor="rgba(240,160,48,0.04)" />
-          <StatCard icon={CheckCircle} value={user.totalSolved.toString()} label={t('dashboard.problemsSolved')} color="#4ade80"              dimColor="rgba(74,222,128,0.04)" />
-          <StatCard icon={Trophy}      value={`#${myRank}`}              label={t('dashboard.leaderboardRank')} color="#a855f7"              dimColor="rgba(168,85,247,0.04)" />
-        </motion.div>
-
-        <div className="grid lg:grid-cols-3 gap-5">
-
-          {/* ── Left 2/3 ─────────────────────────────────────────── */}
-          <div className="lg:col-span-2 space-y-5">
-
-            {/* Continue Learning */}
-            <motion.section
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.18 }}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <h2
-                  className="font-bold flex items-center gap-2 text-sm"
-                  style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.01em' }}
-                >
-                  <TrendingUp size={15} style={{ color: 'var(--color-accent)' }} />
-                  {t('dashboard.continueLearning')}
-                </h2>
-                <Link
-                  to="/learn"
-                  className="flex items-center gap-1 text-[11px] transition-colors"
-                  style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
-                  onMouseEnter={e => ((e.target as HTMLElement).style.color = 'var(--color-text)')}
-                  onMouseLeave={e => ((e.target as HTMLElement).style.color = 'var(--color-text-mid)')}
-                >
-                  {t('dashboard.allCoursesLink')} <ChevronRight size={12} />
-                </Link>
-              </div>
-              <motion.div
-                variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
-                initial="hidden"
-                animate="visible"
-                className="grid sm:grid-cols-2 gap-3"
-              >
-                {inProgress.map((course, i) => (
-                  <CourseCard key={course.id} course={course} index={i} />
-                ))}
-              </motion.div>
-            </motion.section>
-
-            {/* Recommended Exercises */}
-            <motion.section
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.26 }}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <h2
-                  className="font-bold flex items-center gap-2 text-sm"
-                  style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.01em' }}
-                >
-                  <Target size={15} style={{ color: 'var(--color-accent)' }} />
-                  {t('dashboard.recommendedExercises')}
-                </h2>
-                <Link
-                  to="/editor"
-                  className="flex items-center gap-1 text-[11px] transition-colors"
-                  style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
-                  onMouseEnter={e => ((e.target as HTMLElement).style.color = 'var(--color-text)')}
-                  onMouseLeave={e => ((e.target as HTMLElement).style.color = 'var(--color-text-mid)')}
-                >
-                  {t('dashboard.allProblemsLink')} <ChevronRight size={12} />
-                </Link>
-              </div>
-              <div className="space-y-2.5">
-                {recommended.map((ex, i) => (
-                  <motion.div
-                    key={ex.id}
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + i * 0.06 }}
-                    className="flex items-center justify-between px-4 py-3.5 rounded-lg group"
-                    style={{
-                      background: 'rgba(255,255,255,0.025)',
-                      border: '1px solid rgba(255,255,255,0.06)',
-                      transition: 'all 150ms ease-out',
-                    }}
-                    onMouseEnter={e => {
-                      ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)'
-                    }}
-                    onMouseLeave={e => {
-                      ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.06)'
-                    }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-8 h-8 rounded flex items-center justify-center flex-shrink-0"
-                        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-                      >
-                        <Code2 size={14} style={{ color: 'var(--color-text-mid)' }} />
-                      </div>
-                      <div>
-                        <div
-                          className="font-medium text-sm"
-                          style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.01em' }}
-                        >
-                          {ex.title}
-                        </div>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span className={cn('text-[10px] font-medium px-1.5 py-0.5 rounded border', getDifficultyBg(ex.difficulty))}>
-                            {ex.difficulty}
-                          </span>
-                          <span className="text-[10px]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
-                            {ex.category}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="text-xs font-semibold"
-                        style={{ color: 'var(--color-accent)', fontFamily: 'IBM Plex Mono, monospace' }}
-                      >
-                        +{ex.xp} XP
-                      </span>
-                      <Link
-                        to={`/editor?exercise=${ex.id}`}
-                        className="flex items-center gap-1.5 btn-primary py-1.5 px-3 text-[11px] opacity-0 group-hover:opacity-100 transition-opacity"
-                        aria-label={`${t('dashboard.solve')} ${ex.title}`}
-                      >
-                        {t('dashboard.solve')} <ArrowRight size={11} />
-                      </Link>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.section>
-
-            {/* Quick Access */}
-            <motion.section
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.34 }}
-            >
-              <h2
-                className="font-bold text-sm mb-3"
-                style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.01em' }}
-              >
-                {t('dashboard.quickAccess')}
-              </h2>
-              <div className="grid grid-cols-3 gap-2.5">
-                {[
-                  { to: '/editor',    icon: Code2,    label: t('dashboard.codeEditorLabel'),  color: 'var(--color-accent)' },
-                  { to: '/visualize', icon: BookOpen, label: t('dashboard.visualizerLabel'),  color: '#60a5fa' },
-                  { to: '/mentor',    icon: Star,     label: t('dashboard.aiMentorLabel'),    color: 'var(--color-xp)' },
-                ].map(({ to, icon: Icon, label, color }) => (
-                  <Link
-                    key={to}
-                    to={to}
-                    className="flex flex-col items-center gap-2 py-4 px-3 rounded-lg text-center"
-                    style={{
-                      background: 'rgba(255,255,255,0.025)',
-                      border: '1px solid rgba(255,255,255,0.06)',
-                      transition: 'all 150ms ease-out',
-                    }}
-                    onMouseEnter={e => {
-                      ;(e.currentTarget as HTMLElement).style.borderColor = `${color}30`
-                      ;(e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'
-                    }}
-                    onMouseLeave={e => {
-                      ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.06)'
-                      ;(e.currentTarget as HTMLElement).style.transform = 'translateY(0)'
-                    }}
-                  >
-                    <div
-                      className="w-9 h-9 rounded flex items-center justify-center"
-                      style={{ background: `${color}15`, border: `1px solid ${color}25` }}
-                    >
-                      <Icon size={16} style={{ color }} />
-                    </div>
-                    <span
-                      className="text-[11px] font-medium"
-                      style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}
-                    >
-                      {label}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </motion.section>
-          </div>
-
-          {/* ── Right 1/3 ────────────────────────────────────────── */}
-          <div className="space-y-4">
-
-            {/* Streak & Level */}
-            <motion.div
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.22 }}
-              className="p-5 rounded-lg"
-              style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}
-            >
-              <h3
-                className="text-[10px] uppercase tracking-widest mb-4"
-                style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}
-              >
-                {t('dashboard.yourProgress')}
-              </h3>
-
-              <div className="flex items-center gap-3 mb-5">
-                {/* Flame ring */}
-                <div className="relative flex-shrink-0">
-                  <ProgressRing pct={xpPct} size={56} color="var(--color-xp)" />
-                  <div
-                    className="absolute inset-0 flex items-center justify-center text-base"
-                    aria-hidden="true"
-                  >
-                    🔥
-                  </div>
-                </div>
-                <div>
-                  <div
-                    className="text-2xl font-bold leading-none"
-                    style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.025em', color: 'var(--color-xp)' }}
-                  >
-                    {user.streak}
-                  </div>
-                  <div className="text-xs mt-0.5" style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}>
-                    {t('dashboard.dayStreak')}
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-[10px] mb-1.5" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
-                  <span>{t('dashboard.levelProgress', { level: user.level })}</span>
-                  <span style={{ color: 'var(--color-accent)' }}>{t('dashboard.xpOf', { xp: user.xp, max: xpToNext })}</span>
-                </div>
-                <div className="progress-bar">
-                  <motion.div
-                    className="progress-fill"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${xpPct}%` }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                  />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Recent Activity */}
-            <motion.div
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.28 }}
-              className="p-5 rounded-lg"
-              style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}
-            >
-              <h3
-                className="text-[10px] uppercase tracking-widest mb-4"
-                style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}
-              >
-                {t('dashboard.recentActivity')}
-              </h3>
-              <div className="space-y-3">
-                {RECENT_ACTIVITY.map((item, i) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.35 + i * 0.05 }}
-                    className="flex items-center gap-2.5"
-                  >
-                    <div
-                      className="w-7 h-7 rounded flex items-center justify-center text-xs flex-shrink-0"
-                      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
-                    >
-                      {item.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs">
-                        <span style={{ color: 'var(--color-text-mid)' }}>{item.action} </span>
-                        <span className="font-medium truncate">{item.target}</span>
-                      </div>
-                      <div className="text-[10px]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
-                        {item.time}
-                      </div>
-                    </div>
-                    {item.xp > 0 && (
-                      <span
-                        className="text-[11px] font-semibold flex-shrink-0"
-                        style={{ color: 'var(--color-accent)', fontFamily: 'IBM Plex Mono, monospace' }}
-                      >
-                        +{item.xp}
-                      </span>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Badges */}
-            <motion.div
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.32 }}
-              className="p-5 rounded-lg"
-              style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3
-                  className="text-[10px] uppercase tracking-widest"
-                  style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}
-                >
-                  {t('profile.badges.title')}
-                </h3>
-                <span
-                  className="text-[10px]"
-                  style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}
-                >
-                  {t('dashboard.earnedCount', { count: earnedBadges.length })}
-                </span>
-              </div>
-              <div className="grid grid-cols-4 gap-1.5">
-                {earnedBadges.slice(0, 8).map((badge, i) => (
-                  <motion.div
-                    key={badge.id}
-                    initial={{ opacity: 0, scale: 0.6 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.38 + i * 0.05, type: 'spring', stiffness: 220 }}
-                    title={`${badge.name}: ${badge.description}`}
-                    className="w-10 h-10 rounded cursor-help flex items-center justify-center text-lg"
-                    style={{
-                      background: 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      transition: 'transform 150ms ease-out',
-                    }}
-                    onMouseEnter={e => ((e.currentTarget as HTMLElement).style.transform = 'scale(1.12)')}
-                    onMouseLeave={e => ((e.currentTarget as HTMLElement).style.transform = 'scale(1)')}
-                  >
-                    {badge.icon}
-                  </motion.div>
-                ))}
-                {Array.from({ length: Math.max(0, 8 - earnedBadges.length) }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-10 h-10 rounded flex items-center justify-center text-[10px]"
-                    style={{
-                      background: 'rgba(255,255,255,0.02)',
-                      border: '1px dashed rgba(255,255,255,0.07)',
-                      color: 'var(--color-text-faint)',
-                      fontFamily: 'IBM Plex Mono, monospace',
-                    }}
-                  >
-                    ?
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Leaderboard */}
-            <motion.div
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.36 }}
-              className="p-5 rounded-lg"
-              style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}
-            >
-              <h3
-                className="text-[10px] uppercase tracking-widest mb-4"
-                style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}
-              >
-                {t('dashboard.leaderboard')}
-              </h3>
-              <div className="space-y-1.5">
-                {leaderboard.map((entry, i) => (
-                  <motion.div
-                    key={entry.rank}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 + i * 0.04 }}
-                    className={cn(
-                      'flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors',
-                      entry.isCurrentUser ? '' : 'hover:bg-white/3'
-                    )}
-                    style={entry.isCurrentUser ? {
-                      background: 'var(--color-accent-dim)',
-                      border: '1px solid rgba(0,245,212,0.18)',
-                    } : {}}
-                  >
-                    <span
-                      className={cn('text-xs font-bold w-4 text-center flex-shrink-0')}
-                      style={{
-                        fontFamily: 'Space Grotesk, sans-serif',
-                        color: i === 0 ? 'var(--color-xp)' : i === 1 ? 'var(--color-text)' : i === 2 ? '#a16207' : 'var(--color-text-faint)',
-                      }}
-                    >
-                      {entry.rank}
-                    </span>
-                    <div
-                      className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold flex-shrink-0"
-                      style={{ background: 'rgba(255,255,255,0.06)', fontFamily: 'Space Grotesk, sans-serif' }}
-                    >
-                      {entry.avatar}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div
-                        className={cn('text-xs font-medium truncate', entry.isCurrentUser ? '' : '')}
-                        style={{
-                          color: entry.isCurrentUser ? 'var(--color-accent)' : 'var(--color-text)',
-                          fontFamily: 'IBM Plex Mono, monospace',
-                        }}
-                      >
-                        {entry.name}
-                      </div>
-                      <div className="text-[10px]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
-                        {entry.xp.toLocaleString()} XP
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
-                      {entry.delta !== undefined && entry.delta !== 0 && (
-                        <RankDelta delta={entry.delta} />
-                      )}
-                      <span
-                        className="text-[10px] flex items-center gap-0.5"
-                        style={{ color: 'var(--color-xp)', fontFamily: 'IBM Plex Mono, monospace' }}
-                      >
-                        <Flame size={9} />
-                        {entry.streak}
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </div>
       </div>
     </div>
   )

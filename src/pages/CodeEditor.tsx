@@ -383,6 +383,7 @@ function ChallengeEditor({
   const { t }      = useTranslation()
   const navigate   = useNavigate()
   const exercise   = MOCK_EXERCISES.find(e => e.id === exerciseId) ?? MOCK_EXERCISES[0]
+  const resolvedExerciseId = exercise.id
 
   const { code, output, isRunning, language, setCode, setLanguage, runCode, setActiveExercise } = useEditorStore()
 
@@ -390,13 +391,13 @@ function ChallengeEditor({
   const fileExt    = language === 'algorithm' ? 'solution.algo' : 'solution.py'
 
   useEffect(() => {
-    setActiveExercise(exerciseId)
+    setActiveExercise(resolvedExerciseId)
     const starter = language === 'algorithm' && exercise.algorithmStarterCode
       ? exercise.algorithmStarterCode
       : exercise.starterCode
     setCode(starter)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exerciseId])
+  }, [resolvedExerciseId])
 
   function handleEditorMount(_: unknown, monaco: any) {
     registerAlgorithmLanguage(monaco)
@@ -411,7 +412,7 @@ function ChallengeEditor({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -40 }}
       transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-      className="h-[calc(100vh-56px)] flex flex-col"
+      className="h-[calc(100dvh-60px)] flex flex-col"
     >
       {/* ── Top bar ──────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-surface-900/50 flex-shrink-0">

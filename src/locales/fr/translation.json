@@ -6,6 +6,7 @@
     "sandbox": "Bac à sable",
     "visualize": "Visualiser",
     "aiMentor": "Mentor IA",
+    "admin": "Admin",
     "signIn": "Se connecter",
     "startLearning": "Commencer →",
     "profile": "Profil",
@@ -111,7 +112,7 @@
     "subGreeting": "Vous êtes sur une série de {{streak}} jours ! Continuez 🔥",
     "level": "Niveau {{level}}",
     "xpToNext": "{{xp}} XP pour le prochain niveau",
-    "totalXP": "XP Total",
+    "levelXp": "XP du niveau",
     "currentStreak": "Série Actuelle",
     "days": "jours",
     "problemsSolved": "Problèmes Résolus",
@@ -327,7 +328,7 @@
       "notifications": "Notifications"
     },
     "stats": {
-      "xp": "XP Total",
+      "xp": "XP du niveau",
       "streak": "Jours de Suite",
       "solved": "Problèmes Résolus",
       "rank": "Rang",

@@ -24,6 +24,23 @@ export default function CodeModeNav() {
         className="flex items-center gap-2 select-none"
         style={{ fontFamily: 'Space Grotesk, sans-serif' }}
       >
+        <div
+          className="w-6 h-6 rounded overflow-hidden flex items-center justify-center"
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(109,255,26,0.22)',
+            boxShadow: '0 0 8px var(--color-accent-glow)',
+          }}
+        >
+          <img
+            src="/logo.png"
+            alt="Learning++ logo"
+            width={24}
+            height={24}
+            className="w-full h-full object-contain"
+            style={{ transform: 'scale(1.85)' }}
+          />
+        </div>
         <span className="text-sm font-bold" style={{ color: 'var(--color-accent)' }}>
           Learning++
         </span>

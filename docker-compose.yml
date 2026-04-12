@@ -1,0 +1,78 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mqacademy-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-LearningDataBase}
+      POSTGRES_USER: ${DB_USERNAME:-anwer}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-test}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-anwer} -d ${DB_NAME:-LearningDataBase}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - mqacademy_net
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mqacademy-backend
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/${DB_NAME:-LearningDataBase}}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-${DB_USERNAME:-anwer}}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-${DB_PASSWORD:-test}}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-mqacademy-dev-jwt-secret-please-rotate-in-production-2026}
+      APP_JWT_EXPIRATION_MS: ${APP_JWT_EXPIRATION_MS:-604800000}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8081/actuator/health >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 45s
+    networks:
+      - mqacademy_net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8081/api}
+    container_name: mqacademy-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080 >/dev/null || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    networks:
+      - mqacademy_net
+
+volumes:
+  postgres_data:
+
+networks:
+  mqacademy_net:
+    name: mqacademy_net
+    driver: bridge

@@ -72,15 +72,21 @@ export default function SignUp() {
           {/* Logo */}
           <div className="flex items-center justify-center gap-2.5 mb-8">
             <div
-              className="w-8 h-8 rounded flex items-center justify-center text-sm font-bold select-none"
+              className="w-9 h-9 rounded overflow-hidden flex items-center justify-center"
               style={{
-                background: 'var(--color-accent)',
-                color: '#0a120e',
-                fontFamily: 'Space Grotesk, sans-serif',
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(109,255,26,0.22)',
                 boxShadow: '0 0 14px var(--color-accent-glow)',
               }}
             >
-              L+
+              <img
+                src="/logo.png"
+                alt="Learning++ logo"
+                width={36}
+                height={36}
+                className="w-full h-full object-contain"
+                style={{ transform: 'scale(1.85)' }}
+              />
             </div>
             <span
               className="font-bold text-lg"

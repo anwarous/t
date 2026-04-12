@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { Lock } from 'lucide-react'
 import { type Badge } from '@/data/mockData'
 import { cn, getRarityColor } from '@/lib/utils'
 
@@ -68,10 +67,16 @@ export function BadgeCard({ badge, size = 'md', showDetails = true }: BadgeCardP
         {badge.earned ? (
           <span className={fontSize}>{badge.icon}</span>
         ) : (
-          <Lock
-            size={size === 'sm' ? 13 : size === 'md' ? 17 : 21}
-            style={{ color: 'var(--color-text-faint)' }}
-          />
+          <span
+            style={{
+              color: 'var(--color-text-faint)',
+              fontFamily: 'IBM Plex Mono, monospace',
+              fontSize: size === 'sm' ? '12px' : size === 'md' ? '15px' : '18px',
+              lineHeight: 1,
+            }}
+          >
+            ▣
+          </span>
         )}
       </div>
 

@@ -410,7 +410,7 @@ export default function SandboxPage() {
   const hasSuccess = output.includes('✅')
 
   return (
-    <div className="h-[calc(100vh-64px)] flex flex-col">
+    <div className="h-[calc(100dvh-60px)] flex flex-col">
 
       {/* ── Top bar ─────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 px-4 py-2 border-b border-white/5 bg-surface-900/50 flex-shrink-0">

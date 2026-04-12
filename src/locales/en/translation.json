@@ -6,6 +6,7 @@
     "sandbox": "Sandbox",
     "visualize": "Visualize",
     "aiMentor": "AI Mentor",
+    "admin": "Admin",
     "signIn": "Sign in",
     "startLearning": "Start Learning →",
     "profile": "Profile",
@@ -111,7 +112,7 @@
     "subGreeting": "You're on a {{streak}}-day streak! Keep it up 🔥",
     "level": "Level {{level}}",
     "xpToNext": "{{xp}} XP to next level",
-    "totalXP": "Total XP",
+    "levelXp": "Level XP",
     "currentStreak": "Current Streak",
     "days": "days",
     "problemsSolved": "Problems Solved",
@@ -327,7 +328,7 @@
       "notifications": "Notifications"
     },
     "stats": {
-      "xp": "Total XP",
+      "xp": "Level XP",
       "streak": "Day Streak",
       "solved": "Problems Solved",
       "rank": "Rank",

@@ -615,10 +615,20 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div
-              className="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold select-none"
-              style={{ background: 'var(--color-accent)', color: '#0a120e', fontFamily: 'Space Grotesk, sans-serif' }}
+              className="w-7 h-7 rounded overflow-hidden flex items-center justify-center"
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(109,255,26,0.22)',
+              }}
             >
-              L+
+              <img
+                src="/logo.png"
+                alt="Learning++ logo"
+                width={28}
+                height={28}
+                className="w-full h-full object-contain"
+                style={{ transform: 'scale(1.85)' }}
+              />
             </div>
             <span
               className="text-sm font-bold"

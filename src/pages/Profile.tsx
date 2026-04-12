@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -9,7 +9,8 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useUserStore } from '@/store'
-import { MOCK_BADGES, RECENT_ACTIVITY, LEADERBOARD_OTHERS, type LeaderboardEntry } from '@/data/mockData'
+import { MOCK_BADGES, RECENT_ACTIVITY } from '@/data/mockData'
+import { leaderboardApi } from '@/lib/api'
 import { cn, getRarityColor } from '@/lib/utils'
 
 // ── Reusable toggle ────────────────────────────────────────────────────────────
@@ -65,6 +66,7 @@ function ProfileTab() {
   const { user, updateProfile } = useUserStore()
   const [form, setForm] = useState({ name: user.name, email: user.email, bio: user.bio, language: user.language })
   const [saved, setSaved] = useState(false)
+  const [myRank, setMyRank] = useState<number | null>(null)
 
   function save() {
     updateProfile(form)
@@ -72,14 +74,25 @@ function ProfileTab() {
     setTimeout(() => setSaved(false), 2000)
   }
 
-  const myRank = useMemo(() => {
-    const entries: LeaderboardEntry[] = [
-      ...LEADERBOARD_OTHERS,
-      { name: user.name, xp: user.xp, streak: 0, avatar: user.avatar, isCurrentUser: true },
-    ]
-    const sorted = [...entries].sort((a, b) => b.xp - a.xp)
-    return sorted.findIndex((e) => e.isCurrentUser) + 1
-  }, [user.name, user.xp, user.avatar])
+  useEffect(() => {
+    let active = true
+
+    leaderboardApi
+      .list()
+      .then((entries) => {
+        if (!active) return
+        const me = entries.find((entry) => (entry.displayName?.trim() || entry.username).toLowerCase() === user.name.trim().toLowerCase())
+        setMyRank(me?.position ?? null)
+      })
+      .catch(() => {
+        if (!active) return
+        setMyRank(null)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [user.name])
 
   const memberSince = useMemo(() => {
     const d = new Date(user.joinedAt)
@@ -125,8 +138,8 @@ function ProfileTab() {
           </div>
 
           {/* Leaderboard rank */}
-          <div className="text-center p-4 rounded-xl glass border border-white/8">
-            <div className="text-3xl font-display font-bold gradient-text">#{myRank}</div>
+          <div className="text-center p-4 rounded-2xl glass border border-white/8">
+            <div className="text-3xl font-display font-bold gradient-text">#{myRank ?? '-'}</div>
             <div className="text-xs text-surface-400 mt-1">{t('profile.globalRank')}</div>
           </div>
         </div>
@@ -134,7 +147,7 @@ function ProfileTab() {
         {/* Stats row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
           {stats.map(({ icon: Icon, label, value, color, bg }) => (
-            <div key={label} className={cn('flex flex-col items-center py-3 rounded-xl border border-white/5', bg)}>
+            <div key={label} className={cn('flex flex-col items-center py-3 rounded-2xl border border-white/5', bg)}>
               <Icon size={16} className={cn(color, 'mb-1')} />
               <div className={cn('text-xl font-display font-bold', color)}>{value}</div>
               <div className="text-xs text-surface-500 mt-0.5">{label}</div>
@@ -262,7 +275,7 @@ function BadgesTab() {
           { label: t('profile.badges.rarity.legendary'), value: badges.filter(b => b.rarity === 'legendary' && b.earned).length, color: 'text-amber-400', bg: 'bg-amber-500/10' },
           { label: t('profile.badges.rarity.epic'),      value: badges.filter(b => b.rarity === 'epic'      && b.earned).length, color: 'text-purple-400', bg: 'bg-purple-500/10' },
         ].map(({ label, value, color, bg }) => (
-          <div key={label} className={cn('p-4 rounded-xl border border-white/5 text-center', bg)}>
+          <div key={label} className={cn('p-4 rounded-2xl border border-white/5 text-center', bg)}>
             <div className={cn('text-2xl font-display font-bold', color)}>{value}</div>
             <div className="text-xs text-surface-500 mt-0.5">{label}</div>
           </div>
@@ -597,14 +610,14 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-8">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+      <div className="max-w-[1120px] mx-auto">
 
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-7"
+          className="mb-8"
         >
           <h1 className="text-3xl font-display font-bold">
             {t('profile.myProfileTitle')}
@@ -612,7 +625,7 @@ export default function ProfilePage() {
           <p className="text-surface-400 mt-1">{t('profile.subtitle')}</p>
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-8">
 
           {/* Sidebar tabs */}
           <motion.aside

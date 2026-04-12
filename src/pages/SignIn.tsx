@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next'
 import { authApi } from '@/lib/api'
 import { useAuthStore } from '@/store'
 
+const ADMIN_EMAIL = 'admin@admin.admin'
+
 export default function SignIn() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -31,7 +33,7 @@ export default function SignIn() {
         email: res.email,
         displayName: res.displayName,
       })
-      navigate(from, { replace: true })
+      navigate(res.email === ADMIN_EMAIL ? '/admin' : from, { replace: true })
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t('signin.failed'))
     } finally {
@@ -74,15 +76,21 @@ export default function SignIn() {
           {/* Logo */}
           <div className="flex items-center justify-center gap-2.5 mb-8">
             <div
-              className="w-8 h-8 rounded flex items-center justify-center text-sm font-bold select-none"
+              className="w-9 h-9 rounded overflow-hidden flex items-center justify-center"
               style={{
-                background: 'var(--color-accent)',
-                color: '#0a120e',
-                fontFamily: 'Space Grotesk, sans-serif',
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(109,255,26,0.22)',
                 boxShadow: '0 0 14px var(--color-accent-glow)',
               }}
             >
-              L+
+              <img
+                src="/logo.png"
+                alt="Learning++ logo"
+                width={36}
+                height={36}
+                className="w-full h-full object-contain"
+                style={{ transform: 'scale(1.85)' }}
+              />
             </div>
             <span
               className="font-bold text-lg"

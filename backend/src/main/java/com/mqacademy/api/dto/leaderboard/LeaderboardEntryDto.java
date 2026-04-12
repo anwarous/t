@@ -11,5 +11,6 @@ public record LeaderboardEntryDto(
         int xp,
         int level,
         String rank,
+        int streak,
         int totalSolved
 ) {}

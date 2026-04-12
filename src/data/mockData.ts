@@ -1540,6 +1540,7 @@ export const RECENT_ACTIVITY = [
 export interface LeaderboardEntry {
   name: string
   xp: number
+  level: number
   streak: number
   avatar: string
   isCurrentUser?: boolean
@@ -1547,8 +1548,8 @@ export interface LeaderboardEntry {
 }
 
 export const LEADERBOARD_OTHERS: LeaderboardEntry[] = [
-  { name: 'Sarah K.', xp: 8920, streak: 21, avatar: 'SK' },
-  { name: 'Marcus J.', xp: 7650, streak: 14, avatar: 'MJ' },
-  { name: 'Priya M.', xp: 6800, streak: 9, avatar: 'PM' },
-  { name: 'David L.', xp: 2900, streak: 5, avatar: 'DL' },
+  { name: 'Sarah K.', xp: 8920, level: 18, streak: 21, avatar: 'SK' },
+  { name: 'Marcus J.', xp: 7650, level: 16, streak: 14, avatar: 'MJ' },
+  { name: 'Priya M.', xp: 6800, level: 15, streak: 9, avatar: 'PM' },
+  { name: 'David L.', xp: 2900, level: 8, streak: 5, avatar: 'DL' },
 ]

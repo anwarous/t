@@ -147,17 +147,17 @@ export default function VisualizationPage() {
     : 'bg-surface-800 text-surface-500'
 
   return (
-    <div className="min-h-screen px-4 py-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+      <div className="max-w-[1120px] mx-auto">
 
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-3xl font-display font-bold mb-1">
             {t('visualize.title')}
           </h1>
           <p className="text-surface-400">{t('visualize.subtitle')}</p>
         </motion.div>
 
-        <div className="grid xl:grid-cols-4 gap-5">
+        <div className="grid xl:grid-cols-4 gap-6">
 
           {/* ── Sidebar ─────────────────────────────────────────────────────── */}
           <motion.div
@@ -410,7 +410,7 @@ export default function VisualizationPage() {
                   { labelKey: 'visualize.stats.currentStep', value: currentStep + 1             },
                   { labelKey: 'visualize.stats.progressLabel', value: `${Math.round(progress)}%` },
                 ].map(({ labelKey, value }) => (
-                  <div key={labelKey} className="p-4 rounded-xl glass border border-white/8 text-center">
+                  <div key={labelKey} className="p-4 rounded-2xl glass border border-white/8 text-center">
                     <div className="text-2xl font-display font-bold gradient-text">{value}</div>
                     <div className="text-xs text-surface-500 mt-1">{t(labelKey)}</div>
                   </div>

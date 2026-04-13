@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: mqacademy-postgres
+    container_name: learningplusplus-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME:-LearningDataBase}
@@ -16,13 +16,13 @@ services:
       retries: 10
       start_period: 20s
     networks:
-      - mqacademy_net
+      - learningplusplus_net
 
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: mqacademy-backend
+    container_name: learningplusplus-backend
     restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
@@ -30,9 +30,15 @@ services:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/${DB_NAME:-LearningDataBase}}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-${DB_USERNAME:-anwer}}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-${DB_PASSWORD:-test}}
-      APP_JWT_SECRET: ${APP_JWT_SECRET:-mqacademy-dev-jwt-secret-please-rotate-in-production-2026}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-learningplusplus-dev-jwt-secret-please-rotate-in-production-2026}
       APP_JWT_EXPIRATION_MS: ${APP_JWT_EXPIRATION_MS:-604800000}
       APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+      APP_LLM_BASE_URL: ${APP_LLM_BASE_URL:-https://api.openai.com/v1}
+      APP_LLM_API_KEY: ${APP_LLM_API_KEY:-}
+      APP_LLM_MODEL: ${APP_LLM_MODEL:-gpt-4o-mini}
+      APP_LLM_TEMPERATURE: ${APP_LLM_TEMPERATURE:-0.3}
+      APP_LLM_MAX_TOKENS: ${APP_LLM_MAX_TOKENS:-450}
+      APP_LLM_SYSTEM_PROMPT: ${APP_LLM_SYSTEM_PROMPT:-You are Learning++ Mentor, an algorithm tutor. Explain clearly, give hints before full solutions, and keep answers concise and practical.}
     ports:
       - "8081:8081"
     depends_on:
@@ -45,7 +51,29 @@ services:
       retries: 8
       start_period: 45s
     networks:
-      - mqacademy_net
+      - learningplusplus_net
+
+  algo-compiler:
+    build:
+      context: ./algoCompiler/CompilerRes
+      dockerfile: Dockerfile
+    container_name: learningplusplus-algo-compiler
+    restart: unless-stopped
+    environment:
+      PORT: 5000
+      ALLOWED_ORIGIN: ${ALGO_ALLOWED_ORIGIN:-http://localhost:5173}
+    ports:
+      - "5000:5000"
+    volumes:
+      - algo_files_data:/app/algo_files
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:5000/health').getcode()==200 else sys.exit(1)\""]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - learningplusplus_net
 
   frontend:
     build:
@@ -53,12 +81,15 @@ services:
       dockerfile: Dockerfile.frontend
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8081/api}
-    container_name: mqacademy-frontend
+        VITE_ALGO_COMPILER_URL: ${VITE_ALGO_COMPILER_URL:-/algo-api}
+    container_name: learningplusplus-frontend
     restart: unless-stopped
     ports:
       - "5173:8080"
     depends_on:
       backend:
+        condition: service_healthy
+      algo-compiler:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080 >/dev/null || exit 1"]
@@ -67,12 +98,13 @@ services:
       retries: 10
       start_period: 40s
     networks:
-      - mqacademy_net
+      - learningplusplus_net
 
 volumes:
   postgres_data:
+  algo_files_data:
 
 networks:
-  mqacademy_net:
-    name: mqacademy_net
+  learningplusplus_net:
+    name: learningplusplus_net
     driver: bridge

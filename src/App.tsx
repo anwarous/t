@@ -12,6 +12,7 @@ import { ToastProvider } from '@/components/ui/Toast'
 import NotFound from '@/pages/NotFound'
 import ProfilePage from '@/pages/Profile'
 import SandboxPage from '@/pages/Sandbox'
+import CollectionPage from '@/pages/Collection'
 import SignIn from '@/pages/SignIn'
 import SignUp from '@/pages/SignUp'
 import AdminPage from '@/pages/Admin'
@@ -79,9 +80,14 @@ export default function App() {
           <Route path="/editor" element={<RequireAuth><CodeEditorPage /></RequireAuth>} />
           <Route path="/visualize" element={<RequireAuth><VisualizationPage /></RequireAuth>} />
           <Route path="/mentor" element={<RequireAuth><MentorPage /></RequireAuth>} />
-          <Route path="/learn" element={<RequireAuth><LearnPage /></RequireAuth>} />
-          <Route path="/learn/:courseId" element={<RequireAuth><LearnPage /></RequireAuth>} />
+          <Route path="/learn" element={<RequireAuth><LearnPage view="hub" /></RequireAuth>} />
+          <Route path="/learn/roadmap" element={<RequireAuth><LearnPage view="roadmap-list" /></RequireAuth>} />
+          <Route path="/learn/roadmap/:packId" element={<RequireAuth><LearnPage view="roadmap-detail" /></RequireAuth>} />
+          <Route path="/learn/course" element={<RequireAuth><LearnPage view="course-list" /></RequireAuth>} />
+          <Route path="/learn/course/:courseId" element={<RequireAuth><LearnPage view="course-detail" /></RequireAuth>} />
+          <Route path="/learn/:courseId" element={<RequireAuth><LearnPage view="course-detail" /></RequireAuth>} />
           <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
+          <Route path="/collection" element={<RequireAuth><CollectionPage /></RequireAuth>} />
           <Route path="/sandbox" element={<RequireAuth><SandboxPage /></RequireAuth>} />
           <Route path="/admin" element={<RequireAdmin><AdminPage /></RequireAdmin>} />
           <Route path="*" element={<NotFound />} />

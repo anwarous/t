@@ -1,6 +1,7 @@
-import { useEffect, useState, Suspense, lazy } from 'react'
+import { useEffect, useRef, useState, Suspense, lazy } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import {
   Play, RotateCcw, ChevronLeft, CheckCircle2, XCircle,
   Lightbulb, Terminal, Code2, Loader2, BookOpen, ExternalLink,
@@ -10,7 +11,7 @@ import { useEditorStore } from '@/store'
 import { useUserStore } from '@/store'
 import { MOCK_EXERCISES } from '@/data/mockData'
 import { cn, getDifficultyBg } from '@/lib/utils'
-import { registerAlgorithmLanguage } from '@/lib/algorithmLanguage'
+import { installAlgorithmBangShortcut, registerAlgorithmLanguage } from '@/lib/algorithmLanguage'
 import { useTranslation } from 'react-i18next'
 
 const MonacoEditor = lazy(() => import('@monaco-editor/react'))
@@ -37,6 +38,69 @@ const MONACO_THEME = {
     'editorCursor.foreground':          '#1a5cff',
     'editor.inactiveSelectionBackground':'#1a5cff15',
   },
+}
+
+const EXECUTION_FEEDBACK_ANIMATIONS = {
+  error: 'https://lottie.host/8f0449b4-f6d9-4ff6-bfac-c9f77a45c04b/Bc9E8QJAYq.lottie',
+  success: 'https://lottie.host/2e54393d-e7c3-447b-af85-04ea55db9246/Qxlez535IE.lottie',
+} as const
+
+const EXERCISE_SOLVED_ANIMATION = 'https://lottie.host/170f762d-7919-4e3e-aed0-7b24de4a55fa/4LK3tbtITs.lottie'
+
+function ExecutionFeedback({ status }: { status: 'success' | 'error' }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 18, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 16, scale: 0.96 }}
+      transition={{ duration: 0.24, ease: 'easeOut' }}
+      className="fixed right-5 bottom-5 z-[80] pointer-events-none"
+    >
+      <div
+        className={cn(
+          'rounded-2xl border px-3 py-2 backdrop-blur-sm',
+          status === 'success' ? 'border-emerald-400/35 bg-emerald-500/10' : 'border-rose-400/35 bg-rose-500/10'
+        )}
+      >
+        <div className="h-24 w-24 sm:h-28 sm:w-28">
+          <DotLottieReact
+            src={EXECUTION_FEEDBACK_ANIMATIONS[status]}
+            autoplay
+            loop
+            style={{ width: '100%', height: '100%', background: 'transparent' }}
+          />
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function ExerciseSolvedOverlay() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25, ease: 'easeOut' }}
+      className="fixed inset-0 z-[120] pointer-events-none flex items-center justify-center"
+      style={{ background: 'radial-gradient(circle at center, rgba(16,185,129,0.16) 0%, rgba(0,0,0,0.72) 78%)' }}
+    >
+      <motion.div
+        initial={{ scale: 0.92, y: 16 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.95, y: 10 }}
+        transition={{ duration: 0.28, ease: 'easeOut' }}
+        className="w-[78vw] h-[78vh] max-w-[1100px] max-h-[900px]"
+      >
+        <DotLottieReact
+          src={EXERCISE_SOLVED_ANIMATION}
+          autoplay
+          loop
+          style={{ width: '100%', height: '100%', background: 'transparent' }}
+        />
+      </motion.div>
+    </motion.div>
+  )
 }
 
 // ── Per-line syntax-aware colouring ──────────────────────────────────────────
@@ -384,8 +448,14 @@ function ChallengeEditor({
   const navigate   = useNavigate()
   const exercise   = MOCK_EXERCISES.find(e => e.id === exerciseId) ?? MOCK_EXERCISES[0]
   const resolvedExerciseId = exercise.id
+  const completedExercises = useUserStore((s) => s.user.completedExercises ?? [])
 
   const { code, output, isRunning, language, setCode, setLanguage, runCode, setActiveExercise } = useEditorStore()
+  const [executionFeedback, setExecutionFeedback] = useState<'success' | 'error' | null>(null)
+  const [showSolvedOverlay, setShowSolvedOverlay] = useState(false)
+  const feedbackTimerRef = useRef<number | null>(null)
+  const solvedOverlayTimerRef = useRef<number | null>(null)
+  const wasSolvedBeforeRunRef = useRef(false)
 
   const monacoLang = language === 'algorithm' ? 'algorithm' : 'python'
   const fileExt    = language === 'algorithm' ? 'solution.algo' : 'solution.py'
@@ -399,10 +469,55 @@ function ChallengeEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolvedExerciseId])
 
-  function handleEditorMount(_: unknown, monaco: any) {
+  useEffect(() => {
+    if (isRunning || !output.trim()) return
+
+    const failed = output.includes('❌') || output.includes('✗') || /Error:/.test(output)
+    setExecutionFeedback(failed ? 'error' : 'success')
+
+    if (feedbackTimerRef.current) {
+      window.clearTimeout(feedbackTimerRef.current)
+    }
+
+    feedbackTimerRef.current = window.setTimeout(() => {
+      setExecutionFeedback(null)
+      feedbackTimerRef.current = null
+    }, 5000)
+  }, [isRunning, output])
+
+  useEffect(() => {
+    return () => {
+      if (feedbackTimerRef.current) {
+        window.clearTimeout(feedbackTimerRef.current)
+      }
+      if (solvedOverlayTimerRef.current) {
+        window.clearTimeout(solvedOverlayTimerRef.current)
+      }
+    }
+  }, [])
+
+  async function handleRun() {
+    wasSolvedBeforeRunRef.current = completedExercises.includes(resolvedExerciseId)
+    await runCode()
+
+    const nowSolved = (useUserStore.getState().user.completedExercises ?? []).includes(resolvedExerciseId)
+    if (!wasSolvedBeforeRunRef.current && nowSolved) {
+      setShowSolvedOverlay(true)
+      if (solvedOverlayTimerRef.current) {
+        window.clearTimeout(solvedOverlayTimerRef.current)
+      }
+      solvedOverlayTimerRef.current = window.setTimeout(() => {
+        setShowSolvedOverlay(false)
+        solvedOverlayTimerRef.current = null
+      }, 2000)
+    }
+  }
+
+  function handleEditorMount(editor: any, monaco: any) {
     registerAlgorithmLanguage(monaco)
     monaco.editor.defineTheme('mq-dark', MONACO_THEME)
     monaco.editor.setTheme('mq-dark')
+    installAlgorithmBangShortcut(editor, monaco)
   }
 
   return (
@@ -414,6 +529,14 @@ function ChallengeEditor({
       transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
       className="h-[calc(100dvh-60px)] flex flex-col"
     >
+      <AnimatePresence>
+        {showSolvedOverlay && <ExerciseSolvedOverlay />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {executionFeedback && <ExecutionFeedback status={executionFeedback} />}
+      </AnimatePresence>
+
       {/* ── Top bar ──────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-surface-900/50 flex-shrink-0">
         <div className="flex items-center gap-3 min-w-0">
@@ -473,7 +596,7 @@ function ChallengeEditor({
             <RotateCcw size={13} /> {t('editor.reset')}
           </button>
           <button
-            onClick={() => runCode()}
+            onClick={() => { void handleRun() }}
             disabled={isRunning}
             className={cn('btn-primary py-1.5 px-4 text-sm', isRunning && 'opacity-70 cursor-not-allowed')}
           >
@@ -534,6 +657,9 @@ function ChallengeEditor({
                   cursorSmoothCaretAnimation: 'on',
                   overviewRulerBorder: false,
                   hideCursorInOverviewRuler: true,
+                  autoClosingBrackets: 'always',
+                  autoClosingQuotes: 'always',
+                  autoSurround: 'languageDefined',
                   contextmenu: false,
                 }}
               />

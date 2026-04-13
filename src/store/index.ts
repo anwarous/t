@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { MOCK_USER, MOCK_BADGES, MOCK_CHAT_MESSAGES, MOCK_EXERCISES, type ChatMessage, type Badge } from '@/data/mockData'
 import { runPython } from '@/lib/pythonCompiler'
 import { runAlgo } from '@/lib/algoCompiler'
-import { exerciseApi } from '@/lib/api'
+import { ApiError, exerciseApi, mentorApi } from '@/lib/api'
 
 // ─── Auth Store ───────────────────────────────────────────────────────────────
 
@@ -181,6 +181,7 @@ interface UserState {
   updateProfile: (patch: Partial<Pick<UserProfile, 'name' | 'email' | 'bio' | 'language'>>) => void
   updateNotifications: (patch: Partial<UserProfile['notifications']>) => void
   updateTheme: (theme: string) => void
+  hydrateStatsFromBackend: (stats: Pick<UserProfile, 'xp' | 'level' | 'streak' | 'totalSolved' | 'rank'>) => void
   initUser: (username: string, displayName: string, email: string) => void
   resetUser: () => void
 }
@@ -234,6 +235,19 @@ export const useUserStore = create<UserState>((set) => ({
   updateTheme: (theme) =>
     set((s) => {
       const user = { ...s.user, theme }
+      if (s.currentUsername) saveProfile(s.currentUsername, user)
+      return { user }
+    }),
+  hydrateStatsFromBackend: (stats) =>
+    set((s) => {
+      const user = {
+        ...s.user,
+        xp: stats.xp,
+        level: stats.level,
+        streak: Math.max(1, stats.streak),
+        totalSolved: Math.max(0, stats.totalSolved),
+        rank: stats.rank,
+      }
       if (s.currentUsername) saveProfile(s.currentUsername, user)
       return { user }
     }),
@@ -1171,15 +1185,6 @@ interface MentorState {
   clearMessages: () => void
 }
 
-const MOCK_RESPONSES = [
-  "That's a great question! The key insight here is that we're trading **space for time** — by using a hash map, we reduce from O(n²) to O(n) time complexity.",
-  "Let me give you a hint 💡 Think about what data structure would allow O(1) lookups. A hash map can store values you've already seen, so you don't need a nested loop!",
-  "I see you're stuck on the edge case. Remember to handle empty arrays and arrays with duplicate elements. What happens when `nums = [3, 3]` and `target = 6`?",
-  "Excellent work! 🎉 Your solution is correct. The time complexity is O(n) and space complexity is O(n). Can you think of a way to solve it with O(1) space? (Hint: only works on sorted arrays!)",
-  "The **divide and conquer** approach is key here. Split the problem in half, solve each half recursively, then merge the results. This gives you O(n log n) instead of O(n²).",
-  "🔍 I noticed your loop bounds might be off by one. In Python, `range(n)` goes from 0 to n-1. Double-check your inner loop condition!",
-]
-
 export const useMentorStore = create<MentorState>((set) => ({
   messages: MOCK_CHAT_MESSAGES,
   isTyping: false,
@@ -1193,17 +1198,37 @@ export const useMentorStore = create<MentorState>((set) => ({
     }
     set((s) => ({ messages: [...s.messages, userMsg], isTyping: true }))
 
-    await new Promise((r) => setTimeout(r, 1200 + Math.random() * 800))
+    try {
+      const history = useMentorStore.getState().messages
+        .filter((msg) => msg.role === 'user' || msg.role === 'assistant')
+        .slice(-12)
+        .map((msg) => ({ role: msg.role, content: msg.content }))
 
-    const response = MOCK_RESPONSES[Math.floor(Math.random() * MOCK_RESPONSES.length)]
-    const aiMsg: ChatMessage = {
-      id: `m-${Date.now() + 1}`,
-      role: 'assistant',
-      content: response,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      type: 'explanation',
+      const response = await mentorApi.chat(content, history)
+      const aiMsg: ChatMessage = {
+        id: `m-${Date.now() + 1}`,
+        role: 'assistant',
+        content: response.answer,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        type: 'explanation',
+      }
+      set((s) => ({ messages: [...s.messages, aiMsg], isTyping: false }))
+    } catch (error) {
+      const errorMessage = error instanceof ApiError && error.status === 429
+        ? 'The mentor is temporarily rate-limited by OpenRouter. Try again in a bit or switch to another API key/model.'
+        : error instanceof Error
+          ? `I could not reach the AI API: ${error.message}`
+          : 'I could not reach the AI API. Please try again in a moment.'
+
+      const errMsg: ChatMessage = {
+        id: `m-${Date.now() + 1}`,
+        role: 'assistant',
+        content: errorMessage,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        type: 'error',
+      }
+      set((s) => ({ messages: [...s.messages, errMsg], isTyping: false }))
     }
-    set((s) => ({ messages: [...s.messages, aiMsg], isTyping: false }))
   },
   clearMessages: () => set({ messages: [] }),
 }))

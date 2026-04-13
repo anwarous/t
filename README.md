@@ -14,7 +14,7 @@ A modern, production-ready frontend for an interactive algorithm learning platfo
 
 ```bash
 # 1. Navigate to the project directory
-cd mqacademy
+cd learningplusplus
 
 # 2. Install dependencies
 npm install
@@ -31,7 +31,7 @@ npm run dev
 ## 🏗 Project Structure
 
 ```
-mqacademy/
+learningplusplus/
 ├── src/
 │   ├── components/
 │   │   ├── layout/
@@ -200,6 +200,8 @@ These can be added by wiring up real APIs to the existing store actions.
 
 ## Docker
 
+For a full production deployment guide, see `PROD_DEPLOYMENT_MANUAL.md`.
+
 ### Prerequisites
 - Docker 24+
 - Docker Compose v2+
@@ -211,7 +213,7 @@ Copy `.env.example` to `.env` and set real values (especially `APP_JWT_SECRET` a
 ### 2) Build backend image directly (optional)
 
 ```bash
-docker build -t mqacademy-backend:latest .
+docker build -t learningplusplus-backend:latest .
 ```
 
 ### 3) Run full stack with Compose
@@ -227,6 +229,7 @@ This default mode is production-oriented:
 Services:
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8081/api
+- Algo Compiler API (via frontend proxy): http://localhost:5173/algo-api
 - PostgreSQL: localhost:5432
 
 ### 3b) Run in development mode (hot-reload frontend)
@@ -270,6 +273,7 @@ Specific service:
 docker compose logs -f backend
 docker compose logs -f frontend
 docker compose logs -f postgres
+docker compose logs -f algo-compiler
 ```
 
 ### 7) Exec into running containers

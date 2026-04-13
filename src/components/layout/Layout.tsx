@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useUserStore, useAuthStore, applyTheme } from '@/store'
 import Navbar from './Navbar'
 import DashboardTopNav from './DashboardTopNav'
+import PlatformFooter from './PlatformFooter'
 
 const PUBLIC_PATHS = ['/', '/signin', '/signup']
 const ADMIN_EMAIL = 'admin@admin.admin'
@@ -28,6 +29,7 @@ export default function Layout() {
         <main className="min-h-screen overflow-x-hidden">
           <Outlet />
         </main>
+        <PlatformFooter />
       </div>
     )
   }
@@ -50,6 +52,7 @@ export default function Layout() {
         <main>
           <Outlet />
         </main>
+        <PlatformFooter />
       </div>
     )
   }
@@ -64,6 +67,7 @@ export default function Layout() {
           <Outlet />
         </div>
       </main>
+      <PlatformFooter />
     </div>
   )
 }

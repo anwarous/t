@@ -15,6 +15,18 @@ export function registerAlgorithmLanguage(monaco: any) {
       lineComment: '//',
     },
     brackets: [['(', ')'], ['[', ']']],
+    autoClosingPairs: [
+      { open: '(', close: ')' },
+      { open: '[', close: ']' },
+      { open: '"', close: '"', notIn: ['string'] },
+      { open: "'", close: "'", notIn: ['string'] },
+    ],
+    surroundingPairs: [
+      { open: '(', close: ')' },
+      { open: '[', close: ']' },
+      { open: '"', close: '"' },
+      { open: "'", close: "'" },
+    ],
   })
 
   monaco.languages.setMonarchTokensProvider(LANG_ID, {
@@ -83,5 +95,42 @@ export function registerAlgorithmLanguage(monaco: any) {
         [/"/,     'string', '@pop'],
       ],
     },
+  })
+}
+
+/**
+ * In algorithm mode, typing ! on an otherwise empty line expands a starter
+ * template and selects `test` so the user can rename quickly.
+ */
+export function installAlgorithmBangShortcut(editor: any, monaco: any) {
+  editor.onDidType((typedText: string) => {
+    if (typedText !== '!') return
+
+    const model = editor.getModel()
+    if (!model || model.getLanguageId() !== 'algorithm') return
+
+    const selection = editor.getSelection()
+    if (!selection || !selection.isEmpty()) return
+
+    const cursor = selection.getStartPosition()
+    const lineContent = model.getLineContent(cursor.lineNumber)
+    if (lineContent.trim() !== '!') return
+
+    const bangColumn = cursor.column - 1
+    if (bangColumn < 1) return
+
+    const template = 'Algorithme test\ndebut\n\t\nfin'
+    editor.executeEdits('algorithm-bang-shortcut', [
+      {
+        range: new monaco.Range(cursor.lineNumber, bangColumn, cursor.lineNumber, cursor.column),
+        text: template,
+        forceMoveMarkers: true,
+      },
+    ])
+
+    const nameStart = bangColumn + 'Algorithme '.length
+    const nameEnd = nameStart + 'test'.length
+    editor.setSelection(new monaco.Selection(cursor.lineNumber, nameStart, cursor.lineNumber, nameEnd))
+    editor.focus()
   })
 }

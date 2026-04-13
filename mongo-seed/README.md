@@ -15,13 +15,13 @@ Import them with `mongoimport` to populate every collection from scratch.
 | `badges.json` | `badges` | 12 badge definitions |
 | `submissions.json` | `submissions` | 10 sample code submissions |
 | `user_progress.json` | `user_progress` | 18 user-course progress records |
-| `user_badges.json` | `user_badges` | 22 earned badge records |
+| `user_badges.json` | `user_badges` | 16 earned badge records |
 
 ---
 
 ## Import commands
 
-Replace `<DB>` with your database name (e.g. `mqacademy`).
+Replace `<DB>` with your database name (e.g. `learningplusplus`).
 
 ```bash
 mongoimport --uri "mongodb://localhost:27017/<DB>" \
@@ -49,7 +49,7 @@ mongoimport --uri "mongodb://localhost:27017/<DB>" \
 All at once (bash loop):
 
 ```bash
-DB=mqacademy
+DB=learningplusplus
 for f in users courses exercises badges submissions user_progress user_badges; do
   mongoimport --uri "mongodb://localhost:27017/$DB" \
     --collection "$f" --file "${f}.json" --jsonArray
@@ -63,8 +63,8 @@ done
 Every seeded user has the **same bcrypt-hashed password** for demo purposes:
 
 ```
-plaintext : Password123!
-bcrypt    : $2a$12$KIXQv6p3rDqGxK5mD0lnFuYwQZ1hLbN8V3Jt5oWxEcRpYeH7gZkqC
+plaintext : Password123
+bcrypt    : $2a$10$CET9MrVD2O1L6og/cAZ68.Lz/xa.B3hmRbtFsH027QMf9lXBEphhm
 ```
 
 > **Change all passwords before deploying to production.**

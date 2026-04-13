@@ -6,6 +6,7 @@
     "sandbox": "Bac à sable",
     "visualize": "Visualiser",
     "aiMentor": "Mentor IA",
+    "collection": "Collection",
     "admin": "Admin",
     "signIn": "Se connecter",
     "startLearning": "Commencer →",
@@ -21,6 +22,71 @@
     "signOut": "Se déconnecter",
     "streak": "jours de suite",
     "xp": "XP"
+  },
+  "platformFooter": {
+    "brand": "Learning++",
+    "links": {
+      "home": "Accueil",
+      "signIn": "Se connecter",
+      "signUp": "S'inscrire",
+      "dashboard": "Tableau de bord",
+      "learn": "Apprendre",
+      "codeEditor": "Editeur de code",
+      "visualization": "Visualisation",
+      "mentor": "Mentor",
+      "collection": "Collection",
+      "profile": "Profil",
+      "sandbox": "Bac a sable",
+      "admin": "Admin"
+    }
+  },
+  "collection": {
+    "title": "Votre Collection",
+    "subtitle": "Suivez tout ce que vous avez debloque : badges et animaux compagnons.",
+    "badgesTitle": "Badges debloques",
+    "petsTitle": "caracter",
+    "selectPet": "Selectionner",
+    "unselectPet": "Deselectionner",
+    "emptyBadges": "Aucun badge debloque pour l'instant. Resolvez des lecons et des defis pour gagner le premier.",
+    "emptyPets": "Aucun animal debloque pour l'instant. Continuez votre progression pour debloquer des compagnons.",
+    "pets": {
+      "caracter": {
+        "name": "Caracter principal",
+        "requirement": "Debloque avec 1 jour de serie"
+      },
+      "caracter2": {
+        "name": "Caracter Deux",
+        "requirement": "Debloque avec 1 jour de serie"
+      },
+      "caracter3": {
+        "name": "Caracter Trois",
+        "requirement": "Debloque avec 1 jour de serie"
+      },
+      "caracter4": {
+        "name": "Caracter Quatre",
+        "requirement": "Debloque avec 1 jour de serie"
+      },
+      "caracter5": {
+        "name": "Caracter Cinq",
+        "requirement": "Debloque avec 1 jour de serie"
+      },
+      "fox": {
+        "name": "Renard Rapide",
+        "requirement": "Debloque au niveau 5"
+      },
+      "owl": {
+        "name": "Hibou Sage",
+        "requirement": "Debloque apres 3 badges"
+      },
+      "dragon": {
+        "name": "Dragon du Code",
+        "requirement": "Debloque apres 25 problemes resolus"
+      },
+      "phoenix": {
+        "name": "Phenix",
+        "requirement": "Debloque avec une serie de 14 jours"
+      }
+    }
   },
   "landing": {
     "badge": "Apprentissage Interactif des Algorithmes",
@@ -147,8 +213,27 @@
     "xpOf": "{{xp}} / {{max}} XP"
   },
   "learn": {
-    "title": "Cours",
-    "subtitle": "Maîtrisez les algorithmes et structures de données étape par étape.",
+    "title": "Parcours d'apprentissage",
+    "subtitle": "Choisissez un pack de roadmap ou ouvrez un cours spécifique.",
+    "entryBadge": "Choisissez votre manière d'apprendre",
+    "entryTitle": "Choisissez votre parcours d'apprentissage",
+    "entrySubtitle": "Commencez par un pack roadmap pour suivre un chemin guidé, ou allez directement vers un cours spécifique si vous savez déjà ce que vous voulez.",
+    "roadmapChoiceTitle": "Packs roadmap",
+    "roadmapChoiceDesc": "Suivez une suite guidée construite autour d'un objectif.",
+    "courseChoiceTitle": "Cours spécifique",
+    "courseChoiceDesc": "Parcourez le catalogue et ouvrez un cours directement.",
+    "roadmapTitle": "Packs roadmap",
+    "roadmapSubtitle": "Des parcours guidés regroupés par niveau et par focus.",
+    "backToLearn": "← Retour aux parcours d'apprentissage",
+    "backToRoadmaps": "← Retour aux packs roadmap",
+    "roadmapSteps": "Étapes du parcours",
+    "stepLabel": "Étape",
+    "includedCourses": "Cours inclus",
+    "packNotFound": "Ce pack roadmap n'existe pas.",
+    "openRoadmap": "Ouvrir la roadmap",
+    "courseTitle": "Cours spécifiques",
+    "courseSubtitle": "Parcourez le catalogue et choisissez un cours à ouvrir.",
+    "backToCourses": "← Retour aux cours",
     "searchPlaceholder": "Rechercher des cours...",
     "all": "Tous",
     "beginner": "Débutant",

@@ -12,10 +12,10 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.mqacademy</groupId>
-    <artifactId>mqacademy-api</artifactId>
+    <groupId>com.learningplusplus</groupId>
+    <artifactId>learningplusplus-api</artifactId>
     <version>1.0.0</version>
-    <name>mqacademy-api</name>
+    <name>learningplusplus-api</name>
     <description>Learning++ - Algorithm Learning Platform API</description>
 
     <properties>

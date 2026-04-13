@@ -99,7 +99,7 @@ WHERE NOT EXISTS (SELECT 1 FROM badges WHERE slug = 'xp-10000');
 
 -- Power user seed (high streak + achievements unlocked)
 INSERT INTO users (id, username, email, password, display_name, avatar_initials, xp, level, streak, total_solved, rank, created_at)
-SELECT '44444444-4444-4444-4444-444444444444', 'elite_user', 'elite.user@mqacademy.dev', '$2a$10$7EqJtq98hPqEX7fNZaFWoOeN0i7Q8gYdExgkt1/3uzMdGII4XESy', 'Elite User', 'EU', 4280, 1, 120, 350, 'Legend', CURRENT_TIMESTAMP
+SELECT '44444444-4444-4444-4444-444444444444', 'elite_user', 'elite.user@learningplusplus.dev', '$2a$10$7EqJtq98hPqEX7fNZaFWoOeN0i7Q8gYdExgkt1/3uzMdGII4XESy', 'Elite User', 'EU', 4280, 1, 120, 350, 'Legend', CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'elite_user');
 
 INSERT INTO user_roles (user_id, role)
@@ -154,4 +154,262 @@ WHERE NOT EXISTS (
 	FROM user_badges
 	WHERE user_id = '44444444-4444-4444-4444-444444444444'
 		AND badge_id = '33333333-3333-3333-3333-333333333335'
+);
+
+-- Demo users aligned with mongo-seed credentials file
+-- Default password for all accounts: Password123
+INSERT INTO users (id, username, email, password, display_name, avatar_initials, xp, level, streak, total_solved, rank, created_at)
+SELECT '66666666-6666-6666-6666-666666666601', 'platformadmin', 'admin@learningplusplus.com', '$2a$10$CET9MrVD2O1L6og/cAZ68.Lz/xa.B3hmRbtFsH027QMf9lXBEphhm', 'Platform Admin', 'PA', 20, 16, 5, 12, 'Apprentice', CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'platformadmin');
+
+INSERT INTO users (id, username, email, password, display_name, avatar_initials, xp, level, streak, total_solved, rank, created_at)
+SELECT '66666666-6666-6666-6666-666666666602', 'nadiab', 'nadia.bensaid@example.com', '$2a$10$CET9MrVD2O1L6og/cAZ68.Lz/xa.B3hmRbtFsH027QMf9lXBEphhm', 'Nadia Bensaid', 'NB', 0, 58, 8, 52, 'Expert', CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'nadiab');
+
+INSERT INTO users (id, username, email, password, display_name, avatar_initials, xp, level, streak, total_solved, rank, created_at)
+SELECT '66666666-6666-6666-6666-666666666603', 'adaml', 'adam.larbi@example.com', '$2a$10$CET9MrVD2O1L6og/cAZ68.Lz/xa.B3hmRbtFsH027QMf9lXBEphhm', 'Adam Larbi', 'AL', 20, 22, 3, 19, 'Apprentice', CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'adaml');
+
+INSERT INTO users (id, username, email, password, display_name, avatar_initials, xp, level, streak, total_solved, rank, created_at)
+SELECT '66666666-6666-6666-6666-666666666604', 'sophiek', 'sophie.karim@example.com', '$2a$10$CET9MrVD2O1L6og/cAZ68.Lz/xa.B3hmRbtFsH027QMf9lXBEphhm', 'Sophie Karim', 'SK', 10, 112, 16, 94, 'Master', CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'sophiek');
+
+INSERT INTO users (id, username, email, password, display_name, avatar_initials, xp, level, streak, total_solved, rank, created_at)
+SELECT '66666666-6666-6666-6666-666666666605', 'yassineh', 'yassine.haddad@example.com', '$2a$10$CET9MrVD2O1L6og/cAZ68.Lz/xa.B3hmRbtFsH027QMf9lXBEphhm', 'Yassine Haddad', 'YH', 0, 8, 1, 6, 'Novice', CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'yassineh');
+
+INSERT INTO users (id, username, email, password, display_name, avatar_initials, xp, level, streak, total_solved, rank, created_at)
+SELECT '66666666-6666-6666-6666-666666666606', 'leilar', 'leila.rahmani@example.com', '$2a$10$CET9MrVD2O1L6og/cAZ68.Lz/xa.B3hmRbtFsH027QMf9lXBEphhm', 'Leila Rahmani', 'LR', 40, 251, 29, 210, 'Grandmaster', CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'leilar');
+
+INSERT INTO users (id, username, email, password, display_name, avatar_initials, xp, level, streak, total_solved, rank, created_at)
+SELECT '66666666-6666-6666-6666-666666666607', 'karimm', 'karim.mansouri@example.com', '$2a$10$CET9MrVD2O1L6og/cAZ68.Lz/xa.B3hmRbtFsH027QMf9lXBEphhm', 'Karim Mansouri', 'KM', 20, 47, 6, 39, 'Practitioner', CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'karimm');
+
+INSERT INTO users (id, username, email, password, display_name, avatar_initials, xp, level, streak, total_solved, rank, created_at)
+SELECT '66666666-6666-6666-6666-666666666608', 'hajarz', 'hajar.ziani@example.com', '$2a$10$CET9MrVD2O1L6og/cAZ68.Lz/xa.B3hmRbtFsH027QMf9lXBEphhm', 'Hajar Ziani', 'HZ', 40, 89, 12, 74, 'Expert', CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'hajarz');
+
+INSERT INTO users (id, username, email, password, display_name, avatar_initials, xp, level, streak, total_solved, rank, created_at)
+SELECT '66666666-6666-6666-6666-666666666609', 'marwans', 'marwan.saidi@example.com', '$2a$10$CET9MrVD2O1L6og/cAZ68.Lz/xa.B3hmRbtFsH027QMf9lXBEphhm', 'Marwan Saidi', 'MS', 20, 15, 2, 11, 'Apprentice', CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'marwans');
+
+INSERT INTO users (id, username, email, password, display_name, avatar_initials, xp, level, streak, total_solved, rank, created_at)
+SELECT '66666666-6666-6666-6666-666666666610', 'raniaf', 'rania.fikri@example.com', '$2a$10$CET9MrVD2O1L6og/cAZ68.Lz/xa.B3hmRbtFsH027QMf9lXBEphhm', 'Rania Fikri', 'RF', 0, 435, 58, 322, 'Legend', CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'raniaf');
+
+INSERT INTO user_roles (user_id, role)
+SELECT '66666666-6666-6666-6666-666666666601', 'USER'
+WHERE NOT EXISTS (SELECT 1 FROM user_roles WHERE user_id = '66666666-6666-6666-6666-666666666601' AND role = 'USER');
+
+INSERT INTO user_roles (user_id, role)
+SELECT '66666666-6666-6666-6666-666666666601', 'ADMIN'
+WHERE NOT EXISTS (SELECT 1 FROM user_roles WHERE user_id = '66666666-6666-6666-6666-666666666601' AND role = 'ADMIN');
+
+INSERT INTO user_roles (user_id, role)
+SELECT '66666666-6666-6666-6666-666666666602', 'USER'
+WHERE NOT EXISTS (SELECT 1 FROM user_roles WHERE user_id = '66666666-6666-6666-6666-666666666602' AND role = 'USER');
+
+INSERT INTO user_roles (user_id, role)
+SELECT '66666666-6666-6666-6666-666666666603', 'USER'
+WHERE NOT EXISTS (SELECT 1 FROM user_roles WHERE user_id = '66666666-6666-6666-6666-666666666603' AND role = 'USER');
+
+INSERT INTO user_roles (user_id, role)
+SELECT '66666666-6666-6666-6666-666666666604', 'USER'
+WHERE NOT EXISTS (SELECT 1 FROM user_roles WHERE user_id = '66666666-6666-6666-6666-666666666604' AND role = 'USER');
+
+INSERT INTO user_roles (user_id, role)
+SELECT '66666666-6666-6666-6666-666666666605', 'USER'
+WHERE NOT EXISTS (SELECT 1 FROM user_roles WHERE user_id = '66666666-6666-6666-6666-666666666605' AND role = 'USER');
+
+INSERT INTO user_roles (user_id, role)
+SELECT '66666666-6666-6666-6666-666666666606', 'USER'
+WHERE NOT EXISTS (SELECT 1 FROM user_roles WHERE user_id = '66666666-6666-6666-6666-666666666606' AND role = 'USER');
+
+INSERT INTO user_roles (user_id, role)
+SELECT '66666666-6666-6666-6666-666666666607', 'USER'
+WHERE NOT EXISTS (SELECT 1 FROM user_roles WHERE user_id = '66666666-6666-6666-6666-666666666607' AND role = 'USER');
+
+INSERT INTO user_roles (user_id, role)
+SELECT '66666666-6666-6666-6666-666666666608', 'USER'
+WHERE NOT EXISTS (SELECT 1 FROM user_roles WHERE user_id = '66666666-6666-6666-6666-666666666608' AND role = 'USER');
+
+INSERT INTO user_roles (user_id, role)
+SELECT '66666666-6666-6666-6666-666666666609', 'USER'
+WHERE NOT EXISTS (SELECT 1 FROM user_roles WHERE user_id = '66666666-6666-6666-6666-666666666609' AND role = 'USER');
+
+INSERT INTO user_roles (user_id, role)
+SELECT '66666666-6666-6666-6666-666666666610', 'USER'
+WHERE NOT EXISTS (SELECT 1 FROM user_roles WHERE user_id = '66666666-6666-6666-6666-666666666610' AND role = 'USER');
+
+INSERT INTO user_progress (id, user_id, course_id, completed_lessons, progress_percent, last_activity_at)
+SELECT '77777777-7777-7777-7777-777777777701', '66666666-6666-6666-6666-666666666601', '11111111-1111-1111-1111-111111111111', 4, 34, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM user_progress WHERE user_id = '66666666-6666-6666-6666-666666666601' AND course_id = '11111111-1111-1111-1111-111111111111');
+
+INSERT INTO user_progress (id, user_id, course_id, completed_lessons, progress_percent, last_activity_at)
+SELECT '77777777-7777-7777-7777-777777777702', '66666666-6666-6666-6666-666666666602', '11111111-1111-1111-1111-111111111111', 9, 75, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM user_progress WHERE user_id = '66666666-6666-6666-6666-666666666602' AND course_id = '11111111-1111-1111-1111-111111111111');
+
+INSERT INTO user_progress (id, user_id, course_id, completed_lessons, progress_percent, last_activity_at)
+SELECT '77777777-7777-7777-7777-777777777703', '66666666-6666-6666-6666-666666666603', '11111111-1111-1111-1111-111111111112', 3, 30, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM user_progress WHERE user_id = '66666666-6666-6666-6666-666666666603' AND course_id = '11111111-1111-1111-1111-111111111112');
+
+INSERT INTO user_progress (id, user_id, course_id, completed_lessons, progress_percent, last_activity_at)
+SELECT '77777777-7777-7777-7777-777777777704', '66666666-6666-6666-6666-666666666604', '11111111-1111-1111-1111-111111111113', 14, 78, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM user_progress WHERE user_id = '66666666-6666-6666-6666-666666666604' AND course_id = '11111111-1111-1111-1111-111111111113');
+
+INSERT INTO user_progress (id, user_id, course_id, completed_lessons, progress_percent, last_activity_at)
+SELECT '77777777-7777-7777-7777-777777777705', '66666666-6666-6666-6666-666666666605', '11111111-1111-1111-1111-111111111111', 2, 17, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM user_progress WHERE user_id = '66666666-6666-6666-6666-666666666605' AND course_id = '11111111-1111-1111-1111-111111111111');
+
+INSERT INTO user_progress (id, user_id, course_id, completed_lessons, progress_percent, last_activity_at)
+SELECT '77777777-7777-7777-7777-777777777706', '66666666-6666-6666-6666-666666666606', '11111111-1111-1111-1111-111111111113', 18, 100, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM user_progress WHERE user_id = '66666666-6666-6666-6666-666666666606' AND course_id = '11111111-1111-1111-1111-111111111113');
+
+INSERT INTO user_progress (id, user_id, course_id, completed_lessons, progress_percent, last_activity_at)
+SELECT '77777777-7777-7777-7777-777777777707', '66666666-6666-6666-6666-666666666607', '11111111-1111-1111-1111-111111111111', 6, 50, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM user_progress WHERE user_id = '66666666-6666-6666-6666-666666666607' AND course_id = '11111111-1111-1111-1111-111111111111');
+
+INSERT INTO user_progress (id, user_id, course_id, completed_lessons, progress_percent, last_activity_at)
+SELECT '77777777-7777-7777-7777-777777777708', '66666666-6666-6666-6666-666666666608', '11111111-1111-1111-1111-111111111112', 11, 73, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM user_progress WHERE user_id = '66666666-6666-6666-6666-666666666608' AND course_id = '11111111-1111-1111-1111-111111111112');
+
+INSERT INTO user_progress (id, user_id, course_id, completed_lessons, progress_percent, last_activity_at)
+SELECT '77777777-7777-7777-7777-777777777709', '66666666-6666-6666-6666-666666666609', '11111111-1111-1111-1111-111111111111', 3, 25, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM user_progress WHERE user_id = '66666666-6666-6666-6666-666666666609' AND course_id = '11111111-1111-1111-1111-111111111111');
+
+INSERT INTO user_progress (id, user_id, course_id, completed_lessons, progress_percent, last_activity_at)
+SELECT '77777777-7777-7777-7777-777777777710', '66666666-6666-6666-6666-666666666610', '11111111-1111-1111-1111-111111111113', 18, 100, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM user_progress WHERE user_id = '66666666-6666-6666-6666-666666666610' AND course_id = '11111111-1111-1111-1111-111111111113');
+
+-- Realistic submissions for demo users (max solved <= exercise catalog size)
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888801', '66666666-6666-6666-6666-666666666601', '22222222-2222-2222-2222-222222222221', 'def two_sum(nums, target): return [0,1]', true, 50, CURRENT_TIMESTAMP - INTERVAL '9 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888801');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888802', '66666666-6666-6666-6666-666666666601', '22222222-2222-2222-2222-222222222223', 'def binary_search(nums, target): return 0', true, 75, CURRENT_TIMESTAMP - INTERVAL '7 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888802');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888803', '66666666-6666-6666-6666-666666666602', '22222222-2222-2222-2222-222222222221', 'def two_sum(nums, target): return [0,1]', true, 50, CURRENT_TIMESTAMP - INTERVAL '6 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888803');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888804', '66666666-6666-6666-6666-666666666602', '22222222-2222-2222-2222-222222222222', 'def is_anagram(a,b): return True', true, 50, CURRENT_TIMESTAMP - INTERVAL '5 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888804');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888805', '66666666-6666-6666-6666-666666666602', '22222222-2222-2222-2222-222222222223', 'def binary_search(nums, target): return 0', true, 75, CURRENT_TIMESTAMP - INTERVAL '3 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888805');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888806', '66666666-6666-6666-6666-666666666603', '22222222-2222-2222-2222-222222222221', 'def two_sum(nums, target): return [0,1]', true, 50, CURRENT_TIMESTAMP - INTERVAL '4 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888806');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888807', '66666666-6666-6666-6666-666666666604', '22222222-2222-2222-2222-222222222221', 'def two_sum(nums, target): return [0,1]', true, 50, CURRENT_TIMESTAMP - INTERVAL '12 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888807');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888808', '66666666-6666-6666-6666-666666666604', '22222222-2222-2222-2222-222222222222', 'def is_anagram(a,b): return True', true, 50, CURRENT_TIMESTAMP - INTERVAL '11 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888808');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888809', '66666666-6666-6666-6666-666666666604', '22222222-2222-2222-2222-222222222224', 'def lcs(a,b): return 3', true, 150, CURRENT_TIMESTAMP - INTERVAL '10 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888809');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888810', '66666666-6666-6666-6666-666666666604', '22222222-2222-2222-2222-222222222225', 'def coin_change(c,a): return 3', true, 150, CURRENT_TIMESTAMP - INTERVAL '8 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888810');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888811', '66666666-6666-6666-6666-666666666605', '22222222-2222-2222-2222-222222222221', 'def two_sum(nums, target): return []', false, 0, CURRENT_TIMESTAMP - INTERVAL '2 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888811');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888812', '66666666-6666-6666-6666-666666666605', '22222222-2222-2222-2222-222222222221', 'def two_sum(nums, target): return [0,1]', true, 50, CURRENT_TIMESTAMP - INTERVAL '1 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888812');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888813', '66666666-6666-6666-6666-666666666606', '22222222-2222-2222-2222-222222222221', 'def two_sum(nums, target): return [0,1]', true, 50, CURRENT_TIMESTAMP - INTERVAL '20 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888813');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888814', '66666666-6666-6666-6666-666666666606', '22222222-2222-2222-2222-222222222222', 'def is_anagram(a,b): return True', true, 50, CURRENT_TIMESTAMP - INTERVAL '19 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888814');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888815', '66666666-6666-6666-6666-666666666606', '22222222-2222-2222-2222-222222222223', 'def binary_search(nums, target): return 0', true, 75, CURRENT_TIMESTAMP - INTERVAL '18 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888815');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888816', '66666666-6666-6666-6666-666666666606', '22222222-2222-2222-2222-222222222224', 'def lcs(a,b): return 3', true, 150, CURRENT_TIMESTAMP - INTERVAL '17 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888816');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888817', '66666666-6666-6666-6666-666666666606', '22222222-2222-2222-2222-222222222225', 'def coin_change(c,a): return 3', true, 150, CURRENT_TIMESTAMP - INTERVAL '16 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888817');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888818', '66666666-6666-6666-6666-666666666606', '22222222-2222-2222-2222-222222222226', 'def word_break(s,d): return True', true, 250, CURRENT_TIMESTAMP - INTERVAL '15 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888818');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888819', '66666666-6666-6666-6666-666666666607', '22222222-2222-2222-2222-222222222223', 'def binary_search(nums, target): return 0', true, 75, CURRENT_TIMESTAMP - INTERVAL '9 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888819');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888820', '66666666-6666-6666-6666-666666666607', '22222222-2222-2222-2222-222222222225', 'def coin_change(c,a): return 3', true, 150, CURRENT_TIMESTAMP - INTERVAL '8 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888820');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888821', '66666666-6666-6666-6666-666666666608', '22222222-2222-2222-2222-222222222221', 'def two_sum(nums, target): return [0,1]', true, 50, CURRENT_TIMESTAMP - INTERVAL '7 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888821');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888822', '66666666-6666-6666-6666-666666666608', '22222222-2222-2222-2222-222222222224', 'def lcs(a,b): return 3', true, 150, CURRENT_TIMESTAMP - INTERVAL '6 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888822');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888823', '66666666-6666-6666-6666-666666666608', '22222222-2222-2222-2222-222222222226', 'def word_break(s,d): return True', true, 250, CURRENT_TIMESTAMP - INTERVAL '5 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888823');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888824', '66666666-6666-6666-6666-666666666609', '22222222-2222-2222-2222-222222222222', 'def is_anagram(a,b): return True', true, 50, CURRENT_TIMESTAMP - INTERVAL '4 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888824');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888825', '66666666-6666-6666-6666-666666666610', '22222222-2222-2222-2222-222222222221', 'def two_sum(nums, target): return [0,1]', true, 50, CURRENT_TIMESTAMP - INTERVAL '13 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888825');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888826', '66666666-6666-6666-6666-666666666610', '22222222-2222-2222-2222-222222222222', 'def is_anagram(a,b): return True', true, 50, CURRENT_TIMESTAMP - INTERVAL '12 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888826');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888827', '66666666-6666-6666-6666-666666666610', '22222222-2222-2222-2222-222222222223', 'def binary_search(nums, target): return 0', true, 75, CURRENT_TIMESTAMP - INTERVAL '11 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888827');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888828', '66666666-6666-6666-6666-666666666610', '22222222-2222-2222-2222-222222222224', 'def lcs(a,b): return 3', true, 150, CURRENT_TIMESTAMP - INTERVAL '10 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888828');
+
+INSERT INTO submissions (id, user_id, exercise_id, code, passed, xp_earned, submitted_at)
+SELECT '88888888-8888-8888-8888-888888888829', '66666666-6666-6666-6666-666666666610', '22222222-2222-2222-2222-222222222225', 'def coin_change(c,a): return 3', true, 150, CURRENT_TIMESTAMP - INTERVAL '9 days'
+WHERE NOT EXISTS (SELECT 1 FROM submissions WHERE id = '88888888-8888-8888-8888-888888888829');
+
+-- Keep solved count realistic and aligned with real distinct passed submissions
+UPDATE users u
+SET total_solved = LEAST(
+	(
+		SELECT COUNT(DISTINCT s.exercise_id)
+		FROM submissions s
+		WHERE s.user_id = u.id AND s.passed = true
+	),
+	(SELECT COUNT(*) FROM exercises)
+)
+WHERE u.username IN (
+	'platformadmin', 'nadiab', 'adaml', 'sophiek', 'yassineh',
+	'leilar', 'karimm', 'hajarz', 'marwans', 'raniaf'
 );

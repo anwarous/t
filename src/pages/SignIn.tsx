@@ -1,6 +1,7 @@
 import { useState, FormEvent } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import { Eye, EyeOff, LogIn, Terminal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { authApi } from '@/lib/api'
@@ -201,7 +202,13 @@ export default function SignIn() {
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-full animate-spin" style={{ border: '2px solid rgba(10,18,14,0.3)', borderTopColor: '#0a120e' }} />
+                  <span className="h-6 w-6 overflow-hidden rounded-full" aria-hidden>
+                    <DotLottieReact
+                      src="https://lottie.host/24424386-acfe-421e-ba5d-4d0058a32c5e/xYaYKBeKdZ.lottie"
+                      autoplay
+                      loop
+                    />
+                  </span>
                   {t('signin.loading')}
                 </span>
               ) : (

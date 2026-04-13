@@ -1,6 +1,7 @@
-import { useState, Suspense, lazy, useRef } from 'react'
+import { useEffect, useState, Suspense, lazy, useRef } from 'react'
 import { runPython } from '@/lib/pythonCompiler'
 import { motion, AnimatePresence } from 'framer-motion'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import {
   Play, RotateCcw, Save, Download, Copy, Check,
   Terminal, Loader2, Plus, X, ChevronDown,
@@ -8,7 +9,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { runAlgo } from '@/lib/algoCompiler'
-import { registerAlgorithmLanguage } from '@/lib/algorithmLanguage'
+import { installAlgorithmBangShortcut, registerAlgorithmLanguage } from '@/lib/algorithmLanguage'
 
 const MonacoEditor = lazy(() => import('@monaco-editor/react'))
 
@@ -33,6 +34,39 @@ const MONACO_THEME = {
     'editor.lineHighlightBackground':    '#141c35',
     'editorCursor.foreground':           '#1a5cff',
   },
+}
+
+const EXECUTION_FEEDBACK_ANIMATIONS = {
+  error: 'https://lottie.host/8f0449b4-f6d9-4ff6-bfac-c9f77a45c04b/Bc9E8QJAYq.lottie',
+  success: 'https://lottie.host/2e54393d-e7c3-447b-af85-04ea55db9246/Qxlez535IE.lottie',
+} as const
+
+function ExecutionFeedback({ status }: { status: 'success' | 'error' }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 18, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 16, scale: 0.96 }}
+      transition={{ duration: 0.24, ease: 'easeOut' }}
+      className="fixed right-5 bottom-5 z-[80] pointer-events-none"
+    >
+      <div
+        className={cn(
+          'rounded-2xl border px-3 py-2 backdrop-blur-sm',
+          status === 'success' ? 'border-emerald-400/35 bg-emerald-500/10' : 'border-rose-400/35 bg-rose-500/10'
+        )}
+      >
+        <div className="h-24 w-24 sm:h-28 sm:w-28">
+          <DotLottieReact
+            src={EXECUTION_FEEDBACK_ANIMATIONS[status]}
+            autoplay
+            loop
+            style={{ width: '100%', height: '100%', background: 'transparent' }}
+          />
+        </div>
+      </div>
+    </motion.div>
+  )
 }
 
 // ── Starter templates ─────────────────────────────────────────────────────────
@@ -317,6 +351,8 @@ export default function SandboxPage() {
   const [copied,     setCopied]     = useState(false)
   const [showTemplates, setShowTemplates] = useState(false)
   const [stdinInput, setStdinInput] = useState('')
+  const [executionFeedback, setExecutionFeedback] = useState<'success' | 'error' | null>(null)
+  const feedbackTimerRef = useRef<number | null>(null)
 
   const activeTab = tabs.find(t => t.id === activeId) ?? tabs[0]
 
@@ -400,17 +436,45 @@ export default function SandboxPage() {
     a.click(); URL.revokeObjectURL(url)
   }
 
-  function handleEditorMount(_: unknown, monaco: any) {
+  function handleEditorMount(editor: any, monaco: any) {
     registerAlgorithmLanguage(monaco)
     monaco.editor.defineTheme('mq-dark', MONACO_THEME)
     monaco.editor.setTheme('mq-dark')
+    installAlgorithmBangShortcut(editor, monaco)
   }
 
   const hasFailed = output.includes('❌') || output.includes('Error')
   const hasSuccess = output.includes('✅')
 
+  useEffect(() => {
+    if (isRunning || !output.trim()) return
+    if (!hasSuccess && !hasFailed) return
+
+    setExecutionFeedback(hasFailed ? 'error' : 'success')
+
+    if (feedbackTimerRef.current) {
+      window.clearTimeout(feedbackTimerRef.current)
+    }
+
+    feedbackTimerRef.current = window.setTimeout(() => {
+      setExecutionFeedback(null)
+      feedbackTimerRef.current = null
+    }, 5000)
+  }, [hasFailed, hasSuccess, isRunning, output])
+
+  useEffect(() => {
+    return () => {
+      if (feedbackTimerRef.current) {
+        window.clearTimeout(feedbackTimerRef.current)
+      }
+    }
+  }, [])
+
   return (
     <div className="h-[calc(100dvh-60px)] flex flex-col">
+      <AnimatePresence>
+        {executionFeedback && <ExecutionFeedback status={executionFeedback} />}
+      </AnimatePresence>
 
       {/* ── Top bar ─────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 px-4 py-2 border-b border-white/5 bg-surface-900/50 flex-shrink-0">
@@ -579,6 +643,9 @@ export default function SandboxPage() {
                   smoothScrolling: true,
                   cursorSmoothCaretAnimation: 'on',
                   overviewRulerBorder: false,
+                  autoClosingBrackets: 'always',
+                  autoClosingQuotes: 'always',
+                  autoSurround: 'languageDefined',
                   contextmenu: true,
                   // No character/line limits
                   maxTokenizationLineLength: 20000,

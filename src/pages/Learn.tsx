@@ -1,492 +1,106 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import {
-  BookOpen, Clock, ChevronRight, Play, CheckCircle2,
-  Lock, Video, FileText, Code2, HelpCircle, Zap,
-  ArrowLeft, Star, Users, BarChart2
-} from 'lucide-react'
-import { courseApi, type CourseDetailDto, type CourseSummaryDto } from '@/lib/api'
-import type { Course, Lesson } from '@/data/mockData'
-import { cn, getDifficultyBg } from '@/lib/utils'
+import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Compass, Layers3 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { courseApi, progressApi, type CourseDetailDto, type ProgressDto } from '@/lib/api'
+import { cn, getDifficultyBg } from '@/lib/utils'
 
-const LESSON_TYPE_ICONS = {
-  video: Video,
-  reading: FileText,
-  practice: Code2,
-  quiz: HelpCircle,
+type LearnView = 'hub' | 'roadmap-list' | 'roadmap-detail' | 'course-list' | 'course-detail'
+
+type CourseCard = {
+  id: string
+  title: string
+  description: string
+  category: string
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
+  progress: number
 }
 
-const LESSON_TYPE_COLORS = {
-  video: 'text-brand-400',
-  reading: 'text-emerald-400',
-  practice: 'text-amber-400',
-  quiz: 'text-purple-400',
+type RoadmapPack = {
+  id: string
+  title: string
+  description: string
+  courseIds: string[]
+  topics?: string[]
+  topicGroups?: Array<{ title: string; topics: string[] }>
 }
 
-function formatDuration(minutes: number): string {
-  const h = Math.floor(minutes / 60)
-  const m = minutes % 60
-  if (h === 0) return `${m}m`
-  if (m === 0) return `${h}h`
-  return `${h}h ${m}m`
+type RoadmapNode = {
+  id: string
+  topic: string
+  groupTitle: string
+  groupIndex: number
+  topicIndex: number
 }
 
-function mapDifficulty(input: string): Course['difficulty'] {
-  const normalized = input.toUpperCase()
-  if (normalized === 'BEGINNER') return 'Beginner'
-  if (normalized === 'INTERMEDIATE') return 'Intermediate'
+const ROADMAP_PACKS: RoadmapPack[] = [
+  {
+    id: 'bac-info-algorithm',
+    title: 'Algorithm Tunisie',
+    description: 'Core algorithm roadmap for Tunisia bac info preparation.',
+    courseIds: [],
+    topicGroups: [
+      { title: 'Basics', topics: ['Introduction to algorithm', 'datatype', 'condition ( if else )', 'loop', 'function'] },
+      { title: 'Data Handling', topics: ['table', 'string', 'fonction predefinie', 'matrix', 'files', 'enregistrement'] },
+      { title: 'Problem Solving', topics: ['how to solve a problem', 'trie', 'approximation', 'integral'] },
+    ],
+    topics: [
+      'Introduction to algorithm',
+      'datatype',
+      'condition ( if else )',
+      'loop',
+      'function',
+      'table',
+      'string',
+      'fonction predefinie',
+      'matrix',
+      'files',
+      'enregistrement',
+      'how to solve a problem',
+      'trie',
+      'approximation',
+      'integral',
+    ],
+  },
+]
+
+function mapDifficulty(input: string): CourseCard['difficulty'] {
+  const value = input.toUpperCase()
+  if (value === 'BEGINNER') return 'Beginner'
+  if (value === 'INTERMEDIATE') return 'Intermediate'
   return 'Advanced'
 }
 
-function mapIcon(input: string): string {
-  const key = input.toLowerCase()
-  const iconMap: Record<string, string> = {
-    array: '↕',
-    search: '◈',
-    dp: '⟳',
-  }
-  return iconMap[key] ?? '◳'
-}
-
-function splitTags(tags: string): string[] {
-  return tags
-    .split(',')
-    .map((t) => t.trim())
-    .filter(Boolean)
-}
-
-function chapterLinesToLessons(lines: string[]): Course['chapters'] {
-  return lines.map((title, i) => ({
-    id: `ch-${i + 1}`,
-    title,
-    lessons: [
-      {
-        id: `lesson-${i + 1}`,
-        title,
-        type: 'reading',
-        duration: '10m',
-        completed: false,
-        locked: i > 0,
-        xp: 20,
-      },
-    ],
-  }))
-}
-
-function mapCourseSummary(dto: CourseSummaryDto): Course {
-  return {
-    id: dto.slug,
-    title: dto.title,
-    description: dto.description,
-    category: dto.category,
-    difficulty: mapDifficulty(dto.difficulty),
-    progress: 0,
-    totalLessons: dto.totalLessons,
-    completedLessons: 0,
-    duration: formatDuration(dto.durationMinutes),
-    xpReward: dto.xpReward,
-    color: dto.colorHex,
-    icon: mapIcon(dto.icon),
-    tags: splitTags(dto.tags),
-    chapters: [],
-  }
-}
-
-function mapCourseDetail(dto: CourseDetailDto): Course {
-  const base = mapCourseSummary(dto)
-  return {
-    ...base,
-    chapters: chapterLinesToLessons(dto.chapters),
-  }
-}
-
-function LessonRow({ lesson, courseId }: { lesson: Lesson; courseId: string }) {
-  const Icon = LESSON_TYPE_ICONS[lesson.type]
-  const { t } = useTranslation()
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -8 }}
-      animate={{ opacity: 1, x: 0 }}
-      className={cn(
-        'flex items-center gap-4 p-3.5 rounded-xl transition-all group',
-        lesson.locked
-          ? 'opacity-40 cursor-not-allowed'
-          : 'hover:bg-white/4 cursor-pointer'
-      )}
-    >
-      {/* Status */}
-      <div className="flex-shrink-0 w-7 h-7 flex items-center justify-center">
-        {lesson.locked ? (
-          <Lock size={15} className="text-surface-600" />
-        ) : lesson.completed ? (
-          <CheckCircle2 size={18} className="text-emerald-400" />
-        ) : (
-          <div className="w-5 h-5 rounded-full border-2 border-surface-600 group-hover:border-brand-500 transition-colors" />
-        )}
-      </div>
-
-      {/* Type icon */}
-      <div className={cn(
-        'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
-        'bg-surface-800 border border-white/5'
-      )}>
-        <Icon size={15} className={LESSON_TYPE_COLORS[lesson.type]} />
-      </div>
-
-      {/* Title */}
-      <div className="flex-1 min-w-0">
-        <div className={cn(
-          'text-sm font-medium',
-          lesson.completed ? 'text-surface-400 line-through' : 'text-surface-200'
-        )}>
-          {lesson.title}
-        </div>
-        <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-xs text-surface-500 capitalize">{t(`learn.${lesson.type}`)}</span>
-          <span className="text-surface-700">·</span>
-          <span className="text-xs text-surface-500 flex items-center gap-1">
-            <Clock size={10} />
-            {lesson.duration}
-          </span>
-        </div>
-      </div>
-
-      {/* XP */}
-      <div className="flex items-center gap-1 text-xs text-brand-400 font-semibold flex-shrink-0">
-        <Zap size={11} />
-        +{lesson.xp}
-      </div>
-
-      {/* Arrow on hover */}
-      {!lesson.locked && (
-        <ChevronRight
-          size={15}
-          className="text-surface-600 group-hover:text-surface-400 transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100"
-        />
-      )}
-    </motion.div>
-  )
-}
-
-function CourseCard({ course, index }: { course: Course; index: number }) {
-  const { t } = useTranslation()
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.07 }}
-      whileHover={{ y: -4 }}
-    >
-      <Link
-        to={`/learn/${course.id}`}
-        className="block p-6 rounded-2xl glass border border-white/8 hover:border-white/15 transition-all group"
-      >
-        {/* Icon + title */}
-        <div className="flex items-start gap-4 mb-4">
-          <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
-            style={{ background: `${course.color}20`, border: `1px solid ${course.color}30` }}
-          >
-            {course.icon}
-          </div>
-          <div>
-            <h3 className="font-bold text-lg group-hover:text-white transition-colors">{course.title}</h3>
-            <div className="flex items-center gap-2 mt-1">
-              <span className={cn('tag border text-xs', getDifficultyBg(course.difficulty))}>
-                {t(`learn.difficulty.${course.difficulty}`)}
-              </span>
-              <span className="text-xs text-surface-500">{course.category}</span>
-            </div>
-          </div>
-        </div>
-
-        <p className="text-sm text-surface-400 leading-relaxed mb-5">{course.description}</p>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-5">
-          {course.tags.map(tag => (
-            <span key={tag} className="px-2.5 py-1 rounded-full bg-surface-800 border border-white/5 text-xs text-surface-400">
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        {/* Stats */}
-        <div className="flex items-center gap-4 text-xs text-surface-500 mb-4">
-          <span className="flex items-center gap-1">
-            <BookOpen size={12} />
-            {course.totalLessons} {t('learn.lessons', { count: course.totalLessons })}
-          </span>
-          <span className="flex items-center gap-1">
-            <Clock size={12} />
-            {course.duration}
-          </span>
-          <span className="flex items-center gap-1 text-brand-400 font-semibold">
-            <Zap size={12} />
-            {course.xpReward} XP
-          </span>
-        </div>
-
-        {/* Progress */}
-        <div>
-          <div className="flex justify-between text-xs text-surface-500 mb-1.5">
-            <span>{course.completedLessons}/{course.totalLessons} {t('learn.chapters').toLowerCase()}</span>
-            <span>{course.progress}%</span>
-          </div>
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${course.progress}%` }} />
-          </div>
-        </div>
-
-        {/* CTA */}
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-xs text-surface-500">
-            {course.progress === 0 ? t('learn.notStarted') : course.progress === 100 ? `✅ ${t('learn.completed')}` : t('learn.inProgress')}
-          </span>
-          <span className="flex items-center gap-1 text-xs font-medium text-brand-400 group-hover:text-brand-300 transition-colors">
-            {course.progress === 0 ? t('learn.start') : course.progress === 100 ? t('learn.review') : t('learn.continue')}
-            <ChevronRight size={13} />
-          </span>
-        </div>
-      </Link>
-    </motion.div>
-  )
-}
-
-// ─── Course Detail Page ────────────────────────────────────────────────────────
-
-function CourseDetail({ course }: { course: Course }) {
-  const [expandedChapter, setExpandedChapter] = useState<string | null>(course.chapters[0]?.id ?? null)
-  const { t } = useTranslation()
-
-  const totalCompleted = course.chapters.flatMap(c => c.lessons).filter(l => l.completed).length
-  const totalLessons = course.chapters.flatMap(c => c.lessons).length
-
-  return (
-    <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-      <div className="max-w-[1120px] mx-auto">
-
-        {/* Back */}
-        <Link to="/learn" className="inline-flex items-center gap-2 text-sm text-surface-400 hover:text-white transition-colors mb-6">
-          <ArrowLeft size={15} />
-          {t('learn.allCourses')}
-        </Link>
-
-        {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative p-8 rounded-2xl overflow-hidden mb-8"
-          style={{
-            background: `linear-gradient(135deg, ${course.color}15 0%, rgba(9,14,31,0.8) 100%)`,
-            border: `1px solid ${course.color}25`,
-          }}
-        >
-          <div className="absolute top-0 right-0 bottom-0 w-40 opacity-5 flex items-center justify-center text-[120px]">
-            {course.icon}
-          </div>
-          <div className="relative">
-            <div className="flex items-center gap-3 mb-4">
-              <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
-                style={{ background: `${course.color}20`, border: `1px solid ${course.color}30` }}
-              >
-                {course.icon}
-              </div>
-              <div>
-                <h1 className="text-3xl font-display font-bold">{course.title}</h1>
-                <div className="flex items-center gap-3 mt-1">
-                  <span className={cn('tag border text-xs', getDifficultyBg(course.difficulty))}>
-                    {t(`learn.difficulty.${course.difficulty}`)}
-                  </span>
-                  <span className="text-xs text-surface-400">{course.category}</span>
-                </div>
-              </div>
-            </div>
-            <p className="text-surface-300 leading-relaxed mb-6 max-w-2xl">{course.description}</p>
-
-            <div className="flex flex-wrap items-center gap-6">
-              {[
-                { icon: BookOpen, val: `${course.totalLessons} ${t('learn.chapters').toLowerCase()}`, color: 'text-surface-400' },
-                { icon: Clock, val: course.duration, color: 'text-surface-400' },
-                { icon: Zap, val: `${course.xpReward} XP`, color: 'text-brand-400' },
-                { icon: Star, val: `4.9 ${t('learn.rating')}`, color: 'text-amber-400' },
-                { icon: Users, val: `2.1k ${t('learn.students')}`, color: 'text-surface-400' },
-              ].map(({ icon: Icon, val, color }) => (
-                <span key={val} className={cn('flex items-center gap-1.5 text-sm', color)}>
-                  <Icon size={14} />
-                  {val}
-                </span>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Chapters */}
-          <div className="lg:col-span-2 space-y-3">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <BarChart2 size={18} className="text-brand-400" />
-              {t('learn.courseContent')}
-            </h2>
-            {course.chapters.map((chapter, chIdx) => {
-              const chCompleted = chapter.lessons.filter(l => l.completed).length
-              const isExpanded = expandedChapter === chapter.id
-
-              return (
-                <motion.div
-                  key={chapter.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: chIdx * 0.08 }}
-                  className="rounded-2xl glass border border-white/8 overflow-hidden"
-                >
-                  <button
-                    onClick={() => setExpandedChapter(isExpanded ? null : chapter.id)}
-                    className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/3 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        'w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold',
-                        chCompleted === chapter.lessons.length
-                          ? 'bg-emerald-500/20 text-emerald-400'
-                          : 'bg-surface-800 text-surface-400'
-                      )}>
-                        {chCompleted === chapter.lessons.length ? '✓' : chIdx + 1}
-                      </div>
-                      <div className="text-left">
-                        <div className="font-semibold text-sm">{chapter.title}</div>
-                        <div className="text-xs text-surface-500 mt-0.5">
-                          {chCompleted}/{chapter.lessons.length} {t('learn.completed').toLowerCase()}
-                        </div>
-                      </div>
-                    </div>
-                    <motion.div
-                      animate={{ rotate: isExpanded ? 90 : 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ChevronRight size={17} className="text-surface-500" />
-                    </motion.div>
-                  </button>
-
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                        className="overflow-hidden border-t border-white/5"
-                      >
-                        <div className="px-3 py-2">
-                          {chapter.lessons.map((lesson) => (
-                            <LessonRow key={lesson.id} lesson={lesson} courseId={course.id} />
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )
-            })}
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-4">
-            {/* Progress card */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="p-5 rounded-2xl glass border border-white/8 sticky top-20"
-            >
-              <h3 className="font-bold mb-4">{t('learn.yourProgress')}</h3>
-
-              <div className="relative w-28 h-28 mx-auto mb-5">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                  <motion.circle
-                    cx="50" cy="50" r="40" fill="none"
-                    stroke="url(#progressGrad)"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                    strokeDasharray={`${2 * Math.PI * 40}`}
-                    initial={{ strokeDashoffset: 2 * Math.PI * 40 }}
-                    animate={{ strokeDashoffset: 2 * Math.PI * 40 * (1 - course.progress / 100) }}
-                    transition={{ duration: 1, delay: 0.4 }}
-                  />
-                  <defs>
-                    <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#1a5cff" />
-                      <stop offset="100%" stopColor="#00d4ff" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-display font-bold">{course.progress}%</span>
-                  <span className="text-xs text-surface-500">{t('learn.complete')}</span>
-                </div>
-              </div>
-
-              <div className="space-y-2.5 mb-5">
-                <div className="flex justify-between text-sm">
-                  <span className="text-surface-400">{t('learn.chapters')}</span>
-                  <span>{totalCompleted}/{totalLessons}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-surface-400">{t('learn.xpEarned')}</span>
-                  <span className="text-brand-400">{Math.round(course.xpReward * course.progress / 100)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-surface-400">{t('learn.estimated')}</span>
-                  <span>{course.duration}</span>
-                </div>
-              </div>
-
-              <Link
-                to="/editor"
-                className="btn-primary w-full justify-center"
-              >
-                <Play size={15} />
-                {course.progress === 0 ? t('learn.start') : t('learn.continue')}
-              </Link>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── Courses Listing Page ──────────────────────────────────────────────────────
-
-function CoursesListing() {
-  const [filter, setFilter] = useState<string>('All')
-  const [courses, setCourses] = useState<Course[]>([])
+function useCatalog() {
+  const [courses, setCourses] = useState<CourseCard[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string>('')
-  const { t } = useTranslation()
-  const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced']
-  const difficultyLabels: Record<string, string> = {
-    All: t('learn.all'),
-    Beginner: t('learn.beginner'),
-    Intermediate: t('learn.intermediate'),
-    Advanced: t('learn.advanced'),
-  }
+  const [error, setError] = useState('')
 
   useEffect(() => {
     let active = true
     setLoading(true)
     setError('')
 
-    courseApi
-      .list()
-      .then((res) => {
+    Promise.allSettled([courseApi.list(), progressApi.list()])
+      .then(([coursesRes, progressRes]) => {
         if (!active) return
-        setCourses(res.map(mapCourseSummary))
+        if (coursesRes.status !== 'fulfilled') throw new Error('Failed to load courses')
+
+        const progressBySlug = new Map<string, ProgressDto>()
+        if (progressRes.status === 'fulfilled') {
+          for (const progress of progressRes.value) progressBySlug.set(progress.courseSlug, progress)
+        }
+
+        setCourses(
+          coursesRes.value.map((dto) => ({
+            id: dto.slug,
+            title: dto.title,
+            description: dto.description,
+            category: dto.category,
+            difficulty: mapDifficulty(dto.difficulty),
+            progress: progressBySlug.get(dto.slug)?.progressPercent ?? 0,
+          }))
+        )
       })
       .catch((err: unknown) => {
         if (!active) return
@@ -502,69 +116,216 @@ function CoursesListing() {
     }
   }, [])
 
-  const filtered = useMemo(() => {
-    return filter === 'All'
-      ? courses
-      : courses.filter((c) => c.difficulty === filter)
-  }, [filter, courses])
+  return { courses, loading, error }
+}
 
-  if (loading) {
-    return (
-      <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-        <div className="max-w-[1120px] mx-auto">
-          <p className="text-surface-400">{t('common.loading')}</p>
-        </div>
-      </div>
-    )
-  }
+function RoadmapGraph({
+  pack,
+  completedTopics,
+  onToggleTopic,
+}: {
+  pack: RoadmapPack
+  completedTopics: Record<string, boolean>
+  onToggleTopic: (topic: string) => void
+}) {
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const nodeRefs = useRef(new Map<string, HTMLButtonElement | null>())
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 })
+  const [paths, setPaths] = useState<Array<{ id: string; d: string; completed: boolean }>>([])
 
-  if (error) {
-    return (
-      <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-        <div className="max-w-[1120px] mx-auto">
-          <p className="text-red-300">{error}</p>
-        </div>
-      </div>
+  const nodes = useMemo<RoadmapNode[]>(() => {
+    const groups = pack.topicGroups ?? [{ title: 'Roadmap', topics: pack.topics ?? [] }]
+    return groups.flatMap((group, groupIndex) =>
+      group.topics.map((topic, topicIndex) => ({
+        id: `${groupIndex}:${topicIndex}:${topic}`,
+        topic,
+        groupTitle: group.title,
+        groupIndex,
+        topicIndex,
+      }))
     )
-  }
+  }, [pack])
+
+  useLayoutEffect(() => {
+    const update = () => {
+      const container = containerRef.current
+      if (!container) return
+
+      const rect = container.getBoundingClientRect()
+      setCanvasSize({ width: rect.width, height: rect.height })
+
+      const points = nodes
+        .map((node) => {
+          const el = nodeRefs.current.get(node.id)
+          if (!el) return null
+          const box = el.getBoundingClientRect()
+          return {
+            id: node.id,
+            x: box.left - rect.left + box.width / 2,
+            y: box.top - rect.top + box.height / 2,
+            completed: Boolean(completedTopics[node.topic]),
+          }
+        })
+        .filter(Boolean) as Array<{ id: string; x: number; y: number; completed: boolean }>
+
+      setPaths(
+        points.slice(1).map((point, index) => {
+          const previous = points[index]
+          const midX = (previous.x + point.x) / 2
+          return {
+            id: `${previous.id}->${point.id}`,
+            completed: previous.completed && point.completed,
+            d: `M ${previous.x} ${previous.y} C ${midX} ${previous.y}, ${midX} ${point.y}, ${point.x} ${point.y}`,
+          }
+        })
+      )
+    }
+
+    update()
+    const resizeObserver = typeof ResizeObserver !== 'undefined' && containerRef.current ? new ResizeObserver(update) : null
+    if (resizeObserver && containerRef.current) resizeObserver.observe(containerRef.current)
+    window.addEventListener('resize', update)
+    return () => {
+      resizeObserver?.disconnect()
+      window.removeEventListener('resize', update)
+    }
+  }, [completedTopics, nodes])
+
+  const completedCount = nodes.filter((node) => completedTopics[node.topic]).length
 
   return (
-    <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-      <div className="max-w-[1120px] mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <h1 className="text-3xl font-display font-bold mb-2">
-            {t('learn.learningModules').split(' ').slice(0, -1).join(' ')}{' '}
-            <span className="gradient-text">{t('learn.learningModules').split(' ').slice(-1)}</span>
-          </h1>
-          <p className="text-surface-400">{t('learn.masterAlgo')}</p>
-        </motion.div>
+    <div ref={containerRef} className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-surface-950 via-surface-900/90 to-brand-950/20 p-4 sm:p-6">
+      <div className="pointer-events-none absolute inset-0 opacity-60">
+        <div className="absolute -left-20 top-6 h-48 w-48 rounded-full bg-brand-500/10 blur-3xl" />
+        <div className="absolute right-0 bottom-0 h-52 w-52 rounded-full bg-cyan-400/10 blur-3xl" />
+      </div>
 
-        {/* Filters */}
-        <div className="flex items-center gap-2 mb-8 flex-wrap">
-          {difficulties.map((d) => (
-            <button
-              key={d}
-              onClick={() => setFilter(d)}
-              className={cn(
-                'px-4 py-2 rounded-xl text-sm font-medium transition-all',
-                filter === d
-                  ? 'bg-brand-500/15 border border-brand-500/30 text-white'
-                  : 'text-surface-400 hover:text-white bg-surface-800/50 border border-white/5 hover:border-white/10'
-              )}
-            >
-              {difficultyLabels[d]}
-            </button>
-          ))}
-          <span className="ml-auto text-sm text-surface-500">{filtered.length} {t('learn.courses')}</span>
+      <div className="relative mb-5 flex items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-semibold">Roadmap Graph</h2>
+          <p className="text-sm text-surface-400">A node map of the algorithm path.</p>
         </div>
+        <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-surface-400">
+          {completedCount}/{nodes.length} completed
+        </span>
+      </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {filtered.map((course, i) => (
-            <CourseCard key={course.id} course={course} index={i} />
+      <div className="relative">
+        {canvasSize.width > 0 && canvasSize.height > 0 && (
+          <svg className="pointer-events-none absolute inset-0 h-full w-full" width={canvasSize.width} height={canvasSize.height} viewBox={`0 0 ${canvasSize.width} ${canvasSize.height}`} fill="none" aria-hidden="true">
+            <defs>
+              <marker id="roadmap-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,8 L8,4 z" fill="currentColor" />
+              </marker>
+            </defs>
+            {paths.map((path) => (
+              <path
+                key={path.id}
+                d={path.d}
+                stroke={path.completed ? 'rgba(16, 185, 129, 0.85)' : 'rgba(96, 165, 250, 0.35)'}
+                strokeWidth={path.completed ? 2.5 : 2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeDasharray={path.completed ? undefined : '7 9'}
+                markerEnd="url(#roadmap-arrow)"
+              />
+            ))}
+          </svg>
+        )}
+
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {nodes.map((node) => {
+            const isDone = Boolean(completedTopics[node.topic])
+            return (
+              <button
+                key={node.id}
+                ref={(element) => {
+                  nodeRefs.current.set(node.id, element)
+                }}
+                type="button"
+                aria-pressed={isDone}
+                onClick={() => onToggleTopic(node.topic)}
+                className={cn(
+                  'relative z-10 overflow-hidden rounded-2xl border px-4 py-4 text-left transition-all duration-200 hover:-translate-y-0.5',
+                  'bg-surface-950/80 backdrop-blur',
+                  isDone
+                    ? 'border-emerald-400/40 shadow-[0_0_0_1px_rgba(16,185,129,0.15),0_18px_45px_rgba(16,185,129,0.12)]'
+                    : 'border-white/10 hover:border-brand-400/40 hover:shadow-[0_0_0_1px_rgba(96,165,250,0.12),0_18px_45px_rgba(2,6,23,0.45)]'
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={cn('mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-xs font-semibold', isDone ? 'border-emerald-300/60 bg-emerald-400/20 text-emerald-100' : 'border-brand-400/40 bg-brand-500/10 text-brand-200')}>
+                    {node.groupIndex + 1}.{node.topicIndex + 1}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <span className="rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[11px] uppercase tracking-[0.18em] text-surface-500">{node.groupTitle}</span>
+                      <CheckCircle2 size={15} className={isDone ? 'text-emerald-300' : 'text-surface-600'} />
+                    </div>
+                    <p className={cn('text-sm font-medium leading-5', isDone ? 'text-emerald-50' : 'text-surface-100')}>{node.topic}</p>
+                    <p className="mt-2 text-xs text-surface-500">{isDone ? 'Completed' : 'Click to mark as complete'}</p>
+                  </div>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function LearnHub() {
+  const { t } = useTranslation()
+  return (
+    <div className="min-h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <div className="mx-auto max-w-[1120px]">
+        <h1 className="mb-2 text-3xl font-display font-bold">{t('learn.entryTitle')}</h1>
+        <p className="mb-8 text-surface-400">{t('learn.entrySubtitle')}</p>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <Link to="/learn/roadmap" className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition-colors hover:border-white/20">
+            <div className="mb-3 flex items-center gap-3">
+              <Compass size={18} className="text-brand-400" />
+              <h2 className="text-xl font-semibold">{t('learn.roadmapChoiceTitle')}</h2>
+            </div>
+            <p className="mb-3 text-surface-400">{t('learn.roadmapChoiceDesc')}</p>
+            <span className="inline-flex items-center gap-2 text-brand-400">{t('learn.openRoadmap')} <ArrowRight size={14} /></span>
+          </Link>
+
+          <Link to="/learn/course" className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition-colors hover:border-white/20">
+            <div className="mb-3 flex items-center gap-3">
+              <Layers3 size={18} className="text-brand-400" />
+              <h2 className="text-xl font-semibold">{t('learn.courseChoiceTitle')}</h2>
+            </div>
+            <p className="mb-3 text-surface-400">{t('learn.courseChoiceDesc')}</p>
+            <span className="inline-flex items-center gap-2 text-brand-400">{t('learn.courseTitle')} <ArrowRight size={14} /></span>
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function RoadmapList() {
+  const { t } = useTranslation()
+  return (
+    <div className="min-h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <div className="mx-auto max-w-[1120px]">
+        <Link to="/learn" className="mb-6 inline-flex items-center gap-2 text-sm text-surface-400 hover:text-white">
+          <ArrowLeft size={14} /> {t('learn.backToLearn')}
+        </Link>
+
+        <h1 className="mb-2 text-3xl font-display font-bold">{t('learn.roadmapTitle')}</h1>
+        <p className="mb-8 text-surface-400">{t('learn.roadmapSubtitle')}</p>
+
+        <div className="grid gap-5 md:grid-cols-3">
+          {ROADMAP_PACKS.map((pack) => (
+            <Link key={pack.id} to={`/learn/roadmap/${pack.id}`} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition-colors hover:border-white/20">
+              <h2 className="mb-2 text-lg font-semibold">{pack.title}</h2>
+              <p className="mb-4 text-sm text-surface-400">{pack.description}</p>
+              <span className="inline-flex items-center gap-2 text-brand-400">{t('learn.openRoadmap')} <ArrowRight size={14} /></span>
+            </Link>
           ))}
         </div>
       </div>
@@ -572,31 +333,131 @@ function CoursesListing() {
   )
 }
 
-// ─── Router entry point ────────────────────────────────────────────────────────
-
-export default function LearnPage() {
-  const { courseId } = useParams<{ courseId?: string }>()
+function RoadmapDetail({ packId }: { packId: string }) {
   const { t } = useTranslation()
-  const [course, setCourse] = useState<Course | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string>('')
+  const { courses, loading, error } = useCatalog()
+  const pack = ROADMAP_PACKS.find((item) => item.id === packId)
+  const completionKey = `roadmap:progress:${packId}`
+  const [completedTopics, setCompletedTopics] = useState<Record<string, boolean>>(() => {
+    try {
+      const raw = window.localStorage.getItem(completionKey)
+      return raw ? (JSON.parse(raw) as Record<string, boolean>) : {}
+    } catch {
+      return {}
+    }
+  })
 
   useEffect(() => {
-    if (!courseId) return
+    try {
+      window.localStorage.setItem(completionKey, JSON.stringify(completedTopics))
+    } catch {
+      // ignore storage issues
+    }
+  }, [completionKey, completedTopics])
 
+  if (!pack) return <div className="p-10 text-center text-surface-300">{t('learn.packNotFound')}</div>
+
+  const allTopics = pack.topics ?? pack.topicGroups?.flatMap((group) => group.topics) ?? []
+  const included = useMemo(() => {
+    const byId = new Map(courses.map((course) => [course.id, course]))
+    return pack.courseIds.map((id) => byId.get(id)).filter(Boolean) as CourseCard[]
+  }, [courses, pack])
+
+  const toggleTopic = (topic: string) => {
+    setCompletedTopics((prev) => ({ ...prev, [topic]: !prev[topic] }))
+  }
+
+  return (
+    <div className="min-h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <div className="mx-auto max-w-[1120px]">
+        <Link to="/learn/roadmap" className="mb-6 inline-flex items-center gap-2 text-sm text-surface-400 hover:text-white">
+          <ArrowLeft size={14} /> {t('learn.backToRoadmaps')}
+        </Link>
+
+        <h1 className="mb-2 text-3xl font-display font-bold">{pack.title}</h1>
+        <p className="mb-8 text-surface-400">{pack.description}</p>
+
+        {!!allTopics.length && (
+          <div className="mb-8">
+            <RoadmapGraph pack={pack} completedTopics={completedTopics} onToggleTopic={toggleTopic} />
+          </div>
+        )}
+
+        {loading && <p className="text-surface-400">{t('common.loading')}</p>}
+        {error && <p className="text-red-300">{error}</p>}
+
+        {!loading && !error && (
+          <div className="grid gap-4 md:grid-cols-2">
+            {included.map((course) => (
+              <Link key={course.id} to={`/learn/course/${course.id}`} className="rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20">
+                <div className="font-semibold">{course.title}</div>
+                <div className="text-sm text-surface-400">{course.category}</div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function CourseList() {
+  const { t } = useTranslation()
+  const { courses, loading, error } = useCatalog()
+
+  return (
+    <div className="min-h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <div className="mx-auto max-w-[1120px]">
+        <Link to="/learn" className="mb-6 inline-flex items-center gap-2 text-sm text-surface-400 hover:text-white">
+          <ArrowLeft size={14} /> {t('learn.backToLearn')}
+        </Link>
+
+        <h1 className="mb-2 text-3xl font-display font-bold">{t('learn.courseTitle')}</h1>
+        <p className="mb-8 text-surface-400">{t('learn.courseSubtitle')}</p>
+
+        {loading && <p className="text-surface-400">{t('common.loading')}</p>}
+        {error && <p className="text-red-300">{error}</p>}
+
+        {!loading && !error && (
+          <div className="grid gap-5 md:grid-cols-2">
+            {courses.map((course) => (
+              <Link key={course.id} to={`/learn/course/${course.id}`} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition-colors hover:border-white/20">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <h2 className="text-lg font-semibold">{course.title}</h2>
+                  <span className={cn('tag border text-xs', getDifficultyBg(course.difficulty))}>{t(`learn.difficulty.${course.difficulty}`)}</span>
+                </div>
+                <p className="mb-3 text-sm text-surface-400">{course.description}</p>
+                <div className="flex items-center gap-2 text-xs text-surface-500">
+                  <BookOpen size={12} /> {course.category} • {course.progress}%
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function CourseDetail({ courseId }: { courseId: string }) {
+  const { t } = useTranslation()
+  const [course, setCourse] = useState<CourseDetailDto | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
     let active = true
     setLoading(true)
     setError('')
 
     courseApi
       .getBySlug(courseId)
-      .then((res) => {
+      .then((data) => {
         if (!active) return
-        setCourse(mapCourseDetail(res))
+        setCourse(data)
       })
       .catch((err: unknown) => {
         if (!active) return
-        setCourse(null)
         setError(err instanceof Error ? err.message : 'Failed to load course')
       })
       .finally(() => {
@@ -609,24 +470,44 @@ export default function LearnPage() {
     }
   }, [courseId])
 
-  if (courseId) {
-    if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-          <p className="text-surface-300">{t('common.loading')}</p>
-        </div>
-      )
-    }
+  return (
+    <div className="min-h-screen px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <div className="mx-auto max-w-[1120px]">
+        <Link to="/learn/course" className="mb-6 inline-flex items-center gap-2 text-sm text-surface-400 hover:text-white">
+          <ArrowLeft size={14} /> {t('learn.backToCourses')}
+        </Link>
 
-    if (!course) return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <h2 className="text-2xl font-bold">{t('common.error')}</h2>
-        {error && <p className="text-surface-400 text-sm">{error}</p>}
-        <Link to="/learn" className="btn-primary">{t('learn.allCourses')}</Link>
+        {loading && <p className="text-surface-400">{t('common.loading')}</p>}
+        {error && <p className="text-red-300">{error}</p>}
+
+        {course && (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+            <h1 className="mb-2 text-3xl font-display font-bold">{course.title}</h1>
+            <p className="mb-5 text-surface-400">{course.description}</p>
+            <div className="mb-6 space-y-2">
+              {course.chapters.map((chapter, index) => (
+                <div key={`${chapter}-${index}`} className="text-sm text-surface-300">
+                  {index + 1}. {chapter}
+                </div>
+              ))}
+            </div>
+            <Link to="/editor" className="btn-primary">
+              {t('learn.continue')}
+            </Link>
+          </div>
+        )}
       </div>
-    )
-    return <CourseDetail course={course} />
-  }
+    </div>
+  )
+}
 
-  return <CoursesListing />
+export default function LearnPage({ view = 'hub' }: { view?: LearnView }) {
+  const { packId, courseId } = useParams<{ packId?: string; courseId?: string }>()
+
+  if (view === 'roadmap-list') return <RoadmapList />
+  if (view === 'roadmap-detail' && packId) return <RoadmapDetail packId={packId} />
+  if (view === 'course-list') return <CourseList />
+  if (view === 'course-detail' && courseId) return <CourseDetail courseId={courseId} />
+
+  return <LearnHub />
 }

@@ -6,6 +6,7 @@
     "sandbox": "Sandbox",
     "visualize": "Visualize",
     "aiMentor": "AI Mentor",
+    "collection": "Collection",
     "admin": "Admin",
     "signIn": "Sign in",
     "startLearning": "Start Learning →",
@@ -21,6 +22,71 @@
     "signOut": "Sign out",
     "streak": "day streak",
     "xp": "XP"
+  },
+  "platformFooter": {
+    "brand": "Learning++",
+    "links": {
+      "home": "Home",
+      "signIn": "Sign In",
+      "signUp": "Sign Up",
+      "dashboard": "Dashboard",
+      "learn": "Learn",
+      "codeEditor": "Code Editor",
+      "visualization": "Visualization",
+      "mentor": "Mentor",
+      "collection": "Collection",
+      "profile": "Profile",
+      "sandbox": "Sandbox",
+      "admin": "Admin"
+    }
+  },
+  "collection": {
+    "title": "Your Collection",
+    "subtitle": "Track everything you have unlocked: badges and companion pets.",
+    "badgesTitle": "Unlocked Badges",
+    "petsTitle": "caracter",
+    "selectPet": "Select",
+    "unselectPet": "Unselect",
+    "emptyBadges": "No badges unlocked yet. Solve lessons and challenges to earn your first one.",
+    "emptyPets": "No pets unlocked yet. Keep progressing to unlock companions.",
+    "pets": {
+      "caracter": {
+        "name": "Main Caracter",
+        "requirement": "Unlock with a 1-day streak"
+      },
+      "caracter2": {
+        "name": "Caracter Two",
+        "requirement": "Unlock with a 1-day streak"
+      },
+      "caracter3": {
+        "name": "Caracter Three",
+        "requirement": "Unlock with a 1-day streak"
+      },
+      "caracter4": {
+        "name": "Caracter Four",
+        "requirement": "Unlock with a 1-day streak"
+      },
+      "caracter5": {
+        "name": "Caracter Five",
+        "requirement": "Unlock with a 1-day streak"
+      },
+      "fox": {
+        "name": "Swift Fox",
+        "requirement": "Unlock at Level 5"
+      },
+      "owl": {
+        "name": "Wise Owl",
+        "requirement": "Unlock after earning 3 badges"
+      },
+      "dragon": {
+        "name": "Code Dragon",
+        "requirement": "Unlock after solving 25 problems"
+      },
+      "phoenix": {
+        "name": "Phoenix",
+        "requirement": "Unlock with a 14-day streak"
+      }
+    }
   },
   "landing": {
     "badge": "Interactive Algorithm Learning",
@@ -147,8 +213,27 @@
     "xpOf": "{{xp}} / {{max}} XP"
   },
   "learn": {
-    "title": "Courses",
-    "subtitle": "Master algorithms and data structures step by step.",
+    "title": "Learning Paths",
+    "subtitle": "Choose a roadmap pack or open a specific course.",
+    "entryBadge": "Pick how you want to learn",
+    "entryTitle": "Choose your learning path",
+    "entrySubtitle": "Start with a roadmap pack for a guided route, or jump straight to a specific course when you already know what you want.",
+    "roadmapChoiceTitle": "Roadmap packs",
+    "roadmapChoiceDesc": "Follow a guided sequence built around a learning goal.",
+    "courseChoiceTitle": "Specific course",
+    "courseChoiceDesc": "Browse the catalog and open one course directly.",
+    "roadmapTitle": "Roadmap packs",
+    "roadmapSubtitle": "Guided routes grouped by difficulty and focus.",
+    "backToLearn": "← Back to learning paths",
+    "backToRoadmaps": "← Back to roadmap packs",
+    "roadmapSteps": "Roadmap steps",
+    "stepLabel": "Step",
+    "includedCourses": "Included courses",
+    "packNotFound": "That roadmap pack does not exist.",
+    "openRoadmap": "Open roadmap",
+    "courseTitle": "Specific courses",
+    "courseSubtitle": "Browse the catalog and choose one course to open.",
+    "backToCourses": "← Back to Courses",
     "searchPlaceholder": "Search courses...",
     "all": "All",
     "beginner": "Beginner",

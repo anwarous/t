@@ -103,6 +103,28 @@ export interface ProgressDto {
   lastActivityAt: string
 }
 
+export interface MentorHistoryItem {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export interface MentorChatResponseDto {
+  answer: string
+  model: string
+}
+
+export class ApiError extends Error {
+  status: number
+  body: unknown
+
+  constructor(message: string, status: number, body: unknown) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+    this.body = body
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Demo / offline auth
 // Stores registered users in localStorage so sign-up/sign-in round-trips work
@@ -217,13 +239,20 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
     }
 
     let message = `Request failed: ${res.status}`
+    let body: unknown = null
     try {
-      const body = await res.json()
-      message = body?.message ?? body?.error ?? message
+      body = await res.json()
+      if (body && typeof body === 'object') {
+        const payload = body as Record<string, unknown>
+        const candidate = payload.message ?? payload.error
+        if (typeof candidate === 'string' && candidate.trim() !== '') {
+          message = candidate
+        }
+      }
     } catch {
       // ignore parse error
     }
-    throw new Error(message)
+    throw new ApiError(message, res.status, body)
   }
 
   // Some successful endpoints (e.g. DELETE) return 204 with no body.
@@ -314,6 +343,14 @@ export const userApi = {
 
 export const progressApi = {
   list: (): Promise<ProgressDto[]> => request<ProgressDto[]>('/progress', { method: 'GET' }),
+}
+
+export const mentorApi = {
+  chat: (message: string, history: MentorHistoryItem[]): Promise<MentorChatResponseDto> =>
+    request<MentorChatResponseDto>('/mentor/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message, history }),
+    }),
 }
 
 export interface AdminOverview {

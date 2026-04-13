@@ -1,4 +1,4 @@
-# MQAcademy – Diagrammes UML
+# Learning++ – Diagrammes UML
 
 > Les diagrammes sont rédigés en [Mermaid](https://mermaid.js.org/) et s'affichent nativement sur GitHub.
 
@@ -13,7 +13,7 @@ graph LR
     Student(["🎓 Étudiant"])
     AIMentor(["🤖 Mentor IA\n(Système)"])
 
-    subgraph Plateforme MQAcademy
+    subgraph Plateforme Learning++
         UC1([Voir la page d'accueil])
         UC2([S'inscrire])
         UC3([Se connecter])

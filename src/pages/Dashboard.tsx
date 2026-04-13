@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import {
   ArrowRight,
   Clock,
@@ -8,6 +9,7 @@ import {
   Trophy,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useUserStore } from '@/store'
 import { MOCK_COURSES, MOCK_EXERCISES, RECENT_ACTIVITY } from '@/data/mockData'
 import { courseApi, exerciseApi, leaderboardApi, progressApi, userApi } from '@/lib/api'
@@ -24,7 +26,7 @@ const WEEK_ACTIVITY = [
   { day: 'Sun', value: 72 },
 ]
 
-function MetricLine({ label, value, muted = false }: { label: string; value: string; muted?: boolean }) {
+function MetricLine({ label, value, muted = false }: { label: string; value: ReactNode; muted?: boolean }) {
   return (
     <div className="rounded-2xl border border-white/6 px-3 py-3 space-y-1" style={{ background: 'rgba(255,255,255,0.02)' }}>
       <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>{label}</div>
@@ -41,6 +43,54 @@ function MetricLine({ label, value, muted = false }: { label: string; value: str
     </div>
   )
 }
+
+const DASHBOARD_CARACTERS = [
+  {
+    id: 'pet-caracter',
+    lottieSrc: 'https://lottie.host/c62b0afb-22ca-48be-974f-b061e671f5a2/P4fNzo7YQL.lottie',
+    nameKey: 'collection.pets.caracter.name',
+  },
+  {
+    id: 'pet-caracter-2',
+    lottieSrc: 'https://lottie.host/d5f5b742-750a-43b8-a339-6e80059a344b/UfFf4hIllR.lottie',
+    nameKey: 'collection.pets.caracter2.name',
+  },
+  {
+    id: 'pet-caracter-3',
+    lottieSrc: 'https://lottie.host/bdcdb140-851b-4545-b69b-ea076668764c/2Nekh5M3Sr.lottie',
+    nameKey: 'collection.pets.caracter3.name',
+  },
+  {
+    id: 'pet-caracter-4',
+    lottieSrc: 'https://lottie.host/7ad5bf32-c32a-4b64-837d-70a668bd7d7b/6a7DoBKL93.lottie',
+    nameKey: 'collection.pets.caracter4.name',
+  },
+  {
+    id: 'pet-caracter-5',
+    lottieSrc: 'https://lottie.host/7456a036-cd8a-498f-80d0-1874467ec611/Mrs62RRPcC.lottie',
+    nameKey: 'collection.pets.caracter5.name',
+  },
+  {
+    id: 'pet-fox',
+    icon: '🦊',
+    nameKey: 'collection.pets.fox.name',
+  },
+  {
+    id: 'pet-owl',
+    icon: '🦉',
+    nameKey: 'collection.pets.owl.name',
+  },
+  {
+    id: 'pet-dragon',
+    icon: '🐉',
+    nameKey: 'collection.pets.dragon.name',
+  },
+  {
+    id: 'pet-phoenix',
+    icon: '🔥',
+    nameKey: 'collection.pets.phoenix.name',
+  },
+] as const
 
 function EmptyState({ title, body }: { title: string; body: string }) {
   return (
@@ -180,7 +230,7 @@ function CourseLeadCard({ course }: { course: Course }) {
       </p>
 
       <Link
-        to={`/learn/${course.id}`}
+        to={`/learn/course/${course.id}`}
         className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/8 px-4 py-2 text-sm opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0"
         style={{ color: 'var(--color-text)', fontFamily: 'IBM Plex Mono, monospace', background: 'rgba(255,255,255,0.03)' }}
       >
@@ -250,7 +300,15 @@ function BadgeStripCard({ count }: { count: number }) {
 
 export default function Dashboard() {
   const { t } = useTranslation()
-  const { user, badges } = useUserStore()
+  const { user, badges, hydrateStatsFromBackend } = useUserStore()
+  const [selectedCaracterId] = useLocalStorage<string | null>(`collection:selected-caracter:${user.name}`, null)
+  const [allTimeHighStreak, setAllTimeHighStreak] = useState<number>(() => {
+    if (typeof window === 'undefined') return user.streak
+    const raw = window.localStorage.getItem(`dashboard:high-streak:${user.name}`)
+    const parsed = raw ? Number(raw) : Number.NaN
+    if (Number.isFinite(parsed)) return Math.max(parsed, user.streak)
+    return user.streak
+  })
   const [profileUser, setProfileUser] = useState(user)
   const [earnedBadgeCount, setEarnedBadgeCount] = useState(badges.filter((badge) => badge.earned).length)
   const [weeklyActivity, setWeeklyActivity] = useState(WEEK_ACTIVITY)
@@ -297,12 +355,20 @@ export default function Dashboard() {
       }
 
       if (userResult.status === 'fulfilled') {
+        hydrateStatsFromBackend({
+          xp: userResult.value.xp,
+          level: userResult.value.level,
+          streak: userResult.value.streak,
+          totalSolved: userResult.value.totalSolved,
+          rank: userResult.value.rank,
+        })
         setProfileUser((prev) => ({
           ...prev,
           name: userResult.value.displayName || prev.name,
           xp: userResult.value.xp,
           level: userResult.value.level,
           streak: userResult.value.streak,
+          totalSolved: userResult.value.totalSolved,
           rank: userResult.value.rank,
           joinedAt: userResult.value.createdAt,
         }))
@@ -417,15 +483,29 @@ export default function Dashboard() {
     return () => {
       active = false
     }
-  }, [user.name])
+  }, [user.name, hydrateStatsFromBackend])
+
+  useEffect(() => {
+    setAllTimeHighStreak((prev) => {
+      const next = Math.max(prev, profileUser.streak)
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(`dashboard:high-streak:${user.name}`, String(next))
+      }
+      return next
+    })
+  }, [profileUser.streak, user.name])
 
   const primaryCourse = inProgress[0] ?? courses[0] ?? MOCK_COURSES[0]
   const primaryExercise = recommended[0] ?? MOCK_EXERCISES[0]
-  const myRank = leaderboard.find((entry) => entry.isCurrentUser)?.rank ?? '-'
+  const myEntry = leaderboard.find((entry) => entry.isCurrentUser)
+  const myRank = myEntry?.rank ?? '-'
+  const selectedCaracter = DASHBOARD_CARACTERS.find((item) => item.id === selectedCaracterId)
+  const sortedLeaderboard = [...leaderboard].sort((a, b) => a.rank - b.rank)
+  const myIndex = sortedLeaderboard.findIndex((entry) => entry.isCurrentUser)
+  const entryAbove = myIndex > 0 ? sortedLeaderboard[myIndex - 1] : null
+  const gapToAboveXp = entryAbove && myEntry ? Math.max(0, entryAbove.xp - myEntry.xp) : 0
 
   const xpToNext = 60
-  const xpPct = Math.min(100, (profileUser.xp / xpToNext) * 100)
-
   return (
     <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
       <div className="mx-auto max-w-[1120px] space-y-10">
@@ -437,13 +517,39 @@ export default function Dashboard() {
             <div className="flex flex-wrap items-end gap-4">
               <div>
                 <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>{t('dashboard.levelXp')}</div>
-                <div className="mt-2 text-[clamp(3.2rem,8vw,4.8rem)] leading-none tracking-[-0.06em]" style={{ color: 'var(--color-text)', fontFamily: 'Space Grotesk, sans-serif' }}>
-                  {profileUser.xp.toLocaleString()}
+                <div className="mt-2 px-1 py-1 sm:px-2 sm:py-2">
+                  {selectedCaracter ? (
+                    <div className="rounded-2xl border border-emerald-400/45 px-4 py-3 sm:px-5 sm:py-4" style={{ background: 'linear-gradient(180deg, rgba(16,185,129,0.18) 0%, rgba(16,185,129,0.08) 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 8px 24px rgba(0,0,0,0.25)' }}>
+                      <div className="text-[11px] uppercase tracking-[0.08em] text-center" style={{ color: 'rgba(220,255,239,0.92)', fontFamily: 'IBM Plex Mono, monospace' }}>
+                        Selected caracter
+                      </div>
+                      {selectedCaracter.lottieSrc ? (
+                        <div className="h-[18rem] w-[18rem] sm:h-[24rem] sm:w-[24rem] mx-auto bg-transparent" style={{ background: 'transparent', filter: 'drop-shadow(0 14px 28px rgba(0,0,0,0.38))' }}>
+                          <DotLottieReact
+                            src={selectedCaracter.lottieSrc}
+                            autoplay
+                            loop
+                            style={{ width: '100%', height: '100%', background: 'transparent' }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="text-center text-6xl sm:text-7xl" style={{ filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.35))' }}>{selectedCaracter.icon}</div>
+                      )}
+                      <div className="mt-2 text-center text-base sm:text-lg" style={{ color: 'var(--color-text)', fontFamily: 'Space Grotesk, sans-serif', textShadow: '0 1px 0 rgba(0,0,0,0.28)' }}>
+                        {t(selectedCaracter.nameKey)}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-white/8 px-4 py-3 sm:px-5 sm:py-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                      <div className="text-sm sm:text-base" style={{ color: 'var(--color-text)', fontFamily: 'Space Grotesk, sans-serif' }}>
+                        {profileUser.xp.toLocaleString()} XP
+                      </div>
+                      <div className="text-[11px] mt-1" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>
+                        {Math.max(0, xpToNext - (profileUser.xp % xpToNext))} XP to next checkpoint
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <div className="rounded-2xl border border-white/6 px-3 py-3 space-y-1" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>Current Level</div>
-                <div className="text-sm sm:text-base font-medium" style={{ color: 'var(--color-accent)', fontFamily: 'Space Grotesk, sans-serif', fontVariantNumeric: 'tabular-nums' }}>{profileUser.level}</div>
               </div>
             </div>
             <p className="max-w-2xl text-[14.5px] leading-7" style={{ color: 'var(--color-text-mid)', fontFamily: 'IBM Plex Mono, monospace' }}>
@@ -453,8 +559,27 @@ export default function Dashboard() {
 
           <div className="grid h-full gap-3 content-start rounded-3xl border border-white/8 px-5 py-5 sm:px-6 sm:py-6" style={{ background: 'rgba(255,255,255,0.02)' }}>
             <MetricLine label={t('dashboard.level', { level: profileUser.level })} value={profileUser.rank} />
-            <MetricLine label="Current streak" value={`${profileUser.streak} days`} />
+            <MetricLine
+              label="Current streak"
+              value={
+                <span className="inline-flex items-center gap-2 whitespace-nowrap">
+                  <span>{`${profileUser.streak} days`}</span>
+                  {profileUser.streak > 0 && (
+                    <span className="h-5 w-5 overflow-hidden rounded-full shrink-0" aria-hidden>
+                      <DotLottieReact
+                        src="https://lottie.host/6cfd2eb0-4e8e-45fd-8566-b1c3dd0f02b4/kAtpzRfxyK.lottie"
+                        autoplay
+                        loop
+                      />
+                    </span>
+                  )}
+                </span>
+              }
+            />
             <MetricLine label="XP to next" value={`${Math.max(0, xpToNext - (profileUser.xp % xpToNext))}`} muted />
+            <MetricLine label="All-time high streak" value={`${allTimeHighStreak} days`} />
+            <MetricLine label="Gap to player above" value={entryAbove ? `${gapToAboveXp} XP` : 'Top position'} muted />
+            <MetricLine label="Exercises solved" value={`${profileUser.totalSolved}`} />
           </div>
         </section>
 

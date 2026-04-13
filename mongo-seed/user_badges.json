@@ -1,134 +1,98 @@
 [
   {
-    "_id": "ub-001",
-    "userId": "usr_001",
+    "_id": "ub-101",
+    "userId": "usr_admin",
     "badgeId": "b-001",
-    "earnedAt": { "$date": "2024-01-16T09:05:00.000Z" }
+    "earnedAt": { "$date": "2026-01-03T08:10:00.000Z" }
   },
   {
-    "_id": "ub-002",
-    "userId": "usr_001",
+    "_id": "ub-102",
+    "userId": "usr_101",
+    "badgeId": "b-001",
+    "earnedAt": { "$date": "2026-01-06T10:40:00.000Z" }
+  },
+  {
+    "_id": "ub-103",
+    "userId": "usr_101",
     "badgeId": "b-002",
-    "earnedAt": { "$date": "2024-02-05T11:00:00.000Z" }
+    "earnedAt": { "$date": "2026-02-02T11:00:00.000Z" }
   },
   {
-    "_id": "ub-003",
-    "userId": "usr_001",
+    "_id": "ub-104",
+    "userId": "usr_102",
+    "badgeId": "b-001",
+    "earnedAt": { "$date": "2026-01-09T09:20:00.000Z" }
+  },
+  {
+    "_id": "ub-105",
+    "userId": "usr_103",
+    "badgeId": "b-001",
+    "earnedAt": { "$date": "2026-01-11T12:00:00.000Z" }
+  },
+  {
+    "_id": "ub-106",
+    "userId": "usr_103",
+    "badgeId": "b-004",
+    "earnedAt": { "$date": "2026-02-14T12:40:00.000Z" }
+  },
+  {
+    "_id": "ub-107",
+    "userId": "usr_104",
+    "badgeId": "b-001",
+    "earnedAt": { "$date": "2026-01-13T13:50:00.000Z" }
+  },
+  {
+    "_id": "ub-108",
+    "userId": "usr_105",
+    "badgeId": "b-001",
+    "earnedAt": { "$date": "2026-01-16T07:20:00.000Z" }
+  },
+  {
+    "_id": "ub-109",
+    "userId": "usr_105",
+    "badgeId": "b-005",
+    "earnedAt": { "$date": "2026-02-28T07:30:00.000Z" }
+  },
+  {
+    "_id": "ub-110",
+    "userId": "usr_106",
+    "badgeId": "b-001",
+    "earnedAt": { "$date": "2026-01-19T10:30:00.000Z" }
+  },
+  {
+    "_id": "ub-111",
+    "userId": "usr_106",
     "badgeId": "b-003",
-    "earnedAt": { "$date": "2024-02-12T14:00:00.000Z" }
+    "earnedAt": { "$date": "2026-02-10T14:00:00.000Z" }
   },
   {
-    "_id": "ub-004",
-    "userId": "usr_001",
-    "badgeId": "b-004",
-    "earnedAt": { "$date": "2024-03-01T08:00:00.000Z" }
-  },
-  {
-    "_id": "ub-005",
-    "userId": "usr_002",
+    "_id": "ub-112",
+    "userId": "usr_107",
     "badgeId": "b-001",
-    "earnedAt": { "$date": "2024-01-11T10:00:00.000Z" }
+    "earnedAt": { "$date": "2026-01-21T16:00:00.000Z" }
   },
   {
-    "_id": "ub-006",
-    "userId": "usr_002",
+    "_id": "ub-113",
+    "userId": "usr_107",
     "badgeId": "b-002",
-    "earnedAt": { "$date": "2024-01-25T12:00:00.000Z" }
+    "earnedAt": { "$date": "2026-02-08T17:30:00.000Z" }
   },
   {
-    "_id": "ub-007",
-    "userId": "usr_002",
-    "badgeId": "b-004",
-    "earnedAt": { "$date": "2024-02-01T08:00:00.000Z" }
-  },
-  {
-    "_id": "ub-008",
-    "userId": "usr_004",
+    "_id": "ub-114",
+    "userId": "usr_108",
     "badgeId": "b-001",
-    "earnedAt": { "$date": "2023-12-21T07:00:00.000Z" }
+    "earnedAt": { "$date": "2026-01-23T09:00:00.000Z" }
   },
   {
-    "_id": "ub-009",
-    "userId": "usr_004",
-    "badgeId": "b-002",
-    "earnedAt": { "$date": "2023-12-28T08:00:00.000Z" }
-  },
-  {
-    "_id": "ub-010",
-    "userId": "usr_004",
-    "badgeId": "b-004",
-    "earnedAt": { "$date": "2024-01-01T00:00:00.000Z" }
-  },
-  {
-    "_id": "ub-011",
-    "userId": "usr_004",
-    "badgeId": "b-005",
-    "earnedAt": { "$date": "2024-01-11T10:00:00.000Z" }
-  },
-  {
-    "_id": "ub-012",
-    "userId": "usr_006",
+    "_id": "ub-115",
+    "userId": "usr_109",
     "badgeId": "b-001",
-    "earnedAt": { "$date": "2023-11-02T07:00:00.000Z" }
+    "earnedAt": { "$date": "2026-01-26T06:50:00.000Z" }
   },
   {
-    "_id": "ub-013",
-    "userId": "usr_006",
-    "badgeId": "b-002",
-    "earnedAt": { "$date": "2023-11-15T08:00:00.000Z" }
-  },
-  {
-    "_id": "ub-014",
-    "userId": "usr_006",
-    "badgeId": "b-004",
-    "earnedAt": { "$date": "2023-11-08T07:00:00.000Z" }
-  },
-  {
-    "_id": "ub-015",
-    "userId": "usr_006",
-    "badgeId": "b-005",
-    "earnedAt": { "$date": "2023-11-20T09:00:00.000Z" }
-  },
-  {
-    "_id": "ub-016",
-    "userId": "usr_006",
+    "_id": "ub-116",
+    "userId": "usr_109",
     "badgeId": "b-006",
-    "earnedAt": { "$date": "2023-12-10T08:00:00.000Z" }
-  },
-  {
-    "_id": "ub-017",
-    "userId": "usr_006",
-    "badgeId": "b-010",
-    "earnedAt": { "$date": "2023-12-16T09:00:00.000Z" }
-  },
-  {
-    "_id": "ub-018",
-    "userId": "usr_006",
-    "badgeId": "b-012",
-    "earnedAt": { "$date": "2023-12-01T07:00:00.000Z" }
-  },
-  {
-    "_id": "ub-019",
-    "userId": "usr_009",
-    "badgeId": "b-001",
-    "earnedAt": { "$date": "2023-09-02T06:00:00.000Z" }
-  },
-  {
-    "_id": "ub-020",
-    "userId": "usr_009",
-    "badgeId": "b-006",
-    "earnedAt": { "$date": "2023-10-01T06:00:00.000Z" }
-  },
-  {
-    "_id": "ub-021",
-    "userId": "usr_009",
-    "badgeId": "b-007",
-    "earnedAt": { "$date": "2023-11-01T06:00:00.000Z" }
-  },
-  {
-    "_id": "ub-022",
-    "userId": "usr_009",
-    "badgeId": "b-012",
-    "earnedAt": { "$date": "2023-10-01T06:00:00.000Z" }
+    "earnedAt": { "$date": "2026-03-01T06:10:00.000Z" }
   }
 ]

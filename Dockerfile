@@ -19,7 +19,7 @@ ENV SPRING_PROFILES_ACTIVE=prod
 ENV SERVER_PORT=8081
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 -XX:+UseContainerSupport"
 
-COPY --from=build /workspace/backend/target/mqacademy-api-1.0.0.jar /app/app.jar
+COPY --from=build /workspace/backend/target/learningplusplus-api-1.0.0.jar /app/app.jar
 
 USER app
 EXPOSE 8081

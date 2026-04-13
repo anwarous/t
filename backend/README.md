@@ -29,7 +29,7 @@ mvn spring-boot:run
 The server starts on **http://localhost:8080**.
 
 H2 Console (dev): http://localhost:8080/h2-console  
-JDBC URL: `jdbc:h2:mem:mqacademy`  
+JDBC URL: `jdbc:h2:mem:learningplusplus`  
 Username: `sa` | Password: *(empty)*
 
 ## API Endpoints
@@ -122,7 +122,7 @@ Override in production via environment variables or a `application-prod.properti
 ```bash
 SPRING_PROFILES_ACTIVE=prod \
 APP_JWT_SECRET=your-very-long-prod-secret \
-SPRING_DATASOURCE_URL=jdbc:postgresql://host/mqacademy \
+SPRING_DATASOURCE_URL=jdbc:postgresql://host/learningplusplus \
 mvn spring-boot:run
 ```
 

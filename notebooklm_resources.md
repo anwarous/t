@@ -1,12 +1,12 @@
 # Learning++ — Pitch Deck Resources for NotebookLM
 
-> This document contains all structured information about the **Learning++** platform (also branded as MQAcademy). It is intended to be uploaded to NotebookLM as the sole source for generating a professional white-themed pitching presentation.
+> This document contains all structured information about the **Learning++** platform (also branded as Learning++). It is intended to be uploaded to NotebookLM as the sole source for generating a professional white-themed pitching presentation.
 
 ---
 
 ## 1. Project Overview
 
-**Name:** Learning++ (MQAcademy)
+**Name:** Learning++ (Learning++)
 **Tagline:** Master Algorithms, Interactively.
 **Category:** EdTech / Developer Education Platform
 **Stage:** Production-ready MVP

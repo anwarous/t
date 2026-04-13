@@ -28,6 +28,7 @@ export default function DashboardTopNav() {
     { to: '/sandbox', label: t('nav.sandbox') },
     { to: '/visualize', label: t('nav.visualize') },
     { to: '/mentor', label: t('nav.aiMentor') },
+    { to: '/collection', label: t('nav.collection') },
     { to: '/profile', label: t('nav.profile') },
   ], [t])
 

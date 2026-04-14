@@ -240,13 +240,16 @@ export const useUserStore = create<UserState>((set) => ({
     }),
   hydrateStatsFromBackend: (stats) =>
     set((s) => {
+      const mergedLevel = Math.max(s.user.level, stats.level)
       const user = {
         ...s.user,
-        xp: stats.xp,
-        level: stats.level,
-        streak: Math.max(1, stats.streak),
-        totalSolved: Math.max(0, stats.totalSolved),
-        rank: stats.rank,
+        // Keep the best-known progression so local solved exercises are not
+        // visually rolled back by delayed backend state.
+        xp: Math.max(s.user.xp, stats.xp),
+        level: mergedLevel,
+        streak: Math.max(s.user.streak, Math.max(1, stats.streak)),
+        totalSolved: Math.max(s.user.totalSolved, Math.max(0, stats.totalSolved)),
+        rank: calculateRank(mergedLevel),
       }
       if (s.currentUsername) saveProfile(s.currentUsername, user)
       return { user }
@@ -819,6 +822,15 @@ function isAllTestsPassed(output: string): boolean {
 
 async function awardExerciseXP(exerciseId: string | null, code: string, output: string): Promise<void> {
   if (!exerciseId || !isAllTestsPassed(output)) return
+
+  // Local challenge IDs (ex-001, ex-002, ...) do not match backend slugs.
+  // In this mode, apply local progression directly.
+  const isLocalExerciseId = /^ex-\d+$/i.test(exerciseId)
+  if (isLocalExerciseId) {
+    const exercise = MOCK_EXERCISES.find((e) => e.id === exerciseId)
+    useUserStore.getState().markExerciseSolved(exerciseId, exercise?.xp ?? 100)
+    return
+  }
 
   // Prefer backend authority for XP progression when API mode is enabled.
   try {

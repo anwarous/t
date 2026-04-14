@@ -44,7 +44,14 @@ function MetricLine({ label, value, muted = false }: { label: string; value: Rea
   )
 }
 
-const DASHBOARD_CARACTERS = [
+type DashboardCharacter = {
+  id: string
+  nameKey: string
+  lottieSrc?: string
+  icon?: string
+}
+
+const DASHBOARD_CARACTERS: DashboardCharacter[] = [
   {
     id: 'pet-caracter',
     lottieSrc: 'https://lottie.host/c62b0afb-22ca-48be-974f-b061e671f5a2/P4fNzo7YQL.lottie',
@@ -90,7 +97,7 @@ const DASHBOARD_CARACTERS = [
     icon: '🔥',
     nameKey: 'collection.pets.phoenix.name',
   },
-] as const
+]
 
 function EmptyState({ title, body }: { title: string; body: string }) {
   return (
@@ -322,6 +329,10 @@ export default function Dashboard() {
   const [leaderboard, setLeaderboard] = useState<Array<{ rank: number; name: string; xp: number; level: number; streak: number; avatar: string; isCurrentUser: boolean; delta?: number }>>([])
   const inProgress = courses.filter((course) => course.progress > 0 && course.progress < 100)
   const recommended = recommendedExercises
+
+  useEffect(() => {
+    setProfileUser(user)
+  }, [user])
 
   useEffect(() => {
     let active = true

@@ -15,6 +15,10 @@ const ALGO_API_URL = rawAlgoApiUrl.endsWith('/') ? rawAlgoApiUrl.slice(0, -1) : 
 const parsedTimeoutMs = Number(import.meta.env.VITE_ALGO_COMPILER_TIMEOUT_MS)
 const ALGO_TIMEOUT_MS = Number.isFinite(parsedTimeoutMs) && parsedTimeoutMs > 0 ? parsedTimeoutMs : DEFAULT_TIMEOUT_MS
 
+function unavailableCompilerMessage(): string {
+  return 'Algorithm compiler service is unavailable. Start the algo-compiler service (port 5000), or switch to Python mode.'
+}
+
 export async function runAlgo(code: string, inputs = ''): Promise<string> {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), ALGO_TIMEOUT_MS)
@@ -34,7 +38,9 @@ export async function runAlgo(code: string, inputs = ''): Promise<string> {
       : null
 
     if (!response.ok) {
-      const message = data?.error ?? data?.message ?? `Compiler API error (${response.status})`
+      const message = response.status >= 500
+        ? unavailableCompilerMessage()
+        : (data?.error ?? data?.message ?? `Compiler API error (${response.status})`)
       throw new Error(message)
     }
 
@@ -47,10 +53,13 @@ export async function runAlgo(code: string, inputs = ''): Promise<string> {
     if (err instanceof DOMException && err.name === 'AbortError') {
       throw new Error('Algorithm execution timed out. Try again, or increase VITE_ALGO_COMPILER_TIMEOUT_MS.')
     }
+    if (err instanceof TypeError) {
+      throw new Error(unavailableCompilerMessage())
+    }
     if (err instanceof Error) {
       throw err
     }
-    throw new Error('Unable to reach algorithm compiler service.')
+    throw new Error(unavailableCompilerMessage())
   } finally {
     clearTimeout(timeoutId)
   }

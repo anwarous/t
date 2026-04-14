@@ -3,6 +3,8 @@ package com.learningplusplus.api.service;
 import com.learningplusplus.api.dto.mentor.MentorChatRequest;
 import com.learningplusplus.api.dto.mentor.MentorChatResponse;
 import com.learningplusplus.api.dto.mentor.MentorMessageDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,8 @@ import java.util.regex.Pattern;
 
 @Service
 public class MentorService {
+
+    private static final Logger log = LoggerFactory.getLogger(MentorService.class);
 
     private static final int MAX_HISTORY_MESSAGES = 10;
     private static final Pattern LEAK_MARKERS = Pattern.compile(
@@ -56,7 +60,7 @@ public class MentorService {
 
     public MentorChatResponse chat(MentorChatRequest request) {
         if (llmApiKey == null || llmApiKey.isBlank()) {
-            throw new IllegalStateException("LLM API key is not configured. Set APP_LLM_API_KEY.");
+            return fallbackResponse("Mentor is temporarily unavailable because the API key is not configured.", "offline-no-key");
         }
 
         List<Map<String, String>> messages = new ArrayList<>();
@@ -96,27 +100,21 @@ public class MentorService {
                 .body(Map.class);
             raw = response;
         } catch (HttpClientErrorException.TooManyRequests ex) {
-            throw new ResponseStatusException(
-                HttpStatus.TOO_MANY_REQUESTS,
-                "LLM provider rate limit reached. Wait for reset or use another API key/model.",
-                ex
-            );
+            log.warn("Mentor provider rate-limited request", ex);
+            return fallbackResponse("The mentor service is rate-limited right now. Please retry in a moment.", "offline-rate-limit");
         } catch (HttpClientErrorException ex) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_GATEWAY,
-                "LLM provider rejected the request: " + ex.getStatusCode(),
-                ex
-            );
+            log.warn("Mentor provider rejected request with status {}", ex.getStatusCode(), ex);
+            return fallbackResponse("The mentor provider rejected the request. Please try again shortly.", "offline-provider-4xx");
         } catch (HttpServerErrorException ex) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_GATEWAY,
-                "LLM provider is unavailable. Please try again shortly.",
-                ex
-            );
+            log.warn("Mentor provider server error", ex);
+            return fallbackResponse("The mentor provider is temporarily unavailable. Please try again shortly.", "offline-provider-5xx");
+        } catch (Exception ex) {
+            log.error("Unexpected mentor provider error", ex);
+            return fallbackResponse("The mentor service hit an unexpected issue. Please try again shortly.", "offline-unexpected");
         }
 
         if (raw == null) {
-            throw new IllegalStateException("LLM API returned an empty response.");
+            return fallbackResponse("The mentor provider returned an empty response.", "offline-empty");
         }
 
         Object modelObj = raw.get("model");
@@ -124,22 +122,22 @@ public class MentorService {
 
         Object choicesObj = raw.get("choices");
         if (!(choicesObj instanceof List<?> choices) || choices.isEmpty()) {
-            throw new IllegalStateException("LLM API returned no choices.");
+            return fallbackResponse("The mentor provider returned no answer choices.", model);
         }
 
         Object firstChoice = choices.get(0);
         if (!(firstChoice instanceof Map<?, ?> choiceMap)) {
-            throw new IllegalStateException("LLM API returned malformed choice payload.");
+            return fallbackResponse("The mentor provider returned malformed choice payload.", model);
         }
 
         Object messageObj = choiceMap.get("message");
         if (!(messageObj instanceof Map<?, ?> messageMap)) {
-            throw new IllegalStateException("LLM API returned no assistant message.");
+            return fallbackResponse("The mentor provider returned no assistant message.", model);
         }
 
         Object contentObj = messageMap.get("content");
         if (!(contentObj instanceof String content) || content.isBlank()) {
-            throw new IllegalStateException("LLM API returned empty assistant content.");
+            return fallbackResponse("The mentor provider returned empty content.", model);
         }
 
         return new MentorChatResponse(sanitizeAssistantContent(content), model);
@@ -171,5 +169,12 @@ public class MentorService {
         }
 
         return "Let's focus on the result. Ask your question again and I will give a direct, step-by-step explanation without internal notes.";
+    }
+
+    private MentorChatResponse fallbackResponse(String reason, String model) {
+        String answer = "Mentor is temporarily unavailable. "
+            + reason
+            + " Meanwhile, share your algorithm question and I can still guide a step-by-step approach manually.";
+        return new MentorChatResponse(answer, model);
     }
 }

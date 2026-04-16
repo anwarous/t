@@ -5,10 +5,11 @@ import { useUserStore, useAuthStore } from '@/store'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
+import { resolveAvatarImage } from '@/lib/profileAvatar'
 
 type GlyphName =
   | 'dashboard' | 'learn' | 'code' | 'sandbox' | 'visualize' | 'mentor' | 'profile' | 'admin'
-  | 'achievements' | 'settings' | 'notifications' | 'logout' | 'xp' | 'streak' | 'menu' | 'close' | 'chevron'
+  | 'achievements' | 'settings' | 'notifications' | 'users' | 'logout' | 'xp' | 'streak' | 'menu' | 'close' | 'chevron'
 
 function Glyph({ name, active = false, className = '' }: { name: GlyphName; active?: boolean; className?: string }) {
   const map: Record<GlyphName, string> = {
@@ -23,6 +24,7 @@ function Glyph({ name, active = false, className = '' }: { name: GlyphName; acti
     achievements: '◆',
     settings: '◍',
     notifications: '◌',
+    users: '◫',
     logout: '↗',
     xp: '✦',
     streak: '⟡',
@@ -86,6 +88,7 @@ function SidebarFooter({ onAvatarClick }: { onAvatarClick: () => void }) {
   const { user } = useUserStore()
   const xpToNext = 60
   const xpProgress = Math.min(100, (user.xp / xpToNext) * 100)
+  const avatarImage = useMemo(() => resolveAvatarImage(user.avatar), [user.avatar])
 
   return (
     <div className="px-3 py-3 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
@@ -119,7 +122,11 @@ function SidebarFooter({ onAvatarClick }: { onAvatarClick: () => void }) {
             className="absolute inset-0 flex items-center justify-center text-sm font-bold select-none"
             style={{ fontFamily: 'Space Grotesk, sans-serif' }}
           >
-            {user.avatar}
+            {avatarImage ? (
+              <img src={avatarImage} alt={user.name} className="w-7 h-7 rounded-full object-cover" />
+            ) : (
+              user.avatar
+            )}
           </div>
         </div>
         <div className="flex-1 min-w-0 text-left">
@@ -142,6 +149,7 @@ function AvatarDropdown({ onClose }: { onClose: () => void }) {
   const clearAuth = useAuthStore((s) => s.clearAuth)
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const avatarImage = useMemo(() => resolveAvatarImage(user.avatar), [user.avatar])
 
   const go = useCallback((path: string) => { navigate(path); onClose() }, [navigate, onClose])
   const handleSignOut = useCallback(() => {
@@ -152,6 +160,7 @@ function AvatarDropdown({ onClose }: { onClose: () => void }) {
   const menuItems = useMemo(() => ([
     { icon: 'profile' as const,      label: t('nav.myProfile'),     path: '/profile' },
     { icon: 'achievements' as const, label: t('nav.achievements'),  path: '/profile?tab=badges' },
+    { icon: 'users' as const,        label: t('nav.community'),     path: '/profile?tab=community' },
     { icon: 'settings' as const,     label: t('nav.settings'),      path: '/profile?tab=settings' },
     { icon: 'notifications' as const,label: t('nav.notifications'), path: '/profile?tab=notifications' },
   ]), [t])
@@ -172,7 +181,11 @@ function AvatarDropdown({ onClose }: { onClose: () => void }) {
             className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"
             style={{ background: 'var(--color-accent-dim)', border: '1px solid var(--color-accent)', color: 'var(--color-accent)', fontFamily: 'Space Grotesk, sans-serif' }}
           >
-            {user.avatar}
+            {avatarImage ? (
+              <img src={avatarImage} alt={user.name} className="w-full h-full rounded-lg object-cover" />
+            ) : (
+              user.avatar
+            )}
           </div>
           <div className="min-w-0">
             <p className="text-sm font-semibold truncate" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>{user.name}</p>

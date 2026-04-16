@@ -11,6 +11,7 @@ services:
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8081/api}
       VITE_ALGO_COMPILER_URL: ${VITE_ALGO_COMPILER_URL:-/algo-api}
+      VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
       ALGO_COMPILER_PROXY_TARGET: ${ALGO_COMPILER_PROXY_TARGET:-http://algo-compiler:5000}
       CHOKIDAR_USEPOLLING: "true"
     command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"

@@ -3,12 +3,6 @@
 // The API server must be running (see algoCompiler/CompilerRes/web_ui.py).
 // Override the base URL by setting VITE_ALGO_COMPILER_URL in your .env file.
 
-declare global {
-  interface ImportMeta {
-    readonly env: Record<string, string | undefined>
-  }
-}
-
 const DEFAULT_TIMEOUT_MS = 60_000
 const rawAlgoApiUrl = (import.meta.env.VITE_ALGO_COMPILER_URL ?? '/algo-api').trim()
 const ALGO_API_URL = rawAlgoApiUrl.endsWith('/') ? rawAlgoApiUrl.slice(0, -1) : rawAlgoApiUrl

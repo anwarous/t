@@ -4,12 +4,10 @@ FROM maven:3.9.9-eclipse-temurin-17-alpine AS build
 WORKDIR /workspace
 
 COPY backend/pom.xml backend/pom.xml
-RUN --mount=type=cache,target=/root/.m2 \
-    mvn -f backend/pom.xml -B -DskipTests dependency:go-offline
+RUN mvn -f backend/pom.xml -B -DskipTests dependency:go-offline
 
 COPY backend/src backend/src
-RUN --mount=type=cache,target=/root/.m2 \
-    mvn -f backend/pom.xml -B -DskipTests clean package
+RUN mvn -f backend/pom.xml -B -DskipTests clean package
 
 FROM eclipse-temurin:17-jre-alpine AS runtime
 RUN addgroup -S app && adduser -S app -G app && apk add --no-cache curl
@@ -25,6 +23,6 @@ USER app
 EXPOSE 8081
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=5 \
-  CMD curl -fsS http://127.0.0.1:${SERVER_PORT}/actuator/health >/dev/null || exit 1
+  CMD sh -c 'curl -fsS "http://127.0.0.1:${PORT:-${SERVER_PORT:-8081}}/actuator/health" >/dev/null || exit 1'
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]

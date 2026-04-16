@@ -9,10 +9,15 @@ RUN npm ci
 COPY index.html ./
 COPY tsconfig.json tsconfig.node.json vite.config.ts postcss.config.js tailwind.config.js ./
 COPY public ./public
+COPY assetss ./assetss
 COPY src ./src
 
-ARG VITE_API_BASE_URL=http://localhost:8081/api
+ARG VITE_API_BASE_URL=https://learning.up.railway.app/api
+ARG VITE_ALGO_COMPILER_URL=https://algo-compiler-production.up.railway.app
+ARG VITE_GOOGLE_CLIENT_ID=
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ENV VITE_ALGO_COMPILER_URL=${VITE_ALGO_COMPILER_URL}
+ENV VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
 
 RUN npm run build
 

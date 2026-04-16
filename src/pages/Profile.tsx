@@ -1,17 +1,19 @@
 import { useState, useRef, useMemo, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   User, Trophy, Settings, Bell, Save, Camera,
   Zap, Flame, CheckCircle, Target, Edit3, Code2,
   BookOpen, Star, Shield, Globe, Lock, ChevronRight,
-  ToggleLeft, ToggleRight, AlertCircle, Check
+  ToggleLeft, ToggleRight, AlertCircle, Check, Users
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useUserStore } from '@/store'
 import { MOCK_BADGES, RECENT_ACTIVITY } from '@/data/mockData'
+import { BadgeGrid } from '@/components/ui/Badge'
 import { leaderboardApi } from '@/lib/api'
 import { cn, getRarityColor } from '@/lib/utils'
+import { AVATAR_OPTIONS, isIconAvatar, resolveAvatarImage } from '@/lib/profileAvatar'
 
 // ── Reusable toggle ────────────────────────────────────────────────────────────
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
@@ -56,20 +58,377 @@ function SaveToast({ show }: { show: boolean }) {
 const TABS = [
   { id: 'profile',       tKey: 'profile.tabs.profile',       icon: User },
   { id: 'badges',        tKey: 'profile.tabs.achievements',  icon: Trophy },
+  { id: 'community',     tKey: 'profile.tabs.community',     icon: Users },
   { id: 'settings',      tKey: 'profile.tabs.settings',      icon: Settings },
   { id: 'notifications', tKey: 'profile.tabs.notifications', icon: Bell },
 ]
+
+type CommunityActivity = {
+  id: string
+  action: string
+  target: string
+  xp: number
+  time: string
+  icon: string
+}
+
+type CommunityProfile = {
+  id: string
+  name: string
+  avatar: string
+  headline: string
+  bio: string
+  rank: string
+  level: number
+  xp: number
+  streak: number
+  totalSolved: number
+  focus: string
+  badgeIds: Array<{ id: string; earnedAt: string }>
+  highlights: string[]
+  activity: CommunityActivity[]
+}
+
+const COMMUNITY_PROFILES: CommunityProfile[] = [
+  {
+    id: 'sarah-k',
+    name: 'Sarah K.',
+    avatar: 'icon:0',
+    headline: 'Graph systems and interview prep',
+    bio: 'Sarah turns graph problems into visual notes, then shares the shortcuts she uses to finish interview drills faster.',
+    rank: 'Graph Strategist',
+    level: 18,
+    xp: 8920,
+    streak: 21,
+    totalSolved: 128,
+    focus: 'Graph theory, traversal patterns, interview speed runs',
+    badgeIds: [
+      { id: 'b-001', earnedAt: '2024-01-18' },
+      { id: 'b-002', earnedAt: '2024-02-07' },
+      { id: 'b-003', earnedAt: '2024-02-14' },
+      { id: 'b-004', earnedAt: '2024-03-02' },
+    ],
+    highlights: [
+      'Completed the Graph Algorithms path with a perfect review streak',
+      'Solved 12 graph problems in the last month',
+      'Shared a BFS walkthrough that helped two peers unblock their submissions',
+    ],
+    activity: [
+      { id: 's-1', action: 'Completed', target: 'Graph Algorithms', xp: 180, time: '2h ago', icon: '◈' },
+      { id: 's-2', action: 'Earned badge', target: 'Graph Guru', xp: 200, time: '1d ago', icon: '🏅' },
+      { id: 's-3', action: 'Mentored', target: 'BFS vs DFS review session', xp: 40, time: '3d ago', icon: '◎' },
+    ],
+  },
+  {
+    id: 'marcus-j',
+    name: 'Marcus J.',
+    avatar: 'icon:1',
+    headline: 'Performance tuning and sorting drills',
+    bio: 'Marcus focuses on speed: cleaner loops, smaller constants, and careful step-by-step breakdowns of every solution.',
+    rank: 'Optimization Lead',
+    level: 16,
+    xp: 7650,
+    streak: 14,
+    totalSolved: 102,
+    focus: 'Sorting, runtime analysis, clean implementation patterns',
+    badgeIds: [
+      { id: 'b-001', earnedAt: '2024-01-20' },
+      { id: 'b-002', earnedAt: '2024-02-09' },
+      { id: 'b-003', earnedAt: '2024-02-18' },
+      { id: 'b-008', earnedAt: '2024-03-04' },
+    ],
+    highlights: [
+      'Reduced three of his bubble sort solutions from O(n^2) to O(n log n) variants',
+      'Kept a 14-day streak while reviewing optimization tips',
+      'Logged detailed notes for the sorting module and shared them in the cohort chat',
+    ],
+    activity: [
+      { id: 'm-1', action: 'Solved', target: 'Two Sum (Easy)', xp: 100, time: '5h ago', icon: '⚡' },
+      { id: 'm-2', action: 'Completed', target: 'Sorting analysis sprint', xp: 140, time: '1d ago', icon: '↕' },
+      { id: 'm-3', action: 'Earned badge', target: 'Speed Coder', xp: 200, time: '3d ago', icon: '🏅' },
+    ],
+  },
+  {
+    id: 'priya-m',
+    name: 'Priya M.',
+    avatar: 'icon:2',
+    headline: 'Dynamic programming and recursion notes',
+    bio: 'Priya writes compact reasoning notes and compares recursive and tabulated solutions side by side.',
+    rank: 'DP Explorer',
+    level: 15,
+    xp: 6800,
+    streak: 9,
+    totalSolved: 89,
+    focus: 'Memoization, recursion trees, state transitions',
+    badgeIds: [
+      { id: 'b-001', earnedAt: '2024-01-22' },
+      { id: 'b-004', earnedAt: '2024-02-15' },
+      { id: 'b-009', earnedAt: '2024-03-01' },
+      { id: 'b-010', earnedAt: '2024-03-12' },
+    ],
+    highlights: [
+      'Documented a memoization template that she reuses across three DP exercises',
+      'Reviewed recursion trees with a peer study group twice this week',
+      'Finished the backtracking module without skipping any checkpoints',
+    ],
+    activity: [
+      { id: 'p-1', action: 'Completed', target: 'Fibonacci memoization practice', xp: 100, time: '6h ago', icon: '⟳' },
+      { id: 'p-2', action: 'Shared', target: 'State-transition notes', xp: 30, time: '1d ago', icon: '✎' },
+      { id: 'p-3', action: 'Earned badge', target: 'Recursion Ninja', xp: 220, time: '4d ago', icon: '🏅' },
+    ],
+  },
+  {
+    id: 'david-l',
+    name: 'David L.',
+    avatar: 'icon:3',
+    headline: 'Beginners track and bug hunting',
+    bio: 'David keeps a steady pace, focuses on fundamentals, and is quick to spot off-by-one mistakes in practice mode.',
+    rank: 'Foundations Builder',
+    level: 8,
+    xp: 2900,
+    streak: 5,
+    totalSolved: 41,
+    focus: 'Foundations, debugging, beginner course completion',
+    badgeIds: [
+      { id: 'b-001', earnedAt: '2024-01-25' },
+      { id: 'b-002', earnedAt: '2024-02-20' },
+      { id: 'b-008', earnedAt: '2024-03-03' },
+    ],
+    highlights: [
+      'Finished the first sorting course and rewrote his notes into checklists',
+      'Used practice mode to diagnose three separate indexing bugs',
+      'Started helping newer learners with the basics of arrays and loops',
+    ],
+    activity: [
+      { id: 'd-1', action: 'Completed', target: 'Bubble Sort Visualization', xp: 80, time: '2h ago', icon: '✓' },
+      { id: 'd-2', action: 'Solved', target: 'Intro array exercises', xp: 60, time: '1d ago', icon: '↺' },
+      { id: 'd-3', action: 'Earned badge', target: 'Bug Hunter', xp: 120, time: '2d ago', icon: '🏅' },
+    ],
+  },
+]
+
+function buildBadges(profile: CommunityProfile) {
+  return MOCK_BADGES
+    .map((badge) => {
+      const earned = profile.badgeIds.find((entry) => entry.id === badge.id)
+      return earned ? { ...badge, earned: true, earnedAt: earned.earnedAt } : { ...badge, earned: false }
+    })
+    .filter((badge) => badge.earned)
+}
+
+function CommunityTab() {
+  const { t } = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const selectedId = searchParams.get('peer') ?? COMMUNITY_PROFILES[0].id
+  const selectedProfile = COMMUNITY_PROFILES.find((profile) => profile.id === selectedId) ?? COMMUNITY_PROFILES[0]
+
+  useEffect(() => {
+    if (searchParams.get('peer')) return
+    setSearchParams({ tab: 'community', peer: COMMUNITY_PROFILES[0].id }, { replace: true })
+  }, [searchParams, setSearchParams])
+
+  const peerBadges = useMemo(() => buildBadges(selectedProfile), [selectedProfile])
+  const summary = [
+    { label: t('profile.community.summary.profiles'), value: COMMUNITY_PROFILES.length },
+    { label: t('profile.community.summary.badges'), value: COMMUNITY_PROFILES.reduce((count, profile) => count + profile.badgeIds.length, 0) },
+    { label: t('profile.community.summary.activity'), value: COMMUNITY_PROFILES.reduce((count, profile) => count + profile.activity.length, 0) },
+    { label: t('profile.community.summary.streak'), value: `${Math.max(...COMMUNITY_PROFILES.map((profile) => profile.streak))}d` },
+  ]
+
+  return (
+    <div className="space-y-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {summary.map((item) => (
+          <div key={item.label} className="p-4 rounded-2xl border border-white/5 bg-surface-900/40 text-center">
+            <div className="text-2xl font-display font-bold text-white">{item.value}</div>
+            <div className="text-xs text-surface-500 mt-0.5">{item.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-[280px_minmax(0,1fr)] items-start">
+        <div className="p-4 rounded-2xl glass border border-white/8 space-y-3">
+          <div>
+            <h3 className="font-bold flex items-center gap-2">
+              <Users size={16} className="text-brand-400" />
+              {t('profile.community.directory')}
+            </h3>
+            <p className="text-xs text-surface-500 mt-1">{t('profile.community.directorySub')}</p>
+          </div>
+          <div className="space-y-2">
+            {COMMUNITY_PROFILES.map((profile) => {
+              const active = profile.id === selectedProfile.id
+              const avatarImage = resolveAvatarImage(profile.avatar)
+
+              return (
+                <button
+                  key={profile.id}
+                  type="button"
+                  onClick={() => setSearchParams({ tab: 'community', peer: profile.id })}
+                  className={cn(
+                    'w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all',
+                    active
+                      ? 'bg-brand-500/10 border-brand-500/30 text-white'
+                      : 'bg-surface-900/40 border-white/6 text-surface-300 hover:border-white/15 hover:bg-white/5'
+                  )}
+                >
+                  <div className="h-10 w-10 rounded-xl overflow-hidden flex items-center justify-center bg-surface-800 border border-white/8 flex-shrink-0 font-semibold">
+                    {avatarImage ? <img src={avatarImage} alt={profile.name} className="h-full w-full object-cover" /> : profile.avatar}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-semibold text-sm">{profile.name}</div>
+                    <div className="truncate text-[11px] text-surface-500">{profile.headline}</div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className="text-xs font-semibold text-brand-400">Lv {profile.level}</div>
+                    <div className="text-[10px] text-surface-500">{profile.streak}d</div>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="p-6 rounded-2xl glass border border-white/8 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="h-16 w-16 rounded-2xl overflow-hidden bg-gradient-to-br from-brand-500 to-accent-cyan border border-white/10 flex items-center justify-center text-2xl font-bold flex-shrink-0">
+                {resolveAvatarImage(selectedProfile.avatar) ? (
+                  <img src={resolveAvatarImage(selectedProfile.avatar) ?? undefined} alt={selectedProfile.name} className="h-full w-full object-cover" />
+                ) : (
+                  selectedProfile.avatar
+                )}
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-2xl font-display font-bold truncate">{selectedProfile.name}</h3>
+                <p className="text-surface-400 text-sm truncate">{selectedProfile.headline}</p>
+                <p className="text-xs text-surface-500 mt-1">{selectedProfile.bio}</p>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-white/8 bg-surface-900/50 px-4 py-3 text-right">
+              <div className="text-[11px] uppercase tracking-widest text-surface-500">{selectedProfile.rank}</div>
+              <div className="text-lg font-display font-bold text-white">{selectedProfile.level}</div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: t('profile.stats.xp'), value: selectedProfile.xp.toLocaleString() },
+              { label: t('profile.stats.level'), value: `${selectedProfile.level}` },
+              { label: t('profile.stats.streak'), value: `${selectedProfile.streak}d` },
+              { label: t('profile.stats.solved'), value: `${selectedProfile.totalSolved}` },
+            ].map((item) => (
+              <div key={item.label} className="p-4 rounded-2xl border border-white/5 bg-white/3 text-center">
+                <div className="text-xl font-display font-bold text-white">{item.value}</div>
+                <div className="text-xs text-surface-500 mt-0.5">{item.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h4 className="font-bold text-sm">{t('profile.community.focus')}</h4>
+              <span className="text-xs text-surface-500">{t('profile.community.youCanBrowse')}</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {selectedProfile.focus.split(',').map((item) => (
+                <span key={item.trim()} className="px-3 py-1.5 rounded-full border border-white/8 bg-surface-900/60 text-xs text-surface-300">
+                  {item.trim()}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h4 className="font-bold text-sm">{t('profile.community.highlights')}</h4>
+              <span className="text-xs text-surface-500">{t('profile.community.highlightsSub')}</span>
+            </div>
+            <div className="space-y-2">
+              {selectedProfile.highlights.map((item) => (
+                <div key={item} className="rounded-xl border border-white/6 bg-white/3 px-3 py-3 text-sm text-surface-300">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h4 className="font-bold text-sm">{t('profile.community.achievements')}</h4>
+              <span className="text-xs text-surface-500">{peerBadges.length} {t('profile.badges.earned')}</span>
+            </div>
+            <BadgeGrid badges={peerBadges} columns={4} />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h4 className="font-bold text-sm">{t('profile.community.activity')}</h4>
+              <span className="text-xs text-surface-500">{t('profile.community.activitySub')}</span>
+            </div>
+            <div className="space-y-2">
+              {selectedProfile.activity.map((item) => (
+                <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border border-white/6 bg-white/3">
+                  <div className="w-9 h-9 rounded-lg bg-surface-800 flex items-center justify-center text-sm flex-shrink-0">{item.icon}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm">
+                      <span className="text-surface-400">{item.action} </span>
+                      <span className="font-medium text-white">{item.target}</span>
+                    </div>
+                    <div className="text-xs text-surface-500">{item.time}</div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    {item.xp > 0 && <div className="text-xs font-semibold text-brand-400">+{item.xp} XP</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-brand-500/20 bg-brand-500/8 flex items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-semibold">{t('profile.community.openPrompt')}</div>
+              <div className="text-xs text-surface-500">{t('profile.community.openPromptSub')}</div>
+            </div>
+            <Link
+              to="/profile?tab=profile"
+              className="inline-flex items-center gap-2 rounded-full border border-brand-500/30 px-4 py-2 text-xs font-medium text-white"
+              style={{ background: 'rgba(26,92,255,0.18)' }}
+            >
+              {t('profile.community.backToMine')} <ChevronRight size={14} />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // ── Profile tab ───────────────────────────────────────────────────────────────
 function ProfileTab() {
   const { t } = useTranslation()
   const { user, updateProfile } = useUserStore()
-  const [form, setForm] = useState({ name: user.name, email: user.email, bio: user.bio, language: user.language })
+  const [form, setForm] = useState({
+    name: user.name,
+    email: user.email,
+    bio: user.bio,
+    language: user.language,
+    avatar: isIconAvatar(user.avatar) ? user.avatar : 'text',
+  })
   const [saved, setSaved] = useState(false)
   const [myRank, setMyRank] = useState<number | null>(null)
+  const userAvatarImage = useMemo(() => resolveAvatarImage(user.avatar), [user.avatar])
 
   function save() {
-    updateProfile(form)
+    const patch = {
+      name: form.name,
+      email: form.email,
+      bio: form.bio,
+      language: form.language,
+      ...(form.avatar.startsWith('icon:') ? { avatar: form.avatar } : {}),
+    }
+    updateProfile(patch)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
@@ -114,8 +473,12 @@ function ProfileTab() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
           {/* Avatar */}
           <div className="relative group">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-500 to-accent-cyan flex items-center justify-center text-2xl font-bold shadow-glow-blue">
-              {user.avatar}
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-500 to-accent-cyan flex items-center justify-center text-2xl font-bold shadow-glow-blue overflow-hidden">
+              {userAvatarImage ? (
+                <img src={userAvatarImage} alt={user.name} className="w-full h-full object-cover" />
+              ) : (
+                user.avatar
+              )}
             </div>
             <button className="absolute inset-0 rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <Camera size={18} className="text-white" />
@@ -207,6 +570,42 @@ function ProfileTab() {
                 <option key={l} value={l}>{l}</option>
               ))}
             </select>
+          </div>
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-medium text-surface-400 mb-2">Profile icon</label>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setForm((f) => ({ ...f, avatar: 'text' }))}
+                className={cn(
+                  'h-14 w-14 rounded-xl border p-1 transition-colors text-xs font-semibold',
+                  !form.avatar.startsWith('icon:')
+                    ? 'border-brand-500/40 bg-brand-500/10 text-white'
+                    : 'border-white/10 hover:border-white/20 text-surface-300'
+                )}
+              >
+                {(form.name.split(' ').filter((n) => n).map((n) => n[0]).join('').toUpperCase().slice(0, 2) || 'ME')}
+              </button>
+              {AVATAR_OPTIONS.map((option) => {
+                const selected = form.avatar === `icon:${option.id}`
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, avatar: `icon:${option.id}` }))}
+                    className={cn(
+                      'h-14 w-14 rounded-xl border p-1 transition-colors',
+                      selected
+                        ? 'border-brand-500/40 bg-brand-500/10'
+                        : 'border-white/10 hover:border-white/20'
+                    )}
+                    aria-label={option.label}
+                  >
+                    <img src={option.src} alt={option.label} className="h-full w-full rounded-lg object-cover" />
+                  </button>
+                )
+              })}
+            </div>
           </div>
         </div>
 
@@ -605,6 +1004,7 @@ export default function ProfilePage() {
   const tabContent: Record<string, React.ReactNode> = {
     profile:       <ProfileTab />,
     badges:        <BadgesTab />,
+    community:     <CommunityTab />,
     settings:      <SettingsTab />,
     notifications: <NotificationsTab />,
   }
@@ -620,9 +1020,11 @@ export default function ProfilePage() {
           className="mb-8"
         >
           <h1 className="text-3xl font-display font-bold">
-            {t('profile.myProfileTitle')}
+            {tab === 'community' ? t('profile.community.title') : t('profile.myProfileTitle')}
           </h1>
-          <p className="text-surface-400 mt-1">{t('profile.subtitle')}</p>
+          <p className="text-surface-400 mt-1">
+            {tab === 'community' ? t('profile.community.subtitle') : t('profile.subtitle')}
+          </p>
         </motion.div>
 
         <div className="flex flex-col lg:flex-row gap-8">

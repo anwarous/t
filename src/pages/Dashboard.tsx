@@ -324,7 +324,7 @@ export default function Dashboard() {
   )
   const [courses, setCourses] = useState<Course[]>(MOCK_COURSES)
   const [recommendedExercises, setRecommendedExercises] = useState<Exercise[]>(
-    MOCK_EXERCISES.filter((exercise) => !exercise.completed).slice(0, 2)
+    MOCK_EXERCISES.slice(0, 2)
   )
   const [leaderboard, setLeaderboard] = useState<Array<{ rank: number; name: string; xp: number; level: number; streak: number; avatar: string; isCurrentUser: boolean; delta?: number }>>([])
   const inProgress = courses.filter((course) => course.progress > 0 && course.progress < 100)
@@ -613,11 +613,26 @@ export default function Dashboard() {
                 <div className="text-[11px] uppercase tracking-[0.08em]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>Leaderboard</div>
                 <div className="mt-1 text-lg" style={{ fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '-0.03em' }}>You are currently #{myRank}</div>
               </div>
-              <Link to="/profile" className="text-sm" style={{ color: 'var(--color-accent)', fontFamily: 'IBM Plex Mono, monospace' }}>View profile</Link>
+              <Link to="/profile?tab=community" className="text-sm" style={{ color: 'var(--color-accent)', fontFamily: 'IBM Plex Mono, monospace' }}>View profiles</Link>
             </div>
+            {myEntry && (
+              <Link
+                to="/profile?tab=profile"
+                className="mt-4 flex items-center gap-3 rounded-2xl border border-brand-500/20 px-3 py-3 transition-colors hover:border-brand-500/35"
+                style={{ background: 'rgba(109,255,26,0.06)' }}
+              >
+                <div className="w-6 text-center text-[12px] font-semibold" style={{ color: 'var(--color-accent)', fontFamily: 'Space Grotesk, sans-serif' }}>{myEntry.rank}</div>
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/8" style={{ background: 'rgba(255,255,255,0.03)' }}>{myEntry.avatar}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-medium" style={{ color: 'var(--color-text)', fontFamily: 'Space Grotesk, sans-serif' }}>{myEntry.name}</div>
+                  <div className="text-[11px]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>Open your profile</div>
+                </div>
+                <div className="text-[11px] font-semibold" style={{ color: 'var(--color-xp)', fontFamily: 'IBM Plex Mono, monospace' }}>{myEntry.streak}d</div>
+              </Link>
+            )}
             <div className="mt-4 space-y-2">
               {leaderboard.slice(0, 5).map((entry, index) => (
-                <div key={entry.rank} className="flex items-center gap-3 rounded-2xl border border-white/6 px-3 py-3" style={{ background: entry.isCurrentUser ? 'rgba(109,255,26,0.05)' : 'rgba(255,255,255,0.02)' }}>
+                <Link key={entry.rank} to={entry.isCurrentUser ? '/profile?tab=profile' : '/profile?tab=community'} className="flex items-center gap-3 rounded-2xl border border-white/6 px-3 py-3 transition-colors hover:border-white/12" style={{ background: entry.isCurrentUser ? 'rgba(109,255,26,0.05)' : 'rgba(255,255,255,0.02)' }}>
                   <div className="w-6 text-center text-[12px] font-semibold" style={{ color: index === 0 ? 'var(--color-accent)' : 'var(--color-text-mid)', fontFamily: 'Space Grotesk, sans-serif' }}>{entry.rank}</div>
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/8" style={{ background: 'rgba(255,255,255,0.03)' }}>{entry.avatar}</div>
                   <div className="min-w-0 flex-1">
@@ -625,7 +640,7 @@ export default function Dashboard() {
                     <div className="text-[11px]" style={{ color: 'var(--color-text-faint)', fontFamily: 'IBM Plex Mono, monospace' }}>{entry.xp.toLocaleString()} XP</div>
                   </div>
                   <div className="text-[11px]" style={{ color: 'var(--color-xp)', fontFamily: 'IBM Plex Mono, monospace' }}>{entry.streak}d</div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

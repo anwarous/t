@@ -1,0 +1,910 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <defs>
+    <radialGradient id="coreGrad" cx="50%" cy="45%" r="60%">
+      <stop offset="0%" stop-color="#7ff5ff"/>
+      <stop offset="55%" stop-color="#2e8dff"/>
+      <stop offset="100%" stop-color="#182a7a"/>
+    </radialGradient>
+    <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7dffef"/>
+      <stop offset="50%" stop-color="#63a8ff"/>
+      <stop offset="100%" stop-color="#d27dff"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8afff8"/>
+      <stop offset="50%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#8ca4ff"/>
+    </linearGradient>
+    <linearGradient id="xpGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#76ffe7"/>
+      <stop offset="100%" stop-color="#7c8dff"/>
+    </linearGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="3.8" result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="b2"/>
+      <feMerge>
+        <feMergeNode in="b1"/>
+        <feMergeNode in="b2"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="textGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="2.2" result="tb"/>
+      <feMerge>
+        <feMergeNode in="tb"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <symbol id="sparkStar" viewBox="-4 -4 8 8">
+      <path d="M0,-4 L1.2,-1.2 L4,0 L1.2,1.2 L0,4 L-1.2,1.2 L-4,0 L-1.2,-1.2 Z" fill="#c9ffff"/>
+    </symbol>
+    <symbol id="sparkDot" viewBox="-3 -3 6 6">
+      <circle r="2.2" fill="#9df9ff"/>
+    </symbol>
+  </defs>
+
+  <circle cx="150" cy="130" r="118" fill="none" stroke="#3f66c6" stroke-opacity="0.16" stroke-width="1"/>
+  <circle cx="150" cy="130" r="94" fill="none" stroke="#58b6ff" stroke-opacity="0.12" stroke-width="1"/>
+
+  <g filter="url(#glow)">
+    <circle cx="150" cy="130" r="34" fill="none" stroke="url(#ringGrad)" stroke-width="2.6" opacity="0">
+      <animate attributeName="r" begin="0s;replay.click" dur="1.15s" values="34;108" keyTimes="0;1" calcMode="spline" keySplines="0.22 0.61 0.36 1" fill="freeze"/>
+      <animate attributeName="opacity" begin="0s;replay.click" dur="1.15s" values="0;0.95;0" keyTimes="0;0.18;1" calcMode="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1" fill="freeze"/>
+    </circle>
+    <circle cx="150" cy="130" r="34" fill="none" stroke="#85e7ff" stroke-width="1.4" opacity="0">
+      <animate attributeName="r" begin="0.2s;replay.click+0.2s" dur="1.2s" values="38;122" keyTimes="0;1" calcMode="spline" keySplines="0.2 0.8 0.2 1" fill="freeze"/>
+      <animate attributeName="opacity" begin="0.2s;replay.click+0.2s" dur="1.2s" values="0;0.7;0" keyTimes="0;0.2;1" calcMode="spline" keySplines="0.25 0.1 0.25 1;0.2 0 0.2 1" fill="freeze"/>
+    </circle>
+  </g>
+
+  <g transform="translate(150 130)" filter="url(#glow)">
+    <g opacity="0.9">
+      <circle r="52" fill="none" stroke="url(#ringGrad)" stroke-width="3.4" stroke-dasharray="96 230" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate" begin="0s;replay.click" dur="2.8s" values="0;360" calcMode="spline" keySplines="0.33 0 0.17 1" fill="freeze"/>
+      </circle>
+      <circle r="42" fill="none" stroke="#85d3ff" stroke-width="2.4" stroke-dasharray="70 194" stroke-linecap="round" opacity="0.9">
+        <animateTransform attributeName="transform" type="rotate" begin="0s;replay.click" dur="2.5s" values="0;-360" calcMode="spline" keySplines="0.33 0 0.17 1" fill="freeze"/>
+      </circle>
+    </g>
+
+    <g transform="scale(0.55)" opacity="0">
+      <animate attributeName="opacity" begin="0s;replay.click" dur="0.22s" values="0;1" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" begin="0s;replay.click" dur="1.35s"
+        values="0.55;1.2;0.94;1.04;1"
+        keyTimes="0;0.32;0.58;0.78;1"
+        calcMode="spline"
+        keySplines="0.22 0.98 0.34 1;0.2 0 0.25 1;0.35 0 0.2 1;0.25 0.1 0.25 1"
+        fill="freeze"/>
+      <polygon points="0,-38 33,-19 33,19 0,38 -33,19 -33,-19" fill="url(#coreGrad)" stroke="url(#ringGrad)" stroke-width="2.2"/>
+      <polygon points="0,-26 23,-13 23,13 0,26 -23,13 -23,-13" fill="#0f1f58" opacity="0.52"/>
+      <path d="M0 -15 L13 1 L5 1 L5 16 L-5 16 L-5 1 L-13 1 Z" fill="#d8faff"/>
+      <circle r="40" fill="none" stroke="#9df7ff" stroke-opacity="0.45" stroke-width="1">
+        <animate attributeName="r" begin="0.1s;replay.click+0.1s" dur="1.1s" values="22;46;40" keyTimes="0;0.72;1" calcMode="spline" keySplines="0.2 0.8 0.2 1;0.25 0.1 0.25 1" fill="freeze"/>
+        <animate attributeName="opacity" begin="0.1s;replay.click+0.1s" dur="1.1s" values="0;0.8;0.45" keyTimes="0;0.5;1" calcMode="spline" keySplines="0.25 0.1 0.25 1;0.25 0.1 0.25 1" fill="freeze"/>
+      </circle>
+    </g>
+  </g>
+
+  <g transform="translate(150 130)" filter="url(#glow)">
+    <use href="#sparkStar" x="0" y="0" opacity="0">
+      <animate attributeName="opacity" begin="0.15s;replay.click+0.15s" dur="1.1s" values="0;1;0" keyTimes="0;0.2;1" fill="freeze"/>
+      <animateMotion begin="0.15s;replay.click+0.15s" dur="1.1s" path="M0,0 L-98,-42" rotate="auto" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" begin="0.15s;replay.click+0.15s" dur="1.1s" values="0.4;1.2;0.2" fill="freeze"/>
+    </use>
+    <use href="#sparkDot" x="0" y="0" opacity="0">
+      <animate attributeName="opacity" begin="0.05s;replay.click+0.05s" dur="1s" values="0;1;0" keyTimes="0;0.22;1" fill="freeze"/>
+      <animateMotion begin="0.05s;replay.click+0.05s" dur="1s" path="M0,0 L-76,-74" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" begin="0.05s;replay.click+0.05s" dur="1s" values="0.3;1;0.1" fill="freeze"/>
+    </use>
+    <use href="#sparkStar" x="0" y="0" opacity="0">
+      <animate attributeName="opacity" begin="0.1s;replay.click+0.1s" dur="1.2s" values="0;1;0" keyTimes="0;0.2;1" fill="freeze"/>
+      <animateMotion begin="0.1s;replay.click+0.1s" dur="1.2s" path="M0,0 L-24,-106" rotate="auto" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" begin="0.1s;replay.click+0.1s" dur="1.2s" values="0.35;1.1;0.15" fill="freeze"/>
+    </use>
+    <use href="#sparkDot" x="0" y="0" opacity="0">
+      <animate attributeName="opacity" begin="0s;replay.click" dur="1.15s" values="0;1;0" keyTimes="0;0.2;1" fill="freeze"/>
+      <animateMotion begin="0s;replay.click" dur="1.15s" path="M0,0 L46,-98" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" begin="0s;replay.click" dur="1.15s" values="0.25;0.95;0.08" fill="freeze"/>
+    </use>
+    <use href="#sparkStar" x="0" y="0" opacity="0">
+      <animate attributeName="opacity" begin="0.14s;replay.click+0.14s" dur="1.18s" values="0;1;0" keyTimes="0;0.2;1" fill="freeze"/>
+      <animateMotion begin="0.14s;replay.click+0.14s" dur="1.18s" path="M0,0 L92,-52" rotate="auto" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" begin="0.14s;replay.click+0.14s" dur="1.18s" values="0.35;1.08;0.14" fill="freeze"/>
+    </use>
+    <use href="#sparkDot" x="0" y="0" opacity="0">
+      <animate attributeName="opacity" begin="0.06s;replay.click+0.06s" dur="1.22s" values="0;1;0" keyTimes="0;0.22;1" fill="freeze"/>
+      <animateMotion begin="0.06s;replay.click+0.06s" dur="1.22s" path="M0,0 L104,6" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" begin="0.06s;replay.click+0.06s" dur="1.22s" values="0.25;0.95;0.09" fill="freeze"/>
+    </use>
+    <use href="#sparkStar" x="0" y="0" opacity="0">
+      <animate attributeName="opacity" begin="0.2s;replay.click+0.2s" dur="1.2s" values="0;1;0" keyTimes="0;0.18;1" fill="freeze"/>
+      <animateMotion begin="0.2s;replay.click+0.2s" dur="1.2s" path="M0,0 L76,74" rotate="auto" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" begin="0.2s;replay.click+0.2s" dur="1.2s" values="0.4;1.15;0.18" fill="freeze"/>
+    </use>
+    <use href="#sparkDot" x="0" y="0" opacity="0">
+      <animate attributeName="opacity" begin="0.09s;replay.click+0.09s" dur="1.15s" values="0;1;0" keyTimes="0;0.2;1" fill="freeze"/>
+      <animateMotion begin="0.09s;replay.click+0.09s" dur="1.15s" path="M0,0 L14,110" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" begin="0.09s;replay.click+0.09s" dur="1.15s" values="0.25;0.9;0.08" fill="freeze"/>
+    </use>
+    <use href="#sparkStar" x="0" y="0" opacity="0">
+      <animate attributeName="opacity" begin="0.17s;replay.click+0.17s" dur="1.12s" values="0;1;0" keyTimes="0;0.2;1" fill="freeze"/>
+      <animateMotion begin="0.17s;replay.click+0.17s" dur="1.12s" path="M0,0 L-58,88" rotate="auto" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" begin="0.17s;replay.click+0.17s" dur="1.12s" values="0.3;1.05;0.12" fill="freeze"/>
+    </use>
+  </g>
+
+  <g transform="translate(150 220)" filter="url(#textGlow)" opacity="0">
+    <animate attributeName="opacity" begin="0.95s;replay.click+0.95s" dur="0.28s" values="0;1" fill="freeze"/>
+    <animateTransform attributeName="transform" type="scale" additive="sum"
+      begin="0.95s;replay.click+0.95s" dur="0.8s"
+      values="0.84;1.08;1"
+      keyTimes="0;0.65;1"
+      calcMode="spline"
+      keySplines="0.18 1 0.22 1;0.25 0.1 0.25 1"
+      fill="freeze"/>
+    <text x="0" y="0" text-anchor="middle" dominant-baseline="middle"
+      font-family="Orbitron, Rajdhani, Segoe UI, sans-serif" font-size="33" font-weight="900" letter-spacing="4"
+      fill="url(#textGrad)">LEVEL UP</text>
+    <text x="0" y="0" text-anchor="middle" dominant-baseline="middle"
+      font-family="Orbitron, Rajdhani, Segoe UI, sans-serif" font-size="33" font-weight="900" letter-spacing="4"
+      fill="none" stroke="#d9f9ff" stroke-width="1.1" stroke-dasharray="340" stroke-dashoffset="340">
+      LEVEL UP
+      <animate attributeName="stroke-dashoffset" begin="0.98s;replay.click+0.98s" dur="0.88s" values="340;0" calcMode="spline" keySplines="0.2 0.8 0.2 1" fill="freeze"/>
+      <animate attributeName="opacity" begin="1.7s;replay.click+1.7s" dur="0.9s" values="1;0.5;0.8" keyTimes="0;0.5;1" fill="freeze"/>
+    </text>
+  </g>
+
+  <g transform="translate(60 252)" opacity="0">
+    <animate attributeName="opacity" begin="1.05s;replay.click+1.05s" dur="0.25s" values="0;1" fill="freeze"/>
+    <rect x="0" y="0" width="180" height="10" rx="5" fill="#1d2d5f" fill-opacity="0.75" stroke="#4f72d0" stroke-opacity="0.5"/>
+    <rect x="0" y="0" width="0" height="10" rx="5" fill="url(#xpGrad)" filter="url(#glow)">
+      <animate attributeName="width" begin="1.08s;replay.click+1.08s" dur="1.45s" values="0;180" calcMode="spline" keySplines="0.22 1 0.36 1" fill="freeze"/>
+    </rect>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 0/60
+      <animate
+        attributeName="opacity"
+        begin="1.080s;replay.click+1.080s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 1/60
+      <animate
+        attributeName="opacity"
+        begin="1.104s;replay.click+1.104s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 2/60
+      <animate
+        attributeName="opacity"
+        begin="1.128s;replay.click+1.128s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 3/60
+      <animate
+        attributeName="opacity"
+        begin="1.153s;replay.click+1.153s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 4/60
+      <animate
+        attributeName="opacity"
+        begin="1.177s;replay.click+1.177s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 5/60
+      <animate
+        attributeName="opacity"
+        begin="1.201s;replay.click+1.201s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 6/60
+      <animate
+        attributeName="opacity"
+        begin="1.225s;replay.click+1.225s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 7/60
+      <animate
+        attributeName="opacity"
+        begin="1.249s;replay.click+1.249s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 8/60
+      <animate
+        attributeName="opacity"
+        begin="1.273s;replay.click+1.273s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 9/60
+      <animate
+        attributeName="opacity"
+        begin="1.298s;replay.click+1.298s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 10/60
+      <animate
+        attributeName="opacity"
+        begin="1.322s;replay.click+1.322s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 11/60
+      <animate
+        attributeName="opacity"
+        begin="1.346s;replay.click+1.346s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 12/60
+      <animate
+        attributeName="opacity"
+        begin="1.370s;replay.click+1.370s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 13/60
+      <animate
+        attributeName="opacity"
+        begin="1.394s;replay.click+1.394s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 14/60
+      <animate
+        attributeName="opacity"
+        begin="1.418s;replay.click+1.418s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 15/60
+      <animate
+        attributeName="opacity"
+        begin="1.443s;replay.click+1.443s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 16/60
+      <animate
+        attributeName="opacity"
+        begin="1.467s;replay.click+1.467s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 17/60
+      <animate
+        attributeName="opacity"
+        begin="1.491s;replay.click+1.491s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 18/60
+      <animate
+        attributeName="opacity"
+        begin="1.515s;replay.click+1.515s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 19/60
+      <animate
+        attributeName="opacity"
+        begin="1.539s;replay.click+1.539s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 20/60
+      <animate
+        attributeName="opacity"
+        begin="1.563s;replay.click+1.563s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 21/60
+      <animate
+        attributeName="opacity"
+        begin="1.587s;replay.click+1.587s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 22/60
+      <animate
+        attributeName="opacity"
+        begin="1.612s;replay.click+1.612s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 23/60
+      <animate
+        attributeName="opacity"
+        begin="1.636s;replay.click+1.636s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 24/60
+      <animate
+        attributeName="opacity"
+        begin="1.660s;replay.click+1.660s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 25/60
+      <animate
+        attributeName="opacity"
+        begin="1.684s;replay.click+1.684s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 26/60
+      <animate
+        attributeName="opacity"
+        begin="1.708s;replay.click+1.708s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 27/60
+      <animate
+        attributeName="opacity"
+        begin="1.732s;replay.click+1.732s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 28/60
+      <animate
+        attributeName="opacity"
+        begin="1.757s;replay.click+1.757s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 29/60
+      <animate
+        attributeName="opacity"
+        begin="1.781s;replay.click+1.781s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 30/60
+      <animate
+        attributeName="opacity"
+        begin="1.805s;replay.click+1.805s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 31/60
+      <animate
+        attributeName="opacity"
+        begin="1.829s;replay.click+1.829s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 32/60
+      <animate
+        attributeName="opacity"
+        begin="1.853s;replay.click+1.853s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 33/60
+      <animate
+        attributeName="opacity"
+        begin="1.877s;replay.click+1.877s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 34/60
+      <animate
+        attributeName="opacity"
+        begin="1.902s;replay.click+1.902s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 35/60
+      <animate
+        attributeName="opacity"
+        begin="1.926s;replay.click+1.926s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 36/60
+      <animate
+        attributeName="opacity"
+        begin="1.950s;replay.click+1.950s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 37/60
+      <animate
+        attributeName="opacity"
+        begin="1.974s;replay.click+1.974s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 38/60
+      <animate
+        attributeName="opacity"
+        begin="1.998s;replay.click+1.998s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 39/60
+      <animate
+        attributeName="opacity"
+        begin="2.022s;replay.click+2.022s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 40/60
+      <animate
+        attributeName="opacity"
+        begin="2.047s;replay.click+2.047s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 41/60
+      <animate
+        attributeName="opacity"
+        begin="2.071s;replay.click+2.071s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 42/60
+      <animate
+        attributeName="opacity"
+        begin="2.095s;replay.click+2.095s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 43/60
+      <animate
+        attributeName="opacity"
+        begin="2.119s;replay.click+2.119s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 44/60
+      <animate
+        attributeName="opacity"
+        begin="2.143s;replay.click+2.143s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 45/60
+      <animate
+        attributeName="opacity"
+        begin="2.167s;replay.click+2.167s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 46/60
+      <animate
+        attributeName="opacity"
+        begin="2.192s;replay.click+2.192s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 47/60
+      <animate
+        attributeName="opacity"
+        begin="2.216s;replay.click+2.216s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 48/60
+      <animate
+        attributeName="opacity"
+        begin="2.240s;replay.click+2.240s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 49/60
+      <animate
+        attributeName="opacity"
+        begin="2.264s;replay.click+2.264s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 50/60
+      <animate
+        attributeName="opacity"
+        begin="2.288s;replay.click+2.288s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 51/60
+      <animate
+        attributeName="opacity"
+        begin="2.312s;replay.click+2.312s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 52/60
+      <animate
+        attributeName="opacity"
+        begin="2.337s;replay.click+2.337s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 53/60
+      <animate
+        attributeName="opacity"
+        begin="2.361s;replay.click+2.361s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 54/60
+      <animate
+        attributeName="opacity"
+        begin="2.385s;replay.click+2.385s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 55/60
+      <animate
+        attributeName="opacity"
+        begin="2.409s;replay.click+2.409s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 56/60
+      <animate
+        attributeName="opacity"
+        begin="2.433s;replay.click+2.433s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 57/60
+      <animate
+        attributeName="opacity"
+        begin="2.458s;replay.click+2.458s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 58/60
+      <animate
+        attributeName="opacity"
+        begin="2.482s;replay.click+2.482s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 59/60
+      <animate
+        attributeName="opacity"
+        begin="2.506s;replay.click+2.506s"
+        dur="0.024s"
+        values="0;1;1;0"
+        keyTimes="0;0.05;0.95;1"
+        fill="freeze"/>
+    </text>
+    <text x="90" y="-7" text-anchor="middle"
+      font-family="Rajdhani, Segoe UI, sans-serif"
+      font-size="10" letter-spacing="2" fill="#dffbff" opacity="0">
+      XP 60/60
+      <animate
+        attributeName="opacity"
+        begin="2.530s;replay.click+2.530s"
+        dur="0.06s"
+        values="0;1"
+        fill="freeze"/>
+    </text>
+  </g>
+
+  <g transform="translate(150 168)" opacity="0" filter="url(#textGlow)">
+    <animate attributeName="opacity" begin="0.75s;replay.click+0.75s" dur="0.2s" values="0;1" fill="freeze"/>
+    <text x="0" y="0" text-anchor="middle" font-family="Rajdhani, Segoe UI, sans-serif" font-size="14" font-weight="700" fill="#a9dfff" opacity="1">
+      LVL 1
+      <animate attributeName="opacity" begin="1.32s;replay.click+1.32s" dur="0.35s" values="1;0" fill="freeze"/>
+    </text>
+    <text x="0" y="0" text-anchor="middle" font-family="Rajdhani, Segoe UI, sans-serif" font-size="16" font-weight="900" fill="#e7fbff" opacity="0">
+      LVL 2
+      <animate attributeName="opacity" begin="1.48s;replay.click+1.48s" dur="0.32s" values="0;1" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" begin="1.48s;replay.click+1.48s" dur="0.5s" values="0.8;1.16;1" keyTimes="0;0.55;1" calcMode="spline" keySplines="0.2 1 0.3 1;0.25 0.1 0.25 1" fill="freeze"/>
+    </text>
+  </g>
+
+  <rect id="replay" x="0" y="0" width="300" height="300" fill="transparent" pointer-events="all"/>
+</svg>

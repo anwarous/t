@@ -3,6 +3,7 @@ import { MOCK_USER, MOCK_BADGES, MOCK_CHAT_MESSAGES, MOCK_EXERCISES, type ChatMe
 import { runPython } from '@/lib/pythonCompiler'
 import { runAlgo } from '@/lib/algoCompiler'
 import { ApiError, exerciseApi, mentorApi } from '@/lib/api'
+import { isIconAvatar } from '@/lib/profileAvatar'
 
 // ─── Auth Store ───────────────────────────────────────────────────────────────
 
@@ -178,7 +179,7 @@ interface UserState {
   addXP: (amount: number) => void
   incrementStreak: () => void
   markExerciseSolved: (id: string, xp: number) => void
-  updateProfile: (patch: Partial<Pick<UserProfile, 'name' | 'email' | 'bio' | 'language'>>) => void
+  updateProfile: (patch: Partial<Pick<UserProfile, 'name' | 'email' | 'bio' | 'language' | 'avatar'>>) => void
   updateNotifications: (patch: Partial<UserProfile['notifications']>) => void
   updateTheme: (theme: string) => void
   hydrateStatsFromBackend: (stats: Pick<UserProfile, 'xp' | 'level' | 'streak' | 'totalSolved' | 'rank'>) => void
@@ -216,12 +217,16 @@ export const useUserStore = create<UserState>((set) => ({
     }),
   updateProfile: (patch) =>
     set((s) => {
+      const avatar = typeof patch.avatar === 'string'
+        ? patch.avatar
+        : patch.name && !isIconAvatar(s.user.avatar)
+          ? makeAvatar(patch.name)
+          : s.user.avatar
+
       const user = {
         ...s.user,
         ...patch,
-        avatar: patch.name
-          ? makeAvatar(patch.name)
-          : s.user.avatar,
+        avatar,
       }
       if (s.currentUsername) saveProfile(s.currentUsername, user)
       return { user }

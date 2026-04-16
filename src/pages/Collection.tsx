@@ -5,6 +5,19 @@ import { Trophy, PawPrint } from 'lucide-react'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useUserStore } from '@/store'
+import { AVATAR_OPTIONS, isIconAvatar } from '@/lib/profileAvatar'
+import medalBadge from '../../assetss/medal.png'
+import genshinImpactBadge from '../../assetss/Genshin_Impact.png'
+import monsterLabBadge from '../../assetss/monster-lab.jpeg'
+import wBadge from '../../assetss/w.jpeg'
+
+type BadgeCard = {
+  id: string
+  name: string
+  rarity: string
+  icon?: string
+  imageSrc?: string
+}
 
 type Pet = {
   id: string
@@ -81,15 +94,35 @@ const PETS: Pet[] = [
   },
 ]
 
+const UNLOCKED_BADGE_IMAGES: BadgeCard[] = [
+  { id: 'asset-medal', name: 'Medal', rarity: 'legendary', imageSrc: medalBadge },
+  { id: 'asset-genshin-impact', name: 'Genshin Impact', rarity: 'epic', imageSrc: genshinImpactBadge },
+  { id: 'asset-monster-lab', name: 'Monster Lab', rarity: 'rare', imageSrc: monsterLabBadge },
+  { id: 'asset-w', name: 'W', rarity: 'common', imageSrc: wBadge },
+]
+
 export default function CollectionPage() {
   const { t } = useTranslation()
-  const { user, badges } = useUserStore()
+  const { user, badges, updateProfile } = useUserStore()
   const [selectedPetId, setSelectedPetId] = useLocalStorage<string | null>(
     `collection:selected-caracter:${user.name}`,
     null
   )
 
   const earnedBadges = useMemo(() => badges.filter((b) => b.earned), [badges])
+  const unlockedBadges = useMemo<BadgeCard[]>(
+    () => [
+      ...earnedBadges.map((badge) => ({
+        id: badge.id,
+        name: badge.name,
+        rarity: badge.rarity,
+        icon: badge.icon,
+      })),
+      ...UNLOCKED_BADGE_IMAGES,
+    ],
+    [earnedBadges]
+  )
+
   const unlockedPets = useMemo(() => {
     const ctx = {
       level: user.level,
@@ -107,6 +140,11 @@ export default function CollectionPage() {
       setSelectedPetId(null)
     }
   }, [selectedPetId, setSelectedPetId, unlockedPets])
+
+  const selectedIconId = useMemo(() => {
+    if (!isIconAvatar(user.avatar)) return null
+    return user.avatar.replace('icon:', '')
+  }, [user.avatar])
 
   return (
     <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
@@ -132,14 +170,22 @@ export default function CollectionPage() {
                 <Trophy size={16} />
                 <h2 className="font-semibold">{t('collection.badgesTitle')}</h2>
               </div>
-              <span className="text-xs text-surface-500">{earnedBadges.length} / {badges.length}</span>
+              <span className="text-xs text-surface-500">{unlockedBadges.length} / {badges.length + UNLOCKED_BADGE_IMAGES.length}</span>
             </div>
 
-            {earnedBadges.length > 0 ? (
+            {unlockedBadges.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {earnedBadges.map((badge) => (
+                {unlockedBadges.map((badge) => (
                   <div key={badge.id} className="rounded-xl border border-white/8 bg-white/[0.02] p-3 text-center">
-                    <div className="text-2xl mb-1">{badge.icon}</div>
+                    {badge.imageSrc ? (
+                      <img
+                        src={badge.imageSrc}
+                        alt={badge.name}
+                        className="mb-2 h-12 w-12 rounded-lg object-cover mx-auto"
+                      />
+                    ) : (
+                      <div className="text-2xl mb-1">{badge.icon}</div>
+                    )}
                     <div className="text-sm font-medium text-surface-100">{badge.name}</div>
                     <div className="text-[11px] text-surface-500 capitalize">{badge.rarity}</div>
                   </div>
@@ -202,6 +248,49 @@ export default function CollectionPage() {
             ) : (
               <p className="text-sm text-surface-500">{t('collection.emptyPets')}</p>
             )}
+          </motion.section>
+
+          <motion.section
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="rounded-2xl border border-white/10 bg-surface-900/40 p-5 lg:col-span-2"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 text-surface-200">
+                <span className="text-sm">🖼️</span>
+                <h2 className="font-semibold">Icons Collection</h2>
+              </div>
+              <span className="text-xs text-surface-500">
+                {selectedIconId ? '1 selected' : 'None selected'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-3">
+              {AVATAR_OPTIONS.map((iconOption) => {
+                const active = selectedIconId === iconOption.id
+                return (
+                  <button
+                    key={iconOption.id}
+                    type="button"
+                    onClick={() => updateProfile({ avatar: `icon:${iconOption.id}` })}
+                    className="rounded-xl border p-1.5 transition-colors"
+                    style={{
+                      borderColor: active ? 'rgba(59, 130, 246, 0.65)' : 'rgba(255,255,255,0.12)',
+                      background: active ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255,255,255,0.02)',
+                    }}
+                    aria-label={`Select ${iconOption.label}`}
+                    title={iconOption.label}
+                  >
+                    <img
+                      src={iconOption.src}
+                      alt={iconOption.label}
+                      className="h-14 w-full rounded-lg object-cover"
+                    />
+                  </button>
+                )
+              })}
+            </div>
           </motion.section>
         </div>
       </div>

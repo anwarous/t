@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore, useUserStore } from '@/store'
 import LanguageSwitcher from './LanguageSwitcher'
+import { resolveAvatarImage } from '@/lib/profileAvatar'
 
 export default function DashboardTopNav() {
   const location = useLocation()
@@ -15,6 +16,7 @@ export default function DashboardTopNav() {
 
   const activePath = location.pathname
   const initials = useMemo(() => user.avatar || (authUser?.username?.slice(0, 2).toUpperCase() ?? 'ME'), [authUser?.username, user.avatar])
+  const avatarImage = useMemo(() => resolveAvatarImage(user.avatar), [user.avatar])
   const signOut = useCallback(() => {
     clearAuth()
     setMobileOpen(false)
@@ -88,7 +90,11 @@ export default function DashboardTopNav() {
               aria-label={t('nav.profile')}
               aria-expanded={profileMenuOpen}
             >
-              <span className="text-xs font-semibold" style={{ color: 'var(--color-text)', fontFamily: 'Space Grotesk, sans-serif' }}>{initials}</span>
+              {avatarImage ? (
+                <img src={avatarImage} alt={user.name} className="w-full h-full rounded-full object-cover" />
+              ) : (
+                <span className="text-xs font-semibold" style={{ color: 'var(--color-text)', fontFamily: 'Space Grotesk, sans-serif' }}>{initials}</span>
+              )}
             </button>
 
             {profileMenuOpen && (
